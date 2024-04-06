@@ -48,6 +48,14 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
+    implementation(libs.play.services.mlkit.document.scanner)
+    implementation(libs.androidx.activity)
+    implementation(libs.play.services.code.scanner)
+    implementation(libs.glide)
+    annotationProcessor(libs.glide)
+    implementation("com.github.garg-lucifer:AndroidDocumentFilter:0.7.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
