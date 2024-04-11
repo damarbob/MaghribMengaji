@@ -53,8 +53,8 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.play.services.code.scanner)
     implementation(libs.glide)
-    annotationProcessor(libs.glide)
     implementation("com.github.garg-lucifer:AndroidDocumentFilter:0.7.0")
+    annotationProcessor(libs.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

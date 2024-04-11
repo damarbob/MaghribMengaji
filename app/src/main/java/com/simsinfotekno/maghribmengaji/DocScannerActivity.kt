@@ -1,12 +1,18 @@
 package com.simsinfotekno.maghribmengaji
 
+//import android.R
+
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Base64
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
@@ -27,16 +33,36 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.ByteArrayOutputStream
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 
-class DocScannerActivity : AppCompatActivity() {
+class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
 
     private lateinit var scannerResultImageView: ImageView
     private lateinit var documentScannerButton: Button
     private lateinit var qrScannerButton: Button
+    private lateinit var quranApiTextView: TextView
+
+    private val mAPiKey = "K88528569888957"
+
+    private var isOverlayRequired : Boolean = false
+    private lateinit var mImageBase64: String
+    private lateinit var mLanguage: String
+    private lateinit var ocrResultTextView: TextView
+    private lateinit var mIOCRCallBack: IOCRCallBack
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        mIOCRCallBack = this
+        mLanguage = "ara" //Language
+        isOverlayRequired = false
+
+//      option for document scanning
         val option = GmsDocumentScannerOptions.Builder()
             .setScannerMode(SCANNER_MODE_BASE_WITH_FILTER)
             .setGalleryImportAllowed(true)
@@ -53,6 +79,7 @@ class DocScannerActivity : AppCompatActivity() {
         scannerResultImageView = findViewById<ImageView>(R.id.imageViewScannerResult)
         documentScannerButton = findViewById<Button>(R.id.buttonDocumentScanner)
         qrScannerButton = findViewById<Button>(R.id.buttonQrScanner)
+        quranApiTextView = findViewById<TextView>(R.id.textViewQuranApi)
 
         val scanner = GmsDocumentScanning.getClient(option.build())
         val scannerLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -100,7 +127,6 @@ class DocScannerActivity : AppCompatActivity() {
                     .load(pages[0].imageUri)
                     .listener(object : RequestListener<Drawable> {
 
-
                         override fun onResourceReady(
                             resource: Drawable,
                             model: Any,
@@ -109,11 +135,17 @@ class DocScannerActivity : AppCompatActivity() {
                             isFirstResource: Boolean
                         ): Boolean {
                             val gambar = resource.toBitmap()
+                            mImageBase64 = bitmapToBase64(gambar)
+
                             // shadow removal
                             documentFilter.getLightenFilter(gambar) {
                                 // Do your tasks here with the returned bitmap
                                 scannerResultImageView.setImageBitmap(it)
                             }
+
+                            FetchQuranPageTask().execute()
+                            initOCR()
+
                             return true
                         }
 
@@ -143,5 +175,100 @@ class DocScannerActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    inner class FetchQuranPageTask : AsyncTask<Void, Void, String>() {
+        override fun doInBackground(vararg params: Void?): String {
+//    private fun FetchQuranPageTask() {
+            var result = ""
+            var urlConnection: HttpURLConnection? = null
+            try {
+                val url = URL("https://api.alquran.cloud/v1/page/1/quran-uthmani")
+                urlConnection = url.openConnection() as HttpURLConnection
+                urlConnection.requestMethod = "GET"
+                val inputStream = urlConnection.inputStream
+                val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+                val stringBuilder = StringBuilder()
+                var line: String?
+                while (bufferedReader.readLine().also { line = it } != null) {
+                    stringBuilder.append(line).append("\n")
+                }
+                bufferedReader.close()
+                result = stringBuilder.toString()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                urlConnection?.disconnect()
+            }
+
+//    if (!result.isNullOrEmpty()) {
+//                quranApiTextView.text = result
+//            } else {
+//                quranApiTextView.text = "Failed to fetch data"
+//            }
+            return result
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            quranApiTextView.visibility = View.VISIBLE
+            if (!result.isNullOrEmpty()) {
+                quranApiTextView.text = extractTextFromJsonQuranApi(result)
+            } else {
+                quranApiTextView.text = "Failed to fetch data"
+            }
+        }
+    }
+
+    private fun extractTextFromJsonQuranApi(jsonString: String): String {
+        val jsonObject = JSONObject(jsonString)
+        val ayahsArray = jsonObject.getJSONObject("data").getJSONArray("ayahs")
+        val stringBuilder = StringBuilder()
+        for (i in 0 until ayahsArray.length()) {
+            val ayahObject = ayahsArray.getJSONObject(i)
+            val ayahText = ayahObject.getString("text")
+            stringBuilder.append(ayahText).append("\n")
+        }
+        return stringBuilder.toString()
+    }
+    private fun extractTextFromJsonOCRApi(jsonString: String): String? {
+        try {
+            val jsonObject = JSONObject(jsonString)
+            val parsedResults = jsonObject.getJSONArray("ParsedResults")
+            if (parsedResults.length() > 0) {
+                val firstResult = parsedResults.getJSONObject(0)
+                return firstResult.optString("ParsedText")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    private fun initOCR() {
+        ocrResultTextView = findViewById<TextView>(R.id.textViewOCRResult)
+            val oCRAsyncTask = OCRAsyncTask(
+                this@DocScannerActivity,
+                mAPiKey,
+                isOverlayRequired,
+                mImageBase64,
+                mLanguage,
+                mIOCRCallBack
+            )
+            oCRAsyncTask.execute()
+        }
+
+
+    override fun getOCRCallBackResult(response: String?) {
+        ocrResultTextView.visibility = View.VISIBLE
+        ocrResultTextView.text = response?.let { extractTextFromJsonOCRApi(it) }
+    }
+
+    fun bitmapToBase64(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        println(Base64.encodeToString(byteArray, Base64.DEFAULT))
+        return "data:image/jpeg;base64,${Base64.encodeToString(byteArray, Base64.DEFAULT)}"
     }
 }
