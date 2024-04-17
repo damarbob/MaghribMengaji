@@ -47,6 +47,7 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
     private lateinit var documentScannerButton: Button
     private lateinit var qrScannerButton: Button
     private lateinit var quranApiTextView: TextView
+    private lateinit var resultTextView: TextView
 
     private val mAPiKey = "K88528569888957"
 
@@ -80,6 +81,8 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
         documentScannerButton = findViewById<Button>(R.id.buttonDocumentScanner)
         qrScannerButton = findViewById<Button>(R.id.buttonQrScanner)
         quranApiTextView = findViewById<TextView>(R.id.textViewQuranApi)
+        ocrResultTextView = findViewById<TextView>(R.id.textViewOCRResult)
+        resultTextView = findViewById<TextView>(R.id.textViewResult)
 
         val scanner = GmsDocumentScanning.getClient(option.build())
         val scannerLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -107,6 +110,7 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
         qrScannerButton.setOnClickListener {
             startActivity(Intent(this,QRScannerActivity::class.java))
         }
+
     }
 
     private fun handleActivityResult(activityResult: ActivityResult) {
@@ -246,7 +250,6 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
     }
 
     private fun initOCR() {
-        ocrResultTextView = findViewById<TextView>(R.id.textViewOCRResult)
             val oCRAsyncTask = OCRAsyncTask(
                 this@DocScannerActivity,
                 mAPiKey,
@@ -262,6 +265,13 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
     override fun getOCRCallBackResult(response: String?) {
         ocrResultTextView.visibility = View.VISIBLE
         ocrResultTextView.text = response?.let { extractTextFromJsonOCRApi(it) }
+
+        val quranApiText = quranApiTextView.text.toString()
+        val ocrText = ocrResultTextView.text.toString()
+        resultTextView.visibility = View.VISIBLE
+        resultTextView.text = calculateSimilarityIndex(quranApiText,ocrText).toString()
+//        resultTextView.text = removeDiacritics(quranApiText)
+//        resultTextView.text = quranApiText.compareTo(ocrText).toString()
     }
 
     fun bitmapToBase64(bitmap: Bitmap): String {
@@ -270,5 +280,45 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
         val byteArray = byteArrayOutputStream.toByteArray()
         println(Base64.encodeToString(byteArray, Base64.DEFAULT))
         return "data:image/jpeg;base64,${Base64.encodeToString(byteArray, Base64.DEFAULT)}"
+    }
+
+    private fun removeDiacritics(input: String): String {
+        val diacritics = listOf('\u064B', '\u064C', '\u064D', '\u064E', '\u064F', '\u0650', '\u0651', '\u0652', '\u0670')
+        val builder = StringBuilder()
+        input.forEach { char ->
+            if (!diacritics.contains(char)) {
+                builder.append(char)
+            }
+        }
+        return builder.toString()
+    }
+
+    fun calculateSimilarityIndexA(str1: String, str2: String): Double {
+        val cleanStr1 = removeDiacritics(str1)
+        val cleanStr2 = removeDiacritics(str2)
+
+        val maxLength = maxOf(cleanStr1.length, cleanStr2.length)
+        var similarity = 0.0
+
+        for (i in 0 until maxLength) {
+            val char1 = if (i < cleanStr1.length) cleanStr1[i] else '\u0000'
+            val char2 = if (i < cleanStr2.length) cleanStr2[i] else '\u0000'
+
+            if (char1 == char2) {
+                similarity++
+            }
+        }
+
+        return similarity / maxLength
+    }
+
+    private fun calculateSimilarityIndex(str1: String, str2: String): Double {
+        val cleanStr1 = removeDiacritics(str1).toSet()
+        val cleanStr2 = removeDiacritics(str2).toSet()
+
+        val intersectionSize = cleanStr1.intersect(cleanStr2).size.toDouble()
+        val unionSize = cleanStr1.union(cleanStr2).size.toDouble()
+
+        return intersectionSize / unionSize
     }
 }
