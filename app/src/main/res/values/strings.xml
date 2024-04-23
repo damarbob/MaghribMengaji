@@ -5,4 +5,12 @@
     <string name="title_notifications">Notifications</string>
     <string name="error_scanner_cancelled">Scan cancelled</string>
     <string name="error_default_message">Error</string>
+    <string name="failed_to_fetch_data">Failed to fetch data</string>
+    <string name="submit">Submit</string>
+    <string name="similarity_score">Similarity Score</string>
+    <string name="upload">Upload</string>
+    <string name="your_score_is_ssr_press_upload_to_send_your_score">Your Score is great. Press <b>Upload</b> to send your score</string>
+    <string name="your_score_is_low">Your Score is below the KKM. Press <b>Retry</b> to rescan</string>
+    <string name="volume">Volume</string>
+    <string name="page">Page</string>
 </resources>

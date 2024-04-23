@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.play.services.code.scanner)
     implementation(libs.glide)
     implementation("com.github.garg-lucifer:AndroidDocumentFilter:0.7.0")
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.fragment.ktx)
     annotationProcessor(libs.compiler)
 
     testImplementation(libs.junit)
