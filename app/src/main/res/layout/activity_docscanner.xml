@@ -9,12 +9,15 @@
     android:orientation="vertical"
     android:padding="@dimen/activity_horizontal_margin">
 
-    <fragment
-        android:id="@+id/navHostDocScanner"
-        android:name="com.simsinfotekno.maghribmengaji.ui.page.PageFragment"
-        app:navGraph="@navigation/mobile_navigation"
+    <ImageView
+        android:id="@+id/imageViewScannerResult"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/buttonDocumentScanner"

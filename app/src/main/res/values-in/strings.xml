@@ -14,9 +14,6 @@
     <string name="volume">Jilid</string>
     <string name="page">Halaman</string>
     <string name="retry">Ulangi</string>
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Maghrib Mengaji</string>
     <string name="main_menu_home">Beranda</string>
     <string name="main_menu_ustadh">Ustadz</string>
     <string name="main_menu_volume">Jilid</string>

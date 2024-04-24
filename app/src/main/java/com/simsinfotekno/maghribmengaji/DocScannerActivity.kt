@@ -111,7 +111,7 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
         }
 
         binding.buttonDocumentScanner.setOnClickListener {
-            Glide.with(this).clear(binding.imageViewScannerResult)
+//            Glide.with(this).clear(binding.imageViewScannerResult)
 
             scanner.getStartScanIntent(this)
                 .addOnSuccessListener {
@@ -168,7 +168,7 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
                             // shadow removal
                             documentFilter.getGreyScaleFilter(gambar) {
                                 // Do your tasks here with the returned bitmap
-                                binding.imageViewScannerResult.setImageBitmap(it)
+//                                binding.imageViewScannerResult.setImageBitmap(it)
                                 mImageBase64 = bitmapToBase64(it)
 
     //                          FetchQuranPageTask().execute()
