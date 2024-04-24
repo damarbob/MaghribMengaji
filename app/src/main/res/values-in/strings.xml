@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Maghrib Mengaji</string>
+    <string name="main_menu_home">Beranda</string>
+    <string name="main_menu_ustadh">Ustadz</string>
+    <string name="main_menu_volume">Jilid</string>
+    <string name="auth_email">Alamat Email</string>
+    <string name="auth_password">Kata Sandi</string>
+    <string name="auth_login">Masuk</string>
+    <string name="auth_login_google">Masuk dengan Google</string>
+    <string name="auth_signup">Daftar</string>
+    <string name="auth_fullname">Nama Lengkap</string>
+    <string name="auth_phone_number">Nomor HP</string>
+    <string name="auth_forgot_password">Lupa sandi?</string>
+    <string name="welcome_greeting">Selamat datang di</string>
+    <string name="main_menu_profile">Profil</string>
+    <string name="main_menu_contact">Hubungi Kami</string>
+    <string name="quran_volume">Jilid %1$s</string>
+    <string name="quran_page">Halaman %1$s</string>
+    <string name="in_progress">Dalam proses</string>
+    <string name="last_written">Terakhir ditulis</string>
+</resources>

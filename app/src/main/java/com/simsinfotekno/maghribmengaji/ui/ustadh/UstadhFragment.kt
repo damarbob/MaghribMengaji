@@ -1,4 +1,4 @@
-package com.simsinfotekno.maghribmengaji.ui.notifications
+package com.simsinfotekno.maghribmengaji.ui.ustadh
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.simsinfotekno.maghribmengaji.databinding.FragmentNotificationsBinding
+import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhBinding
 
-class NotificationsFragment : Fragment() {
+class UstadhFragment : Fragment() {
 
-    private var _binding: FragmentNotificationsBinding? = null
+    private var _binding: FragmentUstadhBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,14 +22,14 @@ class NotificationsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        val ustadhViewModel =
+            ViewModelProvider(this).get(UstadhViewModel::class.java)
 
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
+        _binding = FragmentUstadhBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
+        val textView: TextView = binding.textDashboard
+        ustadhViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root

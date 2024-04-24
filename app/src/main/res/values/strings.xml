@@ -1,6 +1,23 @@
 <resources>
     <string name="app_name">Maghrib Mengaji</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="main_menu_home">Home</string>
+    <string name="main_menu_ustadh">Ustadh</string>
+    <string name="main_menu_volume">Volume</string>
+    <string name="auth_email">Email Address</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_login">Login</string>
+    <string name="auth_login_google">Login with Google</string>
+    <string name="auth_signup">Sign Up</string>
+    <string name="auth_fullname">Full Name</string>
+    <string name="auth_phone_number">Phone Number</string>
+    <string name="auth_forgot_password">Forgot password?</string>
+    <string name="welcome_greeting">Welcome to</string>
+    <string name="main_menu_profile">Profile</string>
+    <string name="main_menu_contact">Contact Us</string>
+    <string name="quran_volume">Volume %1$s</string>
+    <string name="quran_page">Page %1$s</string>
+    <string name="in_progress">In progress</string>
+    <string name="last_written">Last written</string>
+    <!-- Strings used for fragments for navigation -->
+
 </resources>
