@@ -15,7 +15,7 @@
         >
 
         <TextView
-            android:id="@+id/textViewJilid"
+            android:id="@+id/pageTextViewVolume"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceTitleLarge"
@@ -24,23 +24,24 @@
             android:text="@string/volume"/>
 
         <TextView
-            android:id="@+id/textViewHalaman"
+            android:id="@+id/pageTextViewPage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:text="@string/page" />
     </LinearLayout>
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:indeterminate="true"
         android:layout_marginTop="-7dp"
-        android:id="@+id/progressBar"
+        android:id="@+id/pageProgressBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
     <ImageView
-        android:id="@+id/imageViewScannerResult"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:id="@+id/pageImageViewPage"
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:src="@mipmap/ic_launcher_round"
@@ -54,13 +55,14 @@
         android:layout_marginTop="@dimen/activity_vertical_margin">
 
         <Button
+            android:id="@+id/pageButtonPrevious"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@drawable/baseline_arrow_back_ios_new_24" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/pageButtonSubmit"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             style="@style/Widget.Material3.Button.Icon"
             android:layout_width="wrap_content"
@@ -69,12 +71,27 @@
             app:icon="@drawable/outline_camera_alt_24"/>
 
         <Button
+            android:id="@+id/pageButtonForward"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@drawable/baseline_arrow_forward_ios_24" />
 
-
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/pageTextViewScore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="90"
+        android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+        android:textStyle="bold"/>
+
+    <ImageView
+        android:id="@+id/pageImageViewScannedResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"/>
 
 </LinearLayout>

@@ -13,4 +13,5 @@
     <string name="your_score_is_low">Your Score is below the KKM. Press <b>Retry</b> to rescan</string>
     <string name="volume">Volume</string>
     <string name="page">Page</string>
+    <string name="retry">Retry</string>
 </resources>

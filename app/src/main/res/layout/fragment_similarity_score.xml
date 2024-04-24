@@ -31,7 +31,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewScore"
+        android:id="@+id/similarityScoreTextViewScore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
@@ -56,6 +56,7 @@
         app:trackThickness="16dp" />
 
     <TextView
+        android:id="@+id/similarityScoreTextViewDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/your_score_is_ssr_press_upload_to_send_your_score"
@@ -83,7 +84,7 @@
         android:id="@+id/similarityScoreButtonRetry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Retry"
+        android:text="@string/retry"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
