@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -52,8 +53,6 @@ dependencies {
     implementation(libs.play.services.mlkit.document.scanner)
     implementation(libs.androidx.activity)
     implementation(libs.play.services.code.scanner)
-    implementation(libs.glide)
-    implementation("com.github.garg-lucifer:AndroidDocumentFilter:0.7.0")
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
     annotationProcessor(libs.compiler)
@@ -63,10 +62,17 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+    implementation(platform(libs.firebase.bom))
 
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
+
+    //
+    implementation(libs.glide)
+    implementation(libs.android.document.filter) // Add document filter to bitmap
+    implementation("com.google.code.gson:gson:2.10.1") // Serialization/deserialization dependency
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+
 
 }

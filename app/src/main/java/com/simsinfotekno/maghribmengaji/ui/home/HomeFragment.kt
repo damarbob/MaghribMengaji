@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
-import com.simsinfotekno.maghribmengaji.model.QuranVolume
 
 class HomeFragment : Fragment() {
 
@@ -39,11 +38,10 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val dataset = arrayOf(QuranVolume(1, "1"), QuranVolume(2, "2"), QuranVolume(3, "3"))
-        val volumeAdapter = VolumeAdapter(dataset)
+        val volumeAdapter = VolumeAdapter(MainActivity.quranVolumes) // Set dataset
 
         // Volume list
-        val recyclerView: RecyclerView = _binding!!.homeRecyclerViewVolume
+        val recyclerView: RecyclerView = binding.homeRecyclerViewVolume
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = volumeAdapter

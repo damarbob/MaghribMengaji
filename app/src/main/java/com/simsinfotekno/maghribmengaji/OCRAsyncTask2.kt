@@ -1,10 +1,11 @@
 package com.simsinfotekno.maghribmengaji
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.util.Log
 import android.widget.ProgressBar
+import androidx.lifecycle.LifecycleCoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -12,41 +13,48 @@ import java.io.DataOutputStream
 import java.io.InputStreamReader
 import java.net.URL
 import java.net.URLEncoder
-import java.util.concurrent.Executors
 import javax.net.ssl.HttpsURLConnection
 
-class OCRAsyncTask2(
-    private val mActivity: Activity,
-    private val mApiKey: String,
-    private val isOverlayRequired: Boolean,
-    private val imageBase64: String,
-    private val language: String,
-    private val iOCRCallBack: IOCRCallBack
-) {
+class OCRAsyncTask2 {
+
+    private lateinit var mActivity: Activity
+    private lateinit var imageBase64: String
+    private lateinit var language: String
+    private lateinit var iOCRCallBack: IOCRCallBack
+    private lateinit var progressBar: ProgressBar
+    private val mApiKey = "K88528569888957"
+    private val isOverlayRequired = false
     private val url = "https://api.ocr.space/parse/image" // OCR API Endpoints
-    private var mProgressDialog: ProgressDialog? = null
     private lateinit var mProgressBar: ProgressBar
 
-    private val executor = Executors.newSingleThreadExecutor()
+    operator fun invoke(
+        mActivity: Activity,
+        imageBase64: String,
+        language: String,
+        iOCRCallBack: IOCRCallBack,
+        progressBar: ProgressBar,
+        lifecycleScope: LifecycleCoroutineScope
+    ) {
+        this.mActivity = mActivity
+        this.imageBase64 = imageBase64
+        this.language = language
+        this.iOCRCallBack = iOCRCallBack
+        this.progressBar = progressBar
 
-    suspend fun executeAsyncTask(progressBar: ProgressBar) {
+        lifecycleScope.launch {
+            executeAsyncTask()
+        }
+    }
+
+    suspend fun executeAsyncTask() {
         mProgressBar = progressBar
         try {
-//            mProgressDialog = ProgressDialog(mActivity)
-//            mProgressDialog!!.setTitle("Wait while processing....")
-//            mProgressDialog!!.setCanceledOnTouchOutside(false)
-//            mProgressDialog!!.setCancelable(false)
-//            mProgressDialog!!.show()
-
             mProgressBar.visibility = ProgressBar.VISIBLE
 
-
-
             val response = withContext(Dispatchers.IO) {
-                sendPost(mApiKey, isOverlayRequired, imageBase64, language)
+                sendPost()
             }
 
-//            mProgressDialog?.dismiss()
             mProgressBar.visibility = ProgressBar.GONE
             iOCRCallBack.getOCRCallBackResult(response)
             Log.d(TAG, response)
@@ -56,12 +64,7 @@ class OCRAsyncTask2(
     }
 
     @Throws(Exception::class)
-    private fun sendPost(
-        apiKey: String,
-        isOverlayRequired: Boolean,
-        imageBase64: String,
-        language: String
-    ): String {
+    private fun sendPost(): String {
         val obj = URL(url) // OCR API Endpoints
         val con = obj.openConnection() as HttpsURLConnection
 
@@ -71,7 +74,7 @@ class OCRAsyncTask2(
         con.setRequestProperty("Accept-Language", "en-US,en;q=0.5")
         con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
         val postDataParams = JSONObject()
-        postDataParams.put("apikey", apiKey)
+        postDataParams.put("apikey", mApiKey)
         postDataParams.put("isOverlayRequired", isOverlayRequired)
         postDataParams.put("base64image", imageBase64)
         postDataParams.put("language", language)
@@ -90,7 +93,7 @@ class OCRAsyncTask2(
         }
         `in`.close()
 
-        //return result
+        // Return result
         return response.toString()
     }
 
@@ -111,6 +114,6 @@ class OCRAsyncTask2(
     }
 
     companion object {
-        private const val TAG = "OCRAsyncTask"
+        private val TAG = OCRAsyncTask2::class.simpleName
     }
 }

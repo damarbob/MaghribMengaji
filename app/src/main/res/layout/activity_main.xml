@@ -16,7 +16,7 @@
 
 <!--    Buat coordinator layout-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/extended_fab"
+        android:id="@+id/mainFabVolumeList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

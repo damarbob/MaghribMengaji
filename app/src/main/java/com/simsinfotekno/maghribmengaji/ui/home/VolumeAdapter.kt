@@ -9,7 +9,7 @@ import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 
 
-class VolumeAdapter(private val dataSet: Array<QuranVolume>) :
+class VolumeAdapter(var dataSet: List<QuranVolume>) :
     RecyclerView.Adapter<VolumeAdapter.ViewHolder>() {
 
     /**

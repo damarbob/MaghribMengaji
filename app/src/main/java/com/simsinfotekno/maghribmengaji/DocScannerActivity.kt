@@ -6,18 +6,11 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import android.util.Log
 import android.view.View
-import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
@@ -40,7 +33,6 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
 import com.simsinfotekno.maghribmengaji.databinding.ActivityDocscannerBinding
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
@@ -55,24 +47,17 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
 
     private lateinit var binding: ActivityDocscannerBinding
 
-//    private lateinit var scannerResultImageView: ImageView
-//    private lateinit var documentScannerButton: Button
-//    private lateinit var qrScannerButton: Button
-//    private lateinit var quranApiTextView: TextView
-//    private lateinit var resultTextView: TextView
-
-    private val mAPiKey = "K88528569888957"
-
     private var isOverlayRequired : Boolean = false
-//    private lateinit var mImageBase64: String
     private var mImageBase64: String = ""
     private lateinit var mLanguage: String
-//    private lateinit var ocrResultTextView: TextView
     private lateinit var mIOCRCallBack: IOCRCallBack
-//    private lateinit var progressBar: ProgressBar
 
     private val myExecutor = Executors.newSingleThreadExecutor()
     private val myHandler = Handler(Looper.getMainLooper())
+
+    // Use case
+    private val oCRAsyncTask = OCRAsyncTask2()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -173,7 +158,16 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
 
     //                          FetchQuranPageTask().execute()
                                 fetchQuranPageTask()
-                                initOCR()
+
+                                // Start
+                                oCRAsyncTask(
+                                    this@DocScannerActivity,
+                                    mImageBase64,
+                                    "ara",
+                                    this@DocScannerActivity,
+                                    binding.progressBar,
+                                    lifecycleScope
+                                )
                             }
 
                             return true
@@ -309,27 +303,6 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
         }
         return null
     }
-
-    /**
-     * Call OCR API
-     */
-    private fun initOCR() {
-
-        val oCRAsyncTask = OCRAsyncTask2(
-//            val oCRAsyncTask = OCRAsyncTask(
-            this@DocScannerActivity,
-            mAPiKey,
-            isOverlayRequired,
-            mImageBase64,
-            mLanguage,
-            mIOCRCallBack
-        )
-//            oCRAsyncTask.execute()
-        lifecycleScope.launch {
-            oCRAsyncTask.executeAsyncTask(binding.progressBar)
-        }
-    }
-
 
     /**
      * Get OCR Callback result

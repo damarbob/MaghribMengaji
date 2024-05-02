@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "907262070062",
+    "project_id": "nth-agent-330707",
+    "storage_bucket": "nth-agent-330707.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:907262070062:android:e504817bfd871e6b2b3ebf",
+        "android_client_info": {
+          "package_name": "com.simsinfotekno.maghribmengaji"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "907262070062-b66viakni2bhirqg8cv5qtmo7dd2hit7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyxc7hP58XnD_Jp2dOphdJO8Bu1y8Go9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "907262070062-b66viakni2bhirqg8cv5qtmo7dd2hit7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -13,6 +13,12 @@
         <action
             android:id="@+id/action_navigation_home_to_navigation_profile"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_volumeListFragment"
+            app:destination="@id/volumeListFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_pageFragment"
+            app:destination="@id/pageFragment" />
     </fragment>
 
     <fragment
@@ -20,5 +26,24 @@
         android:name="com.simsinfotekno.maghribmengaji.ui.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/volumeListFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment"
+        android:label="fragment_volume_list"
+        tools:layout="@layout/fragment_volume_list" />
+    <fragment
+        android:id="@+id/pageFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.page.PageFragment"
+        android:label="fragment_page"
+        tools:layout="@layout/fragment_page" >
+        <action
+            android:id="@+id/action_pageFragment_to_similarityScoreFragment"
+            app:destination="@id/similarityScoreFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/similarityScoreFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.similarityscore.SimilarityScoreFragment"
+        android:label="fragment_similarity_score"
+        tools:layout="@layout/fragment_similarity_score" />
 
 </navigation>

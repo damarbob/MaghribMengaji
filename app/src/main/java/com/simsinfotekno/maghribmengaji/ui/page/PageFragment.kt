@@ -3,12 +3,10 @@ package com.simsinfotekno.maghribmengaji.ui.page
 import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +15,9 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.drawable.toBitmap
-import androidx.lifecycle.Lifecycle
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -33,7 +31,6 @@ import com.simsinfotekno.maghribmengaji.IOCRCallBack
 import com.simsinfotekno.maghribmengaji.OCRAsyncTask2
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
@@ -55,51 +52,45 @@ class PageFragment : Fragment(), IOCRCallBack {
     private val binding get() = _binding!!
 
     // OCR
-    private val mAPiKey = "K88528569888957"
-    private var isOverlayRequired : Boolean = false
-    private lateinit var mImageBase64: String
-    private lateinit var mLanguage: String
-    private lateinit var mIOCRCallBack: IOCRCallBack
-
     private val myExecutor = Executors.newSingleThreadExecutor()
     private val myHandler = Handler(Looper.getMainLooper())
 
     private lateinit var quranApiResult: String
     private lateinit var ocrResult: String
 
+    // Use case
+    private val oCRAsyncTask = OCRAsyncTask2()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        OCR
-        mIOCRCallBack = this
-        mLanguage = "ara" //Language
-        isOverlayRequired = false
 
 //        lifecycleScope.launch {
 //            repeatOnLifecycle(Lifecycle.State.STARTED){
 //
 //            }
 //        }
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPageBinding.inflate(inflater,container,false)
+        _binding = FragmentPageBinding.inflate(inflater, container, false)
 
-        //        option for document scanning
+        // Option for document scanning
         val option = GmsDocumentScannerOptions.Builder()
             .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_BASE_WITH_FILTER)
             .setGalleryImportAllowed(true)
             .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
             .setPageLimit(1)
 
-//        get client and launcher of scanner
+        // Get client and launcher of scanner
         val scanner = GmsDocumentScanning.getClient(option.build())
-        val scannerLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            handleActivityResult(result)
-        }
+        val scannerLauncher =
+            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+                handleActivityResult(result)
+            }
 
         binding.pageButtonForward.setOnClickListener {
 
@@ -109,7 +100,7 @@ class PageFragment : Fragment(), IOCRCallBack {
 
         }
 
-//        start scan
+        // Start scan
         binding.pageButtonSubmit.setOnClickListener {
             scanner.getStartScanIntent(this.requireActivity())
                 .addOnSuccessListener {
@@ -126,7 +117,7 @@ class PageFragment : Fragment(), IOCRCallBack {
                 }
         }
 
-        return inflater.inflate(R.layout.fragment_page, container, false)
+        return binding.root
     }
 
     private fun handleActivityResult(activityResult: ActivityResult) {
@@ -138,6 +129,7 @@ class PageFragment : Fragment(), IOCRCallBack {
 
                 val documentFilter = DocumentFilter()
 
+                // To convert URI to drawable->bitmap and to apply filter
                 Glide
                     .with(this)
                     .load(pages[0].imageUri)
@@ -146,19 +138,29 @@ class PageFragment : Fragment(), IOCRCallBack {
                         override fun onResourceReady(
                             resource: Drawable,
                             model: Any,
-                            target: com.bumptech.glide.request.target.Target<Drawable>?,
+                            target: Target<Drawable>?,
                             dataSource: DataSource,
                             isFirstResource: Boolean
                         ): Boolean {
                             val image = resource.toBitmap()
 
-                            // apply filter
+                            // Apply filter
                             documentFilter.getGreyScaleFilter(image) {
-                                // Do your tasks here with the returned bitmap
-                                mImageBase64 = bitmapToBase64(it)
 
-                                fetchQuranPageTask()
-                                initOCR()
+                                fetchQuranPageTask(1) // TODO: Change "1" to variable
+
+                                // Do your tasks here with the returned bitmap
+                                val mImageBase64 = bitmapToBase64(it)
+
+                                // Start
+                                oCRAsyncTask(
+                                    requireActivity(),
+                                    mImageBase64,
+                                    "ara",
+                                    this@PageFragment,
+                                    binding.pageProgressBar,
+                                    lifecycleScope
+                                )
                             }
 
                             return true
@@ -173,7 +175,7 @@ class PageFragment : Fragment(), IOCRCallBack {
                             return false
                         }
                     })
-                    .into(binding.pageImageViewScannedResult)
+                    .into(binding.pageImageViewScannedResult) // Unused but don't delete
 
             }
 
@@ -193,14 +195,14 @@ class PageFragment : Fragment(), IOCRCallBack {
     }
 
     /**
-    * Fetch Quran API
-    */
-    private fun fetchQuranPageTask(){
+     * Fetch Quran API
+     */
+    private fun fetchQuranPageTask(page: Int) {
         myExecutor.execute {
             var result = ""
             var urlConnection: HttpURLConnection? = null
             try {
-                val url = URL("https://api.alquran.cloud/v1/page/1/quran-uthmani")
+                val url = URL("https://api.alquran.cloud/v1/page/$page/quran-uthmani")
                 urlConnection = url.openConnection() as HttpURLConnection
                 urlConnection.requestMethod = "GET"
                 val inputStream = urlConnection.inputStream
@@ -219,12 +221,6 @@ class PageFragment : Fragment(), IOCRCallBack {
             }
 
             myHandler.post {
-//                binding.textViewQuranApi.visibility = View.VISIBLE
-//                if (result.isNotEmpty()) {
-//                    binding.textViewQuranApi.text = extractTextFromJsonQuranApi(result)
-//                } else {
-//                    binding.textViewQuranApi.text = getString(R.string.failed_to_fetch_data)
-//                }
                 if (result.isNotEmpty()) {
                     quranApiResult = extractTextFromJsonQuranApi(result)
                 } else {
@@ -270,45 +266,21 @@ class PageFragment : Fragment(), IOCRCallBack {
         return null
     }
 
-    /**
-     * Call OCR API
-     */
-    private fun initOCR() {
-
-        val oCRAsyncTask = OCRAsyncTask2(
-//            val oCRAsyncTask = OCRAsyncTask(
-            this.requireActivity(),
-            mAPiKey,
-            isOverlayRequired,
-            mImageBase64,
-            mLanguage,
-            mIOCRCallBack
-        )
-//            oCRAsyncTask.execute()
-        lifecycleScope.launch {
-            oCRAsyncTask.executeAsyncTask(binding.pageProgressBar)
-        }
-    }
-
 
     /**
      * Get OCR Callback result
      */
     override fun getOCRCallBackResult(response: String?) {
-//        binding.textViewOCRResult.visibility = View.VISIBLE
-//        binding.textViewOCRResult.text = response?.let { extractTextFromJsonOCRApi(it) }
-//
-//        val quranApiText = binding.textViewQuranApi.text.toString()
-//        val ocrText = binding.textViewOCRResult.text.toString()
-//        binding.textViewResult.visibility = View.VISIBLE
-//        binding.textViewResult.text = calculateSimilarityIndex(quranApiText,ocrText).toString()
         ocrResult = response?.let {
-            extractTextFromJsonOCRApi(it) }.toString()
-        binding.pageTextViewScore.text = calculateSimilarityIndex(quranApiResult,ocrResult).toString()
+            extractTextFromJsonOCRApi(it)
+        }.toString()
+        binding.pageTextViewScore.text =
+            calculateSimilarityIndex(quranApiResult, ocrResult).toString()
     }
 
     /**
      * Convert bitmap to Base64
+     * TODO: Move to use case
      */
     fun bitmapToBase64(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
@@ -320,9 +292,20 @@ class PageFragment : Fragment(), IOCRCallBack {
 
     /**
      * Remove harakats or diacritics from string
+     * TODO: Move to use case
      */
     private fun removeDiacritics(input: String): String {
-        val diacritics = listOf('\u064B', '\u064C', '\u064D', '\u064E', '\u064F', '\u0650', '\u0651', '\u0652', '\u0670')
+        val diacritics = listOf(
+            '\u064B',
+            '\u064C',
+            '\u064D',
+            '\u064E',
+            '\u064F',
+            '\u0650',
+            '\u0651',
+            '\u0652',
+            '\u0670'
+        )
         val builder = StringBuilder()
         input.forEach { char ->
             if (!diacritics.contains(char)) {
@@ -332,28 +315,10 @@ class PageFragment : Fragment(), IOCRCallBack {
         return builder.toString()
     }
 
-    fun calculateSimilarityIndexA(str1: String, str2: String): Double {
-        val cleanStr1 = removeDiacritics(str1)
-        val cleanStr2 = removeDiacritics(str2)
-
-        val maxLength = maxOf(cleanStr1.length, cleanStr2.length)
-        var similarity = 0.0
-
-        for (i in 0 until maxLength) {
-            val char1 = if (i < cleanStr1.length) cleanStr1[i] else '\u0000'
-            val char2 = if (i < cleanStr2.length) cleanStr2[i] else '\u0000'
-
-            if (char1 == char2) {
-                similarity++
-            }
-        }
-
-        return similarity / maxLength
-    }
-
     /**
      * Calculate similarity index of 2 strings
      * with Jaccard method
+     * TODO: Move to use case
      */
     private fun calculateSimilarityIndex(str1: String, str2: String): Double {
         val cleanStr1 = removeDiacritics(str1).toSet()
