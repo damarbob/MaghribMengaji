@@ -61,6 +61,7 @@ class PageFragment : Fragment(), IOCRCallBack {
     // Use case
     private val oCRAsyncTask = OCRAsyncTask2()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,6 +78,12 @@ class PageFragment : Fragment(), IOCRCallBack {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
+
+        val pageId = arguments?.getInt("pageId")
+        val thisQuranPage = viewModel.quranPageRepository.getRecordById(pageId)
+        binding.pageTextViewVolume.text = thisQuranPage!!.volumeIds[0].toString()
+        binding.pageTextViewPage.text = pageId.toString()
+        binding.pageImageViewPage.setImageBitmap(thisQuranPage.picture)
 
         // Option for document scanning
         val option = GmsDocumentScannerOptions.Builder()

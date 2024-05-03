@@ -1,14 +1,17 @@
 package com.simsinfotekno.maghribmengaji.ui.pagelist
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 
-class PageAdapter(private val dataSet: Array<QuranPage>) :
+class PageAdapter(var dataSet: List<QuranPage>, private val navController: NavController, private val invoker: Any) :
     RecyclerView.Adapter<PageAdapter.ViewHolder>() {
 
     /**
@@ -17,10 +20,12 @@ class PageAdapter(private val dataSet: Array<QuranPage>) :
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView
+        val cardViewPage: CardView
 
         init {
             // Define click listener for the ViewHolder's View
             textView = view.findViewById(R.id.itemPageTextTitle)
+            cardViewPage = view.findViewById(R.id.itemPageCardView)
         }
     }
 
@@ -42,6 +47,17 @@ class PageAdapter(private val dataSet: Array<QuranPage>) :
             viewHolder.textView.context.getString(R.string.quran_page),
             dataSet[position].name
         )
+
+        // Listener
+        viewHolder.cardViewPage.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putInt("pageId", dataSet[position].id)
+            if (invoker is PageListFragment) {
+            navController.navigate(R.id.action_pageListFragment_to_pageFragment, bundle)
+            } else {
+                navController.navigate(R.id.action_homeFragment_to_pageFragment)
+            }
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

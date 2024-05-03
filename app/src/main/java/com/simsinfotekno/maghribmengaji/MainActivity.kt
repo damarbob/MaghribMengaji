@@ -9,6 +9,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 
 
@@ -21,12 +22,14 @@ class MainActivity : AppCompatActivity() {
         val TAG: String = MainActivity::class.java.simpleName
         val testUser = MaghribMengajiUser("Damar Maulana", "ibn.damr@gmail.com", 10)
         val quranVolumes = listOf(QuranVolume(1, "1"), QuranVolume(2, "2"), QuranVolume(3, "3"))
+        val quranPages = listOf(QuranPage(100,"100"))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        testFirestore() // 
+//        testFirestore() //
+        testFirestoreQuranPage() //
 
         // Test user setup
         testUser.finishedPageIds = listOf(0, 1, 2, 3, 4)
@@ -84,6 +87,36 @@ class MainActivity : AppCompatActivity() {
         // Add a new document with a generated ID
         db.collection("quranVolumes")
             .add(quranVolumes[0])
+            .addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+    }
+
+    private fun testFirestoreQuranPage() {
+        // Initialize
+        val db = Firebase.firestore
+        Log.d(TAG, "db = $db")
+
+        // Create a batch object
+        val batch = db.batch()
+
+        // Iterate over your list of data class objects and add them to the batch
+        for (quranPages in quranPages) {
+            val docRef = db.collection("quranPages").document()
+            batch.set(docRef, quranPages)
+        }
+
+        // Commit the batched write operation
+        batch.commit().addOnSuccessListener {
+            println("Batch write operation completed successfully.")
+        }
+
+        // Add a new document with a generated ID
+        db.collection("quranPages")
+            .add(quranPages[0])
             .addOnSuccessListener { documentReference ->
                 Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
             }

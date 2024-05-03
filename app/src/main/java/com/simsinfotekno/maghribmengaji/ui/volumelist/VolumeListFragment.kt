@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.simsinfotekno.maghribmengaji.MainActivity
@@ -43,7 +44,7 @@ class VolumeListFragment : Fragment() {
     ): View {
         binding = FragmentVolumeListBinding.inflate(layoutInflater, container, false)
 
-        volumeAdapter = VolumeAdapter(MainActivity.quranVolumes) // Set dataset
+        volumeAdapter = VolumeAdapter(MainActivity.quranVolumes, findNavController(),this) // Set dataset
 
         val recyclerView = binding.volumeListRecyclerViewVolumeList
         recyclerView.layoutManager =

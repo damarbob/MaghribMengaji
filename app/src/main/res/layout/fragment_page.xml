@@ -21,14 +21,14 @@
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textStyle="bold"
             android:layout_weight="1"
-            android:text="@string/volume"/>
+            android:text="@string/quran_volume"/>
 
         <TextView
             android:id="@+id/pageTextViewPage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            android:text="@string/page" />
+            android:text="@string/quran_page" />
     </LinearLayout>
 
     <com.google.android.material.progressindicator.LinearProgressIndicator

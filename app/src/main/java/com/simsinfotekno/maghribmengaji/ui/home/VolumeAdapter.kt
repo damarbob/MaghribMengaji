@@ -1,15 +1,20 @@
 package com.simsinfotekno.maghribmengaji.ui.home
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
+import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
+import java.util.Objects
 
 
-class VolumeAdapter(var dataSet: List<QuranVolume>) :
+class VolumeAdapter(var dataSet: List<QuranVolume>, private val navController: NavController, private val invoker: Any) :
     RecyclerView.Adapter<VolumeAdapter.ViewHolder>() {
 
     /**
@@ -18,10 +23,12 @@ class VolumeAdapter(var dataSet: List<QuranVolume>) :
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView
+        val cardView: CardView
 
         init {
             // Define click listener for the ViewHolder's View
             textView = view.findViewById(R.id.itemVolumeTextTitle)
+            cardView = view.findViewById(R.id.itemVolumeCardView)
         }
     }
 
@@ -43,6 +50,17 @@ class VolumeAdapter(var dataSet: List<QuranVolume>) :
             viewHolder.textView.context.getString(R.string.quran_volume),
             dataSet[position].name
         )
+
+        // Listener
+        viewHolder.cardView.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putInt("volumeId", dataSet[position].id)
+            if (invoker is VolumeListFragment) {
+                navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
+            } else {
+                navController.navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
+            }
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

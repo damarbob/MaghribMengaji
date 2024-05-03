@@ -38,7 +38,7 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val volumeAdapter = VolumeAdapter(MainActivity.quranVolumes) // Set dataset
+        val volumeAdapter = VolumeAdapter(MainActivity.quranVolumes, findNavController(), this) // Set dataset
 
         // Volume list
         val recyclerView: RecyclerView = binding.homeRecyclerViewVolume

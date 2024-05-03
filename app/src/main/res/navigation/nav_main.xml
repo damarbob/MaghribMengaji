@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_homeFragment_to_pageFragment"
             app:destination="@id/pageFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_pageListFragment"
+            app:destination="@id/pageListFragment" />
     </fragment>
 
     <fragment
@@ -30,7 +33,11 @@
         android:id="@+id/volumeListFragment"
         android:name="com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment"
         android:label="fragment_volume_list"
-        tools:layout="@layout/fragment_volume_list" />
+        tools:layout="@layout/fragment_volume_list" >
+        <action
+            android:id="@+id/action_volumeListFragment_to_pageListFragment"
+            app:destination="@id/pageListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/pageFragment"
         android:name="com.simsinfotekno.maghribmengaji.ui.page.PageFragment"
@@ -45,5 +52,14 @@
         android:name="com.simsinfotekno.maghribmengaji.ui.similarityscore.SimilarityScoreFragment"
         android:label="fragment_similarity_score"
         tools:layout="@layout/fragment_similarity_score" />
+    <fragment
+        android:id="@+id/pageListFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.pagelist.PageListFragment"
+        android:label="fragment_page_list"
+        tools:layout="@layout/fragment_page_list" >
+        <action
+            android:id="@+id/action_pageListFragment_to_pageFragment"
+            app:destination="@id/pageFragment" />
+    </fragment>
 
 </navigation>

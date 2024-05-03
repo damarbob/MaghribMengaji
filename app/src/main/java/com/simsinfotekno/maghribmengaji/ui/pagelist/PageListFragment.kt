@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.InsetDrawable
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,9 +17,15 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageListBinding
 import com.simsinfotekno.maghribmengaji.model.QuranPage
+import com.simsinfotekno.maghribmengaji.model.QuranVolume
+import com.simsinfotekno.maghribmengaji.repository.QuranPageRepository
+import com.simsinfotekno.maghribmengaji.ui.page.PageViewModel
+import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
 
 class PageListFragment : Fragment() {
 
@@ -29,6 +36,9 @@ class PageListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: PageListViewModel by viewModels()
+    private val pageViewModel: PageViewModel by viewModels()
+
+    val pageAdapter = PageAdapter(MainActivity.quranPages, findNavController(), this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +54,6 @@ class PageListFragment : Fragment() {
         _binding = FragmentPageListBinding.inflate(inflater,container,false)
 
         val dataset = arrayOf(QuranPage(1,"1"), QuranPage(2,"2"), QuranPage(3,"3"))
-        val pageAdapter = PageAdapter(dataset)
 
         // Page list
         val recyclerView: RecyclerView = _binding!!.pageListRecyclerViewPage
@@ -52,6 +61,12 @@ class PageListFragment : Fragment() {
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = pageAdapter
 
+        // Page info
+        val volumeId = arguments?.getInt("volumeId")
+        binding.pageListTextViewVolume.text = String.format(
+            binding.pageListTextViewVolume.context.getString(R.string.quran_volume),
+            volumeId
+        )
         binding.pageListTextViewPageCompletion.text = "0" //TODO: add page completion logic or function
         binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function
 
@@ -96,6 +111,37 @@ class PageListFragment : Fragment() {
             return@setOnMenuItemClickListener false
         }
         popup.show()
+    }
+
+    // Read quran page from database
+    private fun getQuranPage() {
+
+        val db = viewModel.db
+
+        Log.d(VolumeListFragment.TAG, "db = $db")
+
+        db.collection("quranPages").get()
+            .addOnSuccessListener { documents ->
+
+                val gson = Gson()
+
+                val quranPagesList: List<QuranPage> = documents.map { document ->
+                    val data = document.data
+                    val json = gson.toJson(data)
+                    gson.fromJson(json, QuranPage::class.java)
+                }
+
+                Log.d(VolumeListFragment.TAG, "$quranPagesList")
+
+                pageAdapter.dataSet = quranPagesList
+                pageAdapter.notifyDataSetChanged()
+
+                pageViewModel.quranPageRepository.setRecords(quranPagesList,false)
+
+            }
+            .addOnFailureListener { exception ->
+                Log.d(VolumeListFragment.TAG, "get failed with ", exception)
+            }
     }
 
 }

@@ -74,5 +74,5 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1") // Serialization/deserialization dependency
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
-
+    implementation("org.greenrobot:eventbus:3.3.1") // Event bus
 }
