@@ -35,4 +35,14 @@ class QuranPageRepository() : Repository<QuranPage>() {
         }
         return null
     }
+
+    fun getRecordByIds(ids: IntArray): List<QuranPage> {
+        val result: ArrayList<QuranPage> = arrayListOf()
+
+        ids.forEach { i ->
+            result.add(getRecordById(i)!!)
+        }
+
+        return result
+    }
 }

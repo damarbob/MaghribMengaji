@@ -1,9 +1,10 @@
-package com.simsinfotekno.maghribmengaji
+package com.simsinfotekno.maghribmengaji.usecase
 
 import android.app.Activity
 import android.util.Log
 import android.widget.ProgressBar
 import androidx.lifecycle.LifecycleCoroutineScope
+import com.simsinfotekno.maghribmengaji.IOCRCallBack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -15,7 +16,7 @@ import java.net.URL
 import java.net.URLEncoder
 import javax.net.ssl.HttpsURLConnection
 
-class OCRAsyncTask2 {
+class OCRAsyncTask {
 
     private lateinit var mActivity: Activity
     private lateinit var imageBase64: String
@@ -114,6 +115,6 @@ class OCRAsyncTask2 {
     }
 
     companion object {
-        private val TAG = OCRAsyncTask2::class.simpleName
+        private val TAG = OCRAsyncTask::class.simpleName
     }
 }

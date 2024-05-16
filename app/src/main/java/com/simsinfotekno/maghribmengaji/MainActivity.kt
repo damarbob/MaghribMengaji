@@ -11,6 +11,8 @@ import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
+import com.simsinfotekno.maghribmengaji.repository.QuranPageRepository
+import com.simsinfotekno.maghribmengaji.repository.QuranVolumeRepository
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,20 +22,48 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         val TAG: String = MainActivity::class.java.simpleName
-        val testUser = MaghribMengajiUser("Damar Maulana", "ibn.damr@gmail.com", 10)
-        val quranVolumes = listOf(QuranVolume(1, "1"), QuranVolume(2, "2"), QuranVolume(3, "3"))
-        val quranPages = listOf(QuranPage(100,"100"))
+
+        // Test user setup
+        val testUser = MaghribMengajiUser(
+            "Damar Maulana",
+            "ibn.damr@gmail.com",
+            10,
+            listOf(0, 1, 2, 3, 4),
+            listOf(1,2,3,4),
+            listOf(),
+        )
+
+        // Repository
+        val quranVolumeRepository = QuranVolumeRepository()
+        val quranPageRepository = QuranPageRepository()
+
+        // Test data set
+        val quranVolumes = listOf(
+            QuranVolume(1, "1", (1..61).toList()),
+            QuranVolume(2, "2", (62..121).toList()),
+            QuranVolume(3, "3", (122..181).toList()),
+            QuranVolume(4, "4", (182..241).toList()),
+            QuranVolume(5, "5", (242..301).toList()),
+            QuranVolume(6, "6", (302..361).toList()),
+            QuranVolume(7, "7", (362..421).toList()),
+            QuranVolume(8, "8", (422..481).toList()),
+            QuranVolume(9, "9", (482..541).toList()),
+            QuranVolume(10, "10", (542..604).toList()),
+        )
+        val quranPages = (1..604).map { QuranPage(it, "$it") }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        testFirestore() //
-        testFirestoreQuranPage() //
+        // Firebase tests
+//        testFirestore()
+//        testFirestoreQuranPage()
 
-        // Test user setup
-        testUser.finishedPageIds = listOf(0, 1, 2, 3, 4)
-        testUser.achievementIds = listOf()
+        // Test data insertion to repository
+        quranVolumeRepository.setRecords(quranVolumes, false)
+        quranPageRepository.setRecords(quranPages, false)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

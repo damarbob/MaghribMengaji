@@ -33,6 +33,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
 import com.simsinfotekno.maghribmengaji.databinding.ActivityDocscannerBinding
+import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
@@ -56,7 +57,7 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
     private val myHandler = Handler(Looper.getMainLooper())
 
     // Use case
-    private val oCRAsyncTask = OCRAsyncTask2()
+    private val oCRAsyncTask = OCRAsyncTask()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -46,6 +46,10 @@
         <action
             android:id="@+id/action_pageFragment_to_similarityScoreFragment"
             app:destination="@id/similarityScoreFragment" />
+        <argument
+            android:name="pageId"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/similarityScoreFragment"
@@ -60,6 +64,13 @@
         <action
             android:id="@+id/action_pageListFragment_to_pageFragment"
             app:destination="@id/pageFragment" />
+        <argument
+            android:name="volumeId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="pageIds"
+            app:argType="integer[]" />
     </fragment>
 
 </navigation>

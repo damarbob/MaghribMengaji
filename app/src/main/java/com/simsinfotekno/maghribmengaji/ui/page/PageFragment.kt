@@ -1,12 +1,10 @@
 package com.simsinfotekno.maghribmengaji.ui.page
 
 import android.app.Activity
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,17 +26,18 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
 import com.simsinfotekno.maghribmengaji.IOCRCallBack
-import com.simsinfotekno.maghribmengaji.OCRAsyncTask2
+import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
+import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
+import com.simsinfotekno.maghribmengaji.usecase.JaccardSimilarityIndex
+import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
 import org.json.JSONObject
 import java.io.BufferedReader
-import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
-import kotlin.math.round
 
 class PageFragment : Fragment(), IOCRCallBack {
 
@@ -59,18 +58,13 @@ class PageFragment : Fragment(), IOCRCallBack {
     private lateinit var ocrResult: String
 
     // Use case
-    private val oCRAsyncTask = OCRAsyncTask2()
+    private val oCRAsyncTask = OCRAsyncTask()
+    private val jaccardSimilarityIndex = JaccardSimilarityIndex()
+    private val bitmapToBase64 = BitmapToBase64()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        lifecycleScope.launch {
-//            repeatOnLifecycle(Lifecycle.State.STARTED){
-//
-//            }
-//        }
-
     }
 
     override fun onCreateView(
@@ -80,9 +74,12 @@ class PageFragment : Fragment(), IOCRCallBack {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
 
         val pageId = arguments?.getInt("pageId")
-        val thisQuranPage = viewModel.quranPageRepository.getRecordById(pageId)
-        binding.pageTextViewVolume.text = thisQuranPage!!.volumeIds[0].toString()
-        binding.pageTextViewPage.text = pageId.toString()
+        val thisQuranPage = MainActivity.quranPageRepository.getRecordById(pageId) // Get QuranPage instance
+        val thisQuranVolume = MainActivity.quranVolumeRepository.getRecordByPageId(thisQuranPage!!.id) // Get QuranVolume instance
+
+        // View
+        binding.pageTextViewVolume.text = getString(R.string.quran_volume, thisQuranVolume?.id.toString())
+        binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
         binding.pageImageViewPage.setImageBitmap(thisQuranPage.picture)
 
         // Option for document scanning
@@ -127,6 +124,7 @@ class PageFragment : Fragment(), IOCRCallBack {
         return binding.root
     }
 
+    // Handling activity result
     private fun handleActivityResult(activityResult: ActivityResult) {
         val resultCode = activityResult.resultCode
         val result = GmsDocumentScanningResult.fromActivityResultIntent(activityResult.data)
@@ -229,7 +227,7 @@ class PageFragment : Fragment(), IOCRCallBack {
 
             myHandler.post {
                 if (result.isNotEmpty()) {
-                    quranApiResult = extractTextFromJsonQuranApi(result)
+                    quranApiResult = extractTextFromQuranApiJson(result)
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -243,8 +241,9 @@ class PageFragment : Fragment(), IOCRCallBack {
 
     /**
      * Extract text from Quran API JSON
+     * TODO: Move to use case
      */
-    private fun extractTextFromJsonQuranApi(jsonString: String): String {
+    private fun extractTextFromQuranApiJson(jsonString: String): String {
         val jsonObject = JSONObject(jsonString)
         val ayahsArray = jsonObject.getJSONObject("data").getJSONArray("ayahs")
         val stringBuilder = StringBuilder()
@@ -258,8 +257,9 @@ class PageFragment : Fragment(), IOCRCallBack {
 
     /**
      * Extract text from OCR API JSON
+     * TODO: Move to use case
      */
-    private fun extractTextFromJsonOCRApi(jsonString: String): String? {
+    private fun extractTextFromOCRApiJson(jsonString: String): String? {
         try {
             val jsonObject = JSONObject(jsonString)
             val parsedResults = jsonObject.getJSONArray("ParsedResults")
@@ -272,69 +272,16 @@ class PageFragment : Fragment(), IOCRCallBack {
         }
         return null
     }
-
-
+    
     /**
      * Get OCR Callback result
      */
     override fun getOCRCallBackResult(response: String?) {
         ocrResult = response?.let {
-            extractTextFromJsonOCRApi(it)
+            extractTextFromOCRApiJson(it)
         }.toString()
         binding.pageTextViewScore.text =
-            calculateSimilarityIndex(quranApiResult, ocrResult).toString()
-    }
-
-    /**
-     * Convert bitmap to Base64
-     * TODO: Move to use case
-     */
-    fun bitmapToBase64(bitmap: Bitmap): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-//        println(Base64.encodeToString(byteArray, Base64.DEFAULT))
-        return "data:image/jpeg;base64,${Base64.encodeToString(byteArray, Base64.DEFAULT)}"
-    }
-
-    /**
-     * Remove harakats or diacritics from string
-     * TODO: Move to use case
-     */
-    private fun removeDiacritics(input: String): String {
-        val diacritics = listOf(
-            '\u064B',
-            '\u064C',
-            '\u064D',
-            '\u064E',
-            '\u064F',
-            '\u0650',
-            '\u0651',
-            '\u0652',
-            '\u0670'
-        )
-        val builder = StringBuilder()
-        input.forEach { char ->
-            if (!diacritics.contains(char)) {
-                builder.append(char)
-            }
-        }
-        return builder.toString()
-    }
-
-    /**
-     * Calculate similarity index of 2 strings
-     * with Jaccard method
-     * TODO: Move to use case
-     */
-    private fun calculateSimilarityIndex(str1: String, str2: String): Double {
-        val cleanStr1 = removeDiacritics(str1).toSet()
-        val cleanStr2 = removeDiacritics(str2).toSet()
-
-        val intersectionSize = cleanStr1.intersect(cleanStr2).size.toDouble()
-        val unionSize = cleanStr1.union(cleanStr2).size.toDouble()
-
-        return round(intersectionSize / unionSize * 1000) / 10
+            jaccardSimilarityIndex(quranApiResult, ocrResult).toString()
     }
 
     override fun onDestroyView() {

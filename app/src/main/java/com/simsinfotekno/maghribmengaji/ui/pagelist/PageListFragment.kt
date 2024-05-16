@@ -1,19 +1,18 @@
 package com.simsinfotekno.maghribmengaji.ui.pagelist
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.graphics.drawable.InsetDrawable
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,8 +21,7 @@ import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageListBinding
 import com.simsinfotekno.maghribmengaji.model.QuranPage
-import com.simsinfotekno.maghribmengaji.model.QuranVolume
-import com.simsinfotekno.maghribmengaji.repository.QuranPageRepository
+import com.simsinfotekno.maghribmengaji.ui.adapter.PageAdapter
 import com.simsinfotekno.maghribmengaji.ui.page.PageViewModel
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
 
@@ -38,7 +36,9 @@ class PageListFragment : Fragment() {
     private val viewModel: PageListViewModel by viewModels()
     private val pageViewModel: PageViewModel by viewModels()
 
-    val pageAdapter = PageAdapter(MainActivity.quranPages, findNavController(), this)
+//    ERROR mergane findNavController/function-function sing hubungane karo UI lagi ready bar onCreate '-')
+//    val pageAdapter = PageAdapter(MainActivity.quranPages, findNavController(), this)
+    private lateinit var pageAdapter: PageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +53,12 @@ class PageListFragment : Fragment() {
 
         _binding = FragmentPageListBinding.inflate(inflater,container,false)
 
-        val dataset = arrayOf(QuranPage(1,"1"), QuranPage(2,"2"), QuranPage(3,"3"))
+        // Arguments
+        val volumeId = arguments?.getInt("volumeId")
+        val pageIds = arguments?.getIntArray("pageIds")!!
+
+        // Initialize data set
+        pageAdapter = PageAdapter(MainActivity.quranPageRepository.getRecordByIds(pageIds), findNavController(), this)
 
         // Page list
         val recyclerView: RecyclerView = _binding!!.pageListRecyclerViewPage
@@ -62,7 +67,6 @@ class PageListFragment : Fragment() {
         recyclerView.adapter = pageAdapter
 
         // Page info
-        val volumeId = arguments?.getInt("volumeId")
         binding.pageListTextViewVolume.text = String.format(
             binding.pageListTextViewVolume.context.getString(R.string.quran_volume),
             volumeId
@@ -113,7 +117,7 @@ class PageListFragment : Fragment() {
         popup.show()
     }
 
-    // Read quran page from database
+    // Read quran page from firebase database
     private fun getQuranPage() {
 
         val db = viewModel.db
@@ -136,7 +140,7 @@ class PageListFragment : Fragment() {
                 pageAdapter.dataSet = quranPagesList
                 pageAdapter.notifyDataSetChanged()
 
-                pageViewModel.quranPageRepository.setRecords(quranPagesList,false)
+                MainActivity.quranPageRepository.setRecords(quranPagesList,false)
 
             }
             .addOnFailureListener { exception ->

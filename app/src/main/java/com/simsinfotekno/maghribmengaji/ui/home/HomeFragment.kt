@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
+import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 
 class HomeFragment : Fragment() {
 
@@ -38,7 +39,13 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val volumeAdapter = VolumeAdapter(MainActivity.quranVolumes, findNavController(), this) // Set dataset
+        // Volume adapter
+        val volumeAdapter = VolumeAdapter(
+            // TODO: Handle if onProgressPageIds is null
+            MainActivity.quranVolumeRepository.getRecordsById(MainActivity.testUser.onProgressPageIds!!.toIntArray()),
+            findNavController(),
+            this
+        ) // Set dataset
 
         // Volume list
         val recyclerView: RecyclerView = binding.homeRecyclerViewVolume

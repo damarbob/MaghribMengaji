@@ -1,4 +1,4 @@
-package com.simsinfotekno.maghribmengaji.ui.home
+package com.simsinfotekno.maghribmengaji.ui.adapter
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,13 +9,11 @@ import androidx.cardview.widget.CardView
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
-import com.simsinfotekno.maghribmengaji.model.QuranVolume
-import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
-import java.util.Objects
+import com.simsinfotekno.maghribmengaji.model.QuranPage
+import com.simsinfotekno.maghribmengaji.ui.pagelist.PageListFragment
 
-
-class VolumeAdapter(var dataSet: List<QuranVolume>, private val navController: NavController, private val invoker: Any) :
-    RecyclerView.Adapter<VolumeAdapter.ViewHolder>() {
+class PageAdapter(var dataSet: List<QuranPage>, private val navController: NavController, private val invoker: Any) :
+    RecyclerView.Adapter<PageAdapter.ViewHolder>() {
 
     /**
      * Provide a reference to the type of views that you are using
@@ -23,12 +21,12 @@ class VolumeAdapter(var dataSet: List<QuranVolume>, private val navController: N
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView
-        val cardView: CardView
+        val cardViewPage: CardView
 
         init {
             // Define click listener for the ViewHolder's View
-            textView = view.findViewById(R.id.itemVolumeTextTitle)
-            cardView = view.findViewById(R.id.itemVolumeCardView)
+            textView = view.findViewById(R.id.itemPageTextTitle)
+            cardViewPage = view.findViewById(R.id.itemPageCardView)
         }
     }
 
@@ -36,7 +34,7 @@ class VolumeAdapter(var dataSet: List<QuranVolume>, private val navController: N
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.item_volume, viewGroup, false)
+            .inflate(R.layout.item_page, viewGroup, false)
 
         return ViewHolder(view)
     }
@@ -47,18 +45,18 @@ class VolumeAdapter(var dataSet: List<QuranVolume>, private val navController: N
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         viewHolder.textView.text = String.format(
-            viewHolder.textView.context.getString(R.string.quran_volume),
+            viewHolder.textView.context.getString(R.string.quran_page),
             dataSet[position].name
         )
 
         // Listener
-        viewHolder.cardView.setOnClickListener {
+        viewHolder.cardViewPage.setOnClickListener {
             val bundle = Bundle()
-            bundle.putInt("volumeId", dataSet[position].id)
-            if (invoker is VolumeListFragment) {
-                navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
+            bundle.putInt("pageId", dataSet[position].id)
+            if (invoker is PageListFragment) {
+            navController.navigate(R.id.action_pageListFragment_to_pageFragment, bundle)
             } else {
-                navController.navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
+                navController.navigate(R.id.action_homeFragment_to_pageFragment)
             }
         }
     }

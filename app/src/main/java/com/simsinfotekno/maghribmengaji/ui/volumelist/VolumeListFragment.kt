@@ -13,7 +13,7 @@ import com.google.gson.Gson
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentVolumeListBinding
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
-import com.simsinfotekno.maghribmengaji.ui.home.VolumeAdapter
+import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 
 class VolumeListFragment : Fragment() {
 
@@ -35,7 +35,7 @@ class VolumeListFragment : Fragment() {
         // TODO: Use the ViewModel
 
         // Read quran volume from database
-        getQuranVolume()
+//        getQuranVolume()
     }
 
     override fun onCreateView(
