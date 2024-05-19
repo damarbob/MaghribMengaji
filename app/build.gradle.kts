@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.play.services.code.scanner)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
+//    implementation(libs.firebase.storage.ktx)
     annotationProcessor(libs.compiler)
 
     testImplementation(libs.junit)
@@ -67,6 +68,7 @@ dependencies {
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
 
     //
     implementation(libs.glide)

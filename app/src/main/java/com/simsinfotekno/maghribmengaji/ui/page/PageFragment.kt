@@ -1,7 +1,9 @@
 package com.simsinfotekno.maghribmengaji.ui.page
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,6 +23,9 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
@@ -37,6 +42,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.UUID
 import java.util.concurrent.Executors
 
 class PageFragment : Fragment(), IOCRCallBack {
@@ -62,6 +68,8 @@ class PageFragment : Fragment(), IOCRCallBack {
     private val jaccardSimilarityIndex = JaccardSimilarityIndex()
     private val bitmapToBase64 = BitmapToBase64()
 
+    private val PICK_IMAGE_REQUEST = 1
+    private var fileUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +105,14 @@ class PageFragment : Fragment(), IOCRCallBack {
             }
 
         binding.pageButtonForward.setOnClickListener {
+            fileUri?.let {
+                findDocumentByIdAndUploadImage(pageId!!, it, {
+                    Toast.makeText(requireContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+                }, { exception ->
+                    Toast.makeText(requireContext(), "Failed to upload image: ${exception.message}", Toast.LENGTH_SHORT).show()
+                })
+            } ?: Toast.makeText(requireContext(), "No file selected", Toast.LENGTH_SHORT).show()
+
 
         }
 
@@ -106,23 +122,100 @@ class PageFragment : Fragment(), IOCRCallBack {
 
         // Start scan
         binding.pageButtonSubmit.setOnClickListener {
-            scanner.getStartScanIntent(this.requireActivity())
-                .addOnSuccessListener {
-                    scannerLauncher.launch(
-                        IntentSenderRequest.Builder(it).build()
-                    )
-                }
-                .addOnFailureListener {
-                    Toast.makeText(
-                        requireContext(),
-                        it.message,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+//            scanner.getStartScanIntent(this.requireActivity())
+//                .addOnSuccessListener {
+//                    scannerLauncher.launch(
+//                        IntentSenderRequest.Builder(it).build()
+//                    )
+//                }
+//                .addOnFailureListener {
+//                    Toast.makeText(
+//                        requireContext(),
+//                        it.message,
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                }
+
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            startActivityForResult(intent, PICK_IMAGE_REQUEST)
+
         }
 
         return binding.root
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            fileUri = data?.data
+        }
+    }
+
+    private fun findDocumentByIdAndUploadImage(idValue: Int, fileUri: Uri, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("quranPage").whereEqualTo("id", idValue).get()
+            .addOnSuccessListener { querySnapshot ->
+                if (querySnapshot.documents.isNotEmpty()) {
+                    val document = querySnapshot.documents[0]
+                    val documentId = document.id
+                    uploadAndSaveImageWithId(fileUri, documentId, onSuccess, onFailure)
+                } else {
+                    onFailure(Exception("No document found with id = $idValue"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
+    private fun uploadAndSaveImageWithId(fileUri: Uri, documentId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        uploadImageWithId(fileUri, documentId, { imageUrl ->
+            saveImageUrlToFirestoreWithId(imageUrl, documentId, onSuccess, onFailure)
+        }, onFailure)
+    }
+
+    private fun uploadImageWithId(fileUri: Uri, imageId: String, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
+        val storage = FirebaseStorage.getInstance()
+        val storageRef: StorageReference = storage.reference
+        val imageRef: StorageReference = storageRef.child("images/$imageId")
+
+        val uploadTask = imageRef.putFile(fileUri)
+        uploadTask.addOnSuccessListener {
+            imageRef.downloadUrl.addOnSuccessListener { uri ->
+                onSuccess(uri.toString())
+            }.addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+        }.addOnFailureListener { exception ->
+            onFailure(exception)
+        }
+    }
+
+    private fun saveImageUrlToFirestoreWithId(imageUrl: String, documentId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val imageInfo = hashMapOf(
+            "picture" to imageUrl,
+            "timestamp" to com.google.firebase.Timestamp.now()
+        )
+
+        db.collection("quranPage").document(documentId)
+            .update(imageInfo as Map<String, Any>)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                db.collection("quranPage").document(documentId)
+                    .set(imageInfo)
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener { setException ->
+                        onFailure(setException)
+                    }
+            }
+    }
+
 
     // Handling activity result
     private fun handleActivityResult(activityResult: ActivityResult) {
