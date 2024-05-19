@@ -7,7 +7,6 @@ class JaccardSimilarityIndex {
     /**
      * Calculate similarity index of 2 strings
      * with Jaccard method
-     * TODO: Move to use case
      */
     operator fun invoke(str1: String, str2: String): Double {
 

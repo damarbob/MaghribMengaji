@@ -28,8 +28,8 @@ class MainActivity : AppCompatActivity() {
             "Damar Maulana",
             "ibn.damr@gmail.com",
             10,
-            listOf(0, 1, 2, 3, 4),
-            listOf(1,2,3,4),
+            listOf(1, 2, 3, 4, 5, 6, 7),
+            listOf(1, 2, 3, 4),
             listOf(),
         )
 
