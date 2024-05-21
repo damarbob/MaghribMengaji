@@ -4,15 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
+import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.pagelist.PageListFragment
+import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
 
-class PageAdapter(var dataSet: List<QuranPage>, private val navController: NavController, private val invoker: Any) :
+class PageAdapter(
+    var dataSet: List<QuranPage>,
+    private val navController: NavController,
+    private val quranPageStatusCheck: QuranPageStatusCheck,
+    private val invoker: Any,
+) :
     RecyclerView.Adapter<PageAdapter.ViewHolder>() {
 
     /**
@@ -22,11 +31,13 @@ class PageAdapter(var dataSet: List<QuranPage>, private val navController: NavCo
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView
         val cardViewPage: CardView
+        val imageStatus: ImageView
 
         init {
             // Define click listener for the ViewHolder's View
             textView = view.findViewById(R.id.itemPageTextTitle)
             cardViewPage = view.findViewById(R.id.itemPageCardView)
+            imageStatus = view.findViewById(R.id.itemPageImageStatus)
         }
     }
 
@@ -42,19 +53,52 @@ class PageAdapter(var dataSet: List<QuranPage>, private val navController: NavCo
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
+        val page = dataSet[position]
+        val status = quranPageStatusCheck(page)
+
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         viewHolder.textView.text = String.format(
             viewHolder.textView.context.getString(R.string.quran_page),
-            dataSet[position].name
+            page.name
         )
+
+        // Set the icon based on the completion status
+        when (status) {
+            QuranItemStatus.FINISHED -> {
+                viewHolder.imageStatus.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        viewHolder.imageStatus.context,
+                        R.drawable.round_check_circle_outline_24
+                    )
+                )
+            }
+
+            QuranItemStatus.ON_PROGRESS -> {
+                viewHolder.imageStatus.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        viewHolder.imageStatus.context,
+                        R.drawable.outline_hourglass_empty_24
+                    )
+                )
+            }
+
+            QuranItemStatus.NONE -> {
+                viewHolder.imageStatus.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        viewHolder.imageStatus.context,
+                        R.drawable.baseline_arrow_forward_ios_24
+                    )
+                )
+            }
+        }
 
         // Listener
         viewHolder.cardViewPage.setOnClickListener {
             val bundle = Bundle()
-            bundle.putInt("pageId", dataSet[position].id)
+            bundle.putInt("pageId", page.id)
             if (invoker is PageListFragment) {
-            navController.navigate(R.id.action_pageListFragment_to_pageFragment, bundle)
+                navController.navigate(R.id.action_pageListFragment_to_pageFragment, bundle)
             } else {
                 navController.navigate(R.id.action_homeFragment_to_pageFragment)
             }

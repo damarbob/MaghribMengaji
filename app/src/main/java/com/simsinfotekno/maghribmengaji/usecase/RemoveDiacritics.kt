@@ -4,7 +4,6 @@ class RemoveDiacritics {
 
     /**
      * Remove harakats or diacritics from string
-     * TODO: Move to use case
      */
     operator fun invoke(arabicString: String): String {
         val diacritics = listOf(

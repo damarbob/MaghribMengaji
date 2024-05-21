@@ -8,7 +8,6 @@ class BitmapToBase64 {
 
     /**
      * Convert bitmap to Base64
-     * TODO: Move to use case
      */
     operator fun invoke(bitmap: Bitmap): String {
             val byteArrayOutputStream = ByteArrayOutputStream()

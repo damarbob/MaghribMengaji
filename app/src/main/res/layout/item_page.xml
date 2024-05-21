@@ -15,7 +15,6 @@
         android:padding="16dp">
 
         <ImageView
-            android:id="@+id/imageViewItemPage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/outline_auto_stories_24"
@@ -30,6 +29,7 @@
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/itemPageImageStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"

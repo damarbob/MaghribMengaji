@@ -24,26 +24,32 @@ import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageAdapter
 import com.simsinfotekno.maghribmengaji.ui.page.PageViewModel
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
+import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
 
 class PageListFragment : Fragment() {
 
     companion object {
         fun newInstance() = PageListFragment()
     }
+
     private var _binding: FragmentPageListBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: PageListViewModel by viewModels()
     private val pageViewModel: PageViewModel by viewModels()
 
-//    ERROR mergane findNavController/function-function sing hubungane karo UI lagi ready bar onCreate '-')
-//    val pageAdapter = PageAdapter(MainActivity.quranPages, findNavController(), this)
     private lateinit var pageAdapter: PageAdapter
+
+    // Use case
+    private lateinit var quranPageStatusCheck: QuranPageStatusCheck
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // TODO: Use the ViewModel
+
+        // Use case initialization
+        quranPageStatusCheck = QuranPageStatusCheck(MainActivity.testUser)
     }
 
     override fun onCreateView(
@@ -51,14 +57,19 @@ class PageListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentPageListBinding.inflate(inflater,container,false)
+        _binding = FragmentPageListBinding.inflate(inflater, container, false)
 
         // Arguments
         val volumeId = arguments?.getInt("volumeId")
         val pageIds = arguments?.getIntArray("pageIds")!!
 
         // Initialize data set
-        pageAdapter = PageAdapter(MainActivity.quranPageRepository.getRecordByIds(pageIds), findNavController(), this)
+        pageAdapter = PageAdapter(
+            MainActivity.quranPageRepository.getRecordByIds(pageIds),
+            findNavController(),
+            quranPageStatusCheck,
+            this
+        )
 
         // Page list
         val recyclerView: RecyclerView = _binding!!.pageListRecyclerViewPage
@@ -71,7 +82,8 @@ class PageListFragment : Fragment() {
             binding.pageListTextViewVolume.context.getString(R.string.quran_volume),
             volumeId
         )
-        binding.pageListTextViewPageCompletion.text = "0" //TODO: add page completion logic or function
+        binding.pageListTextViewPageCompletion.text =
+            "0" //TODO: add page completion logic or function
         binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function
 
         // Listener
@@ -140,7 +152,7 @@ class PageListFragment : Fragment() {
                 pageAdapter.dataSet = quranPagesList
                 pageAdapter.notifyDataSetChanged()
 
-                MainActivity.quranPageRepository.setRecords(quranPagesList,false)
+                MainActivity.quranPageRepository.setRecords(quranPagesList, false)
 
             }
             .addOnFailureListener { exception ->
