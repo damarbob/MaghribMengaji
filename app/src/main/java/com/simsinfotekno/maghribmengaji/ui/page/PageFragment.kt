@@ -10,6 +10,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -70,6 +71,7 @@ class PageFragment : Fragment(), IOCRCallBack {
 
     private val PICK_IMAGE_REQUEST = 1
     private var fileUri: Uri? = null
+    private var pageId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +83,7 @@ class PageFragment : Fragment(), IOCRCallBack {
     ): View {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
 
-        val pageId = arguments?.getInt("pageId")
+        pageId = arguments?.getInt("pageId")
         val thisQuranPage = MainActivity.quranPageRepository.getRecordById(pageId) // Get QuranPage instance
         val thisQuranVolume = MainActivity.quranVolumeRepository.getRecordByPageId(thisQuranPage!!.id) // Get QuranVolume instance
 
@@ -104,7 +106,18 @@ class PageFragment : Fragment(), IOCRCallBack {
                 handleActivityResult(result)
             }
 
+        // Show page image
+        val imageView = binding.pageImageViewPage
+        getDocumentById(pageId!!, { imageUrl ->
+            loadImageIntoImageView(imageUrl, imageView)
+        }, { exception ->
+            Toast.makeText(requireContext(), "Failed to load image: ${exception.message}", Toast.LENGTH_SHORT).show()
+            binding.pageProgressBar.visibility = View.GONE
+        })
+
         binding.pageButtonForward.setOnClickListener {
+
+            // Upload database file
             fileUri?.let {
                 findDocumentByIdAndUploadImage(pageId!!, it, {
                     Toast.makeText(requireContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show()
@@ -136,6 +149,7 @@ class PageFragment : Fragment(), IOCRCallBack {
 //                    ).show()
 //                }
 
+            // select file to upload
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*"
             startActivityForResult(intent, PICK_IMAGE_REQUEST)
@@ -145,6 +159,63 @@ class PageFragment : Fragment(), IOCRCallBack {
         return binding.root
     }
 
+    // Get image based on quranPages id from firebase
+    private fun getDocumentById(idValue: Int, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("quranPages").whereEqualTo("id", idValue).get()
+            .addOnSuccessListener { querySnapshot ->
+                if (querySnapshot.documents.isNotEmpty()) {
+                    val document = querySnapshot.documents[0]
+                    val imageUrl = document.getString("picture")
+                    if (imageUrl != null) {
+                        onSuccess(imageUrl)
+                    } else {
+                        onFailure(Exception("Image URL not found"))
+                    }
+                } else {
+                    onFailure(Exception("No document found with id = $idValue"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
+    // Load image to imageview
+    private fun loadImageIntoImageView(imageUrl: String, imageView: ImageView) {
+        binding.pageProgressBar.visibility = View.VISIBLE
+
+        Glide.with(imageView.context)
+            .load(imageUrl)
+            .listener(object : RequestListener<Drawable> {
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    model: Any,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    binding.pageProgressBar.visibility = View.GONE
+                    imageView.visibility = View.VISIBLE
+                    return false
+                }
+
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    binding.pageProgressBar.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Failed to load image", Toast.LENGTH_SHORT).show()
+                    return false
+                }
+            })
+            .into(imageView)
+    }
+
+    // Get image file
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
@@ -152,9 +223,11 @@ class PageFragment : Fragment(), IOCRCallBack {
         }
     }
 
+
+    // Find document based on quranPages id then upload image to it
     private fun findDocumentByIdAndUploadImage(idValue: Int, fileUri: Uri, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         val db = FirebaseFirestore.getInstance()
-        db.collection("quranPage").whereEqualTo("id", idValue).get()
+        db.collection("quranPages").whereEqualTo("id", idValue).get()
             .addOnSuccessListener { querySnapshot ->
                 if (querySnapshot.documents.isNotEmpty()) {
                     val document = querySnapshot.documents[0]
@@ -169,16 +242,17 @@ class PageFragment : Fragment(), IOCRCallBack {
             }
     }
 
+
     private fun uploadAndSaveImageWithId(fileUri: Uri, documentId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        uploadImageWithId(fileUri, documentId, { imageUrl ->
+        uploadImageWithId(fileUri, { imageUrl ->
             saveImageUrlToFirestoreWithId(imageUrl, documentId, onSuccess, onFailure)
         }, onFailure)
     }
 
-    private fun uploadImageWithId(fileUri: Uri, imageId: String, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
+    private fun uploadImageWithId(fileUri: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
         val storage = FirebaseStorage.getInstance()
         val storageRef: StorageReference = storage.reference
-        val imageRef: StorageReference = storageRef.child("images/$imageId")
+        val imageRef: StorageReference = storageRef.child("quranPages/$pageId")
 
         val uploadTask = imageRef.putFile(fileUri)
         uploadTask.addOnSuccessListener {
@@ -199,13 +273,13 @@ class PageFragment : Fragment(), IOCRCallBack {
             "timestamp" to com.google.firebase.Timestamp.now()
         )
 
-        db.collection("quranPage").document(documentId)
+        db.collection("quranPages").document(documentId)
             .update(imageInfo as Map<String, Any>)
             .addOnSuccessListener {
                 onSuccess()
             }
             .addOnFailureListener { exception ->
-                db.collection("quranPage").document(documentId)
+                db.collection("quranPages").document(documentId)
                     .set(imageInfo)
                     .addOnSuccessListener {
                         onSuccess()

@@ -31,21 +31,29 @@
             android:text="@string/quran_page" />
     </LinearLayout>
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:indeterminate="true"
-        android:layout_marginTop="-7dp"
-        android:id="@+id/pageProgressBar"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:layout_marginTop="@dimen/activity_vertical_margin">
 
-    <ImageView
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:id="@+id/pageImageViewPage"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:src="@mipmap/ic_launcher_round"
-        />
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:indeterminate="true"
+            android:id="@+id/pageProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            />
+
+        <ImageView
+            android:id="@+id/pageImageViewPage"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:src="@mipmap/ic_launcher_round"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
