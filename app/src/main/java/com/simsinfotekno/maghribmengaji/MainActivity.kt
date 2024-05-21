@@ -8,7 +8,7 @@ import androidx.navigation.findNavController
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
-import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.repository.QuranPageRepository
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         val TAG: String = MainActivity::class.java.simpleName
 
         // Test user setup
-        val testUser = MaghribMengajiUser(
+        val testUser = MaghribMengajiStudent(
             "Damar Maulana",
             "ibn.damr@gmail.com",
             10,

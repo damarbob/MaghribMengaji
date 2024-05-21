@@ -1,11 +1,11 @@
 package com.simsinfotekno.maghribmengaji.usecase
 
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
-import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 
 class QuranPageStatusCheck(
-    private val maghribMengajiUser: MaghribMengajiUser
+    private val maghribMengajiStudent: MaghribMengajiStudent
 ) {
     operator fun invoke(
         quranPage: QuranPage,
@@ -13,12 +13,12 @@ class QuranPageStatusCheck(
 
         val pageId = quranPage.id
 
-        maghribMengajiUser.finishedPageIds?.forEach {
+        maghribMengajiStudent.finishedPageIds?.forEach {
             if (it == pageId)
                 return QuranItemStatus.FINISHED
         }
 
-        maghribMengajiUser.onProgressPageIds?.forEach {
+        maghribMengajiStudent.onProgressPageIds?.forEach {
             if (it == pageId)
                 return QuranItemStatus.ON_PROGRESS
         }
