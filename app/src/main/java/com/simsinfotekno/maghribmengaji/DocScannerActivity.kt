@@ -161,14 +161,14 @@ class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
                                 fetchQuranPageTask()
 
                                 // Start
-                                oCRAsyncTask(
-                                    this@DocScannerActivity,
-                                    mImageBase64,
-                                    "ara",
-                                    this@DocScannerActivity,
-                                    binding.progressBar,
-                                    lifecycleScope
-                                )
+//                                oCRAsyncTask(
+//                                    this@DocScannerActivity,
+//                                    mImageBase64,
+//                                    "ara",
+//                                    this@DocScannerActivity,
+//                                    binding.progressBar,
+//                                    lifecycleScope
+//                                )
                             }
 
                             return true

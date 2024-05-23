@@ -4,6 +4,7 @@ import android.app.Activity
 import android.util.Log
 import android.widget.ProgressBar
 import androidx.lifecycle.LifecycleCoroutineScope
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.simsinfotekno.maghribmengaji.IOCRCallBack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,18 +23,18 @@ class OCRAsyncTask {
     private lateinit var imageBase64: String
     private lateinit var language: String
     private lateinit var iOCRCallBack: IOCRCallBack
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBar: CircularProgressIndicator
     private val mApiKey = "K88528569888957"
     private val isOverlayRequired = false
     private val url = "https://api.ocr.space/parse/image" // OCR API Endpoints
-    private lateinit var mProgressBar: ProgressBar
+    private lateinit var mProgressBar: CircularProgressIndicator
 
     operator fun invoke(
         mActivity: Activity,
         imageBase64: String,
         language: String,
         iOCRCallBack: IOCRCallBack,
-        progressBar: ProgressBar,
+        progressBar: CircularProgressIndicator,
         lifecycleScope: LifecycleCoroutineScope
     ) {
         this.mActivity = mActivity

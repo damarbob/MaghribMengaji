@@ -18,6 +18,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -89,7 +90,7 @@ class PageFragment : Fragment(), IOCRCallBack {
         binding.pageTextViewVolume.text =
             getString(R.string.quran_volume, thisQuranVolume?.id.toString())
         binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
-        binding.pageImageViewPage.setImageBitmap(thisQuranPage.picture)
+//        binding.pageImageViewPage.setImageBitmap(thisQuranPage.picture)
 
         // Option for document scanning
         val option = GmsDocumentScannerOptions.Builder()
@@ -157,9 +158,7 @@ class PageFragment : Fragment(), IOCRCallBack {
 //            val intent = Intent(Intent.ACTION_GET_CONTENT)
 //            intent.type = "image/*"
 //            startActivityForResult(intent, PICK_IMAGE_REQUEST)
-
         }
-
         return binding.root
     }
 
@@ -199,6 +198,7 @@ class PageFragment : Fragment(), IOCRCallBack {
     }
 
     // Get image file
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
@@ -252,21 +252,32 @@ class PageFragment : Fragment(), IOCRCallBack {
                             // Apply filter
                             documentFilter.getGreyScaleFilter(image) {
 
-                                // Fetch quran page based on the pageId
-                                fetchQuranPageTask(pageId!!)
+//                                fetchQuranPageTask(pageId!!) // TODO: Change "1" to variable
 
                                 // Do your tasks here with the returned bitmap
                                 val mImageBase64 = bitmapToBase64(it)
 
-                                // Start
-                                oCRAsyncTask(
-                                    requireActivity(),
-                                    mImageBase64,
-                                    "ara",
-                                    this@PageFragment,
-                                    binding.pageProgressBar,
-                                    lifecycleScope
+                                // Bundle to pass the data
+                                val bundle = Bundle().apply {
+                                    putString("image_base64", mImageBase64)
+                                    putInt("pageId", pageId!!)
+                                }
+
+                                // Navigate to the ResultFragment with the Bundle
+                                findNavController().navigate(
+                                    R.id.action_pageFragment_to_similarityScoreFragment,
+                                    bundle
                                 )
+
+                                // Start
+//                                oCRAsyncTask(
+//                                    requireActivity(),
+//                                    mImageBase64,
+//                                    "ara",
+//                                    this@PageFragment,
+//                                    binding.pageProgressBar,
+//                                    lifecycleScope
+//                                )
                             }
 
                             return true

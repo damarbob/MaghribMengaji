@@ -18,6 +18,6 @@ class JaccardSimilarityIndex {
         val intersectionSize = cleanStr1.intersect(cleanStr2).size.toDouble()
         val unionSize = cleanStr1.union(cleanStr2).size.toDouble()
 
-        return round(intersectionSize / unionSize * 1000) / 10
+        return round(intersectionSize / unionSize * 100)
     }
 }
