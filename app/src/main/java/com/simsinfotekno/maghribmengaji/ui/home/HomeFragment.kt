@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
         // Volume adapter
         val volumeAdapter = VolumeAdapter(
             // TODO: Handle if onProgressPageIds is null
-            MainActivity.quranVolumeRepository.getRecordsById(MainActivity.testUser.onProgressPageIds!!.toIntArray()),
+            MainActivity.quranVolumeRepository.getRecordsById(MainActivity.testStudent.onProgressPageIds!!.toIntArray()),
             findNavController(),
             this
         ) // Set dataset
@@ -53,11 +53,11 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = volumeAdapter
 
-        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.testUser.lastPageId) // Last written
+        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.testStudent.lastPageId) // Last written
 
         // Progress indicator
         val allPagesCount = 604
-        val progressPercentage = MainActivity.testUser.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
+        val progressPercentage = MainActivity.testStudent.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
         binding.homeTextPagePercentage.text = (progressPercentage).toString()
         if (progressPercentage != null) {
             binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage

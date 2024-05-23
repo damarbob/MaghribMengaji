@@ -25,7 +25,8 @@ class MainActivity : AppCompatActivity() {
         val TAG: String = MainActivity::class.java.simpleName
 
         // Test user setup
-        val testUser = MaghribMengajiStudent(
+        val testStudent = MaghribMengajiStudent(
+            "1",
             "Damar Maulana",
             "ibn.damr@gmail.com",
             10,

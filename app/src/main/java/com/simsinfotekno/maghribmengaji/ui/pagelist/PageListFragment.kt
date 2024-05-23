@@ -49,7 +49,7 @@ class PageListFragment : Fragment() {
         // TODO: Use the ViewModel
 
         // Use case initialization
-        quranPageStatusCheck = QuranPageStatusCheck(MainActivity.testUser)
+        quranPageStatusCheck = QuranPageStatusCheck(MainActivity.testStudent)
     }
 
     override fun onCreateView(

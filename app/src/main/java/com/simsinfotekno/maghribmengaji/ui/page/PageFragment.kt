@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -28,22 +25,13 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
-import com.simsinfotekno.maghribmengaji.IOCRCallBack
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
 import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
-import com.simsinfotekno.maghribmengaji.usecase.JaccardSimilarityIndex
-import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
 import com.simsinfotekno.maghribmengaji.usecase.UploadImageUseCase
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.concurrent.Executors
 
-class PageFragment : Fragment(), IOCRCallBack {
+class PageFragment : Fragment() {
 
     companion object {
         fun newInstance() = PageFragment()
@@ -54,17 +42,15 @@ class PageFragment : Fragment(), IOCRCallBack {
     private var _binding: FragmentPageBinding? = null
     private val binding get() = _binding!!
 
-    // OCR
-    private val myExecutor = Executors.newSingleThreadExecutor()
-    private val myHandler = Handler(Looper.getMainLooper())
+    // Repository
+    private val quranPageRepository = MainActivity.quranPageRepository
+    private val quranVolumeRepository = MainActivity.quranVolumeRepository
+    private val quranPageStudentRepository = MainActivity.quranPageStudentRepository
 
-    private lateinit var quranApiResult: String
-    private lateinit var ocrResult: String
+    // State
 
     // Use case
     private val uploadImageUseCase = UploadImageUseCase()
-    private val oCRAsyncTask = OCRAsyncTask()
-    private val jaccardSimilarityIndex = JaccardSimilarityIndex()
     private val bitmapToBase64 = BitmapToBase64()
 
     private val PICK_IMAGE_REQUEST = 1
@@ -81,16 +67,30 @@ class PageFragment : Fragment(), IOCRCallBack {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
 
         pageId = arguments?.getInt("pageId")
-        val thisQuranPage =
-            MainActivity.quranPageRepository.getRecordById(pageId) // Get QuranPage instance
-        val thisQuranVolume =
-            MainActivity.quranVolumeRepository.getRecordByPageId(thisQuranPage!!.id) // Get QuranVolume instance
+        val page =
+            quranPageRepository.getRecordById(pageId) // Get QuranPage instance
+        val volume =
+            quranVolumeRepository.getRecordByPageId(page!!.id) // Get QuranVolume instance
+        val pageStudent =
+            quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
 
         // View
         binding.pageTextViewVolume.text =
-            getString(R.string.quran_volume, thisQuranVolume?.id.toString())
+            getString(R.string.quran_volume, volume?.id.toString())
         binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
-//        binding.pageImageViewPage.setImageBitmap(thisQuranPage.picture)
+
+        if (pageStudent == null) {
+            // If student's page is not found or student had not submitted
+
+            binding.pageTextViewScore.visibility = View.GONE // Hide score
+            binding.pageButtonSubmit.visibility = View.VISIBLE // Show submit button
+        }
+        else {
+            // If student had submitted
+
+            binding.pageTextViewScore.visibility = View.VISIBLE // Show score
+            binding.pageButtonSubmit.visibility = View.GONE // Show submit button
+        }
 
         // Option for document scanning
         val option = GmsDocumentScannerOptions.Builder()
@@ -109,7 +109,7 @@ class PageFragment : Fragment(), IOCRCallBack {
         // Get the document from Firestore and load the image to ImageView
         val pageImage = binding.pageImageViewPage
 
-        MainActivity.quranPageRepository.getFirebaseRecordById(pageId!!,
+        quranPageRepository.getFirebaseRecordById(pageId!!,
             { imageUrl ->
 
                 // Load image to ImageView
@@ -159,6 +159,7 @@ class PageFragment : Fragment(), IOCRCallBack {
 //            intent.type = "image/*"
 //            startActivityForResult(intent, PICK_IMAGE_REQUEST)
         }
+
         return binding.root
     }
 
@@ -268,16 +269,6 @@ class PageFragment : Fragment(), IOCRCallBack {
                                     R.id.action_pageFragment_to_similarityScoreFragment,
                                     bundle
                                 )
-
-                                // Start
-//                                oCRAsyncTask(
-//                                    requireActivity(),
-//                                    mImageBase64,
-//                                    "ara",
-//                                    this@PageFragment,
-//                                    binding.pageProgressBar,
-//                                    lifecycleScope
-//                                )
                             }
 
                             return true
@@ -309,91 +300,6 @@ class PageFragment : Fragment(), IOCRCallBack {
                 Toast.LENGTH_LONG
             ).show()
         }
-    }
-
-    /**
-     * Fetch Quran API
-     */
-    private fun fetchQuranPageTask(page: Int) {
-        myExecutor.execute {
-            var result = ""
-            var urlConnection: HttpURLConnection? = null
-            try {
-                val url = URL("https://api.alquran.cloud/v1/page/$page/quran-uthmani")
-                urlConnection = url.openConnection() as HttpURLConnection
-                urlConnection.requestMethod = "GET"
-                val inputStream = urlConnection.inputStream
-                val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-                val stringBuilder = StringBuilder()
-                var line: String?
-                while (bufferedReader.readLine().also { line = it } != null) {
-                    stringBuilder.append(line).append("\n")
-                }
-                bufferedReader.close()
-                result = stringBuilder.toString()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                urlConnection?.disconnect()
-            }
-
-            myHandler.post {
-                if (result.isNotEmpty()) {
-                    quranApiResult = extractTextFromQuranApiJson(result)
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.failed_to_fetch_data),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
-    }
-
-    /**
-     * Extract text from Quran API JSON
-     * TODO: Move to use case
-     */
-    private fun extractTextFromQuranApiJson(jsonString: String): String {
-        val jsonObject = JSONObject(jsonString)
-        val ayahsArray = jsonObject.getJSONObject("data").getJSONArray("ayahs")
-        val stringBuilder = StringBuilder()
-        for (i in 0 until ayahsArray.length()) {
-            val ayahObject = ayahsArray.getJSONObject(i)
-            val ayahText = ayahObject.getString("text")
-            stringBuilder.append(ayahText).append("\n")
-        }
-        return stringBuilder.toString()
-    }
-
-    /**
-     * Extract text from OCR API JSON
-     * TODO: Move to use case
-     */
-    private fun extractTextFromOCRApiJson(jsonString: String): String? {
-        try {
-            val jsonObject = JSONObject(jsonString)
-            val parsedResults = jsonObject.getJSONArray("ParsedResults")
-            if (parsedResults.length() > 0) {
-                val firstResult = parsedResults.getJSONObject(0)
-                return firstResult.optString("ParsedText")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
-    }
-
-    /**
-     * Get OCR Callback result
-     */
-    override fun getOCRCallBackResult(response: String?) {
-        ocrResult = response?.let {
-            extractTextFromOCRApiJson(it)
-        }.toString()
-        binding.pageTextViewScore.text =
-            jaccardSimilarityIndex(quranApiResult, ocrResult).toString()
     }
 
     override fun onDestroyView() {

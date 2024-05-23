@@ -24,7 +24,7 @@ class QuranPageStudentRepository() : Repository<QuranPageStudent>() {
     }
 
     override fun onRecordCleared() {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
     fun getRecordByPageId(id: Int?): QuranPageStudent? {

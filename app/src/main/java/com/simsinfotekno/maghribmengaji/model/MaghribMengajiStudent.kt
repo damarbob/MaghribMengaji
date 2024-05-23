@@ -1,6 +1,7 @@
 package com.simsinfotekno.maghribmengaji.model
 
 data class MaghribMengajiStudent(
+    var id: String,
     var fullName: String,
     var email: String,
     var lastPageId: Int? = null,

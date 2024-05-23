@@ -47,24 +47,24 @@
         android:id="@+id/similarityScoreCircularProgressScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:progress="0"
         app:indicatorSize="128dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/similarityScoreTextView"
+        app:layout_constraintTop_toTopOf="parent"
         app:trackThickness="16dp" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/similarityScoreCircularProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:indeterminate="true"
         app:indicatorSize="128dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/similarityScoreTextView"
+        app:layout_constraintTop_toTopOf="parent"
         app:trackThickness="16dp" />
 
     <TextView

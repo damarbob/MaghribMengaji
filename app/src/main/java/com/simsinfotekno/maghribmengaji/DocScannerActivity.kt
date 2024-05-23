@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -44,14 +43,14 @@ import java.util.concurrent.Executors
 import kotlin.math.round
 
 
-class DocScannerActivity : AppCompatActivity(), IOCRCallBack {
+class DocScannerActivity : AppCompatActivity(), OCRAsyncTask.IOCRCallBack {
 
     private lateinit var binding: ActivityDocscannerBinding
 
     private var isOverlayRequired : Boolean = false
     private var mImageBase64: String = ""
     private lateinit var mLanguage: String
-    private lateinit var mIOCRCallBack: IOCRCallBack
+    private lateinit var mIOCRCallBack: OCRAsyncTask.IOCRCallBack
 
     private val myExecutor = Executors.newSingleThreadExecutor()
     private val myHandler = Handler(Looper.getMainLooper())

@@ -5,7 +5,6 @@ import android.util.Log
 import android.widget.ProgressBar
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.simsinfotekno.maghribmengaji.IOCRCallBack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,6 +17,10 @@ import java.net.URLEncoder
 import javax.net.ssl.HttpsURLConnection
 
 class OCRAsyncTask {
+
+    interface IOCRCallBack {
+        fun getOCRCallBackResult(response: String?)
+    }
 
     private lateinit var mActivity: Activity
     private lateinit var imageBase64: String
