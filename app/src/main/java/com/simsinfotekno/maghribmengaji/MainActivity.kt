@@ -12,6 +12,7 @@ import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.repository.QuranPageRepository
+import com.simsinfotekno.maghribmengaji.repository.QuranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.repository.QuranVolumeRepository
 
 
@@ -29,13 +30,14 @@ class MainActivity : AppCompatActivity() {
             "ibn.damr@gmail.com",
             10,
             listOf(1, 2, 3, 4, 5, 6, 7),
-            listOf(1, 2, 3, 4),
+            listOf(1, 2, 3, 10),
             listOf(),
         )
 
         // Repository
         val quranVolumeRepository = QuranVolumeRepository()
         val quranPageRepository = QuranPageRepository()
+        val quranPageStudentRepository = QuranPageStudentRepository()
 
         // Test data set
         val quranVolumes = listOf(
