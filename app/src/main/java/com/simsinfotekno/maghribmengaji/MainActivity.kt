@@ -80,13 +80,21 @@ class MainActivity : AppCompatActivity() {
 
         // Listener
         fabVolumeList.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
+            val fragmentId = navController.currentDestination?.id
+            when (fragmentId) {
+                R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
+                R.id.pageListFragment -> navController.navigate(R.id.action_pageListFragment_to_volumeListFragment)
+            }
+//            navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
             // Testing
 //            navController.navigate(R.id.action_homeFragment_to_pageFragment)
         }
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             when (destination.id) {
                 R.id.volumeListFragment -> fabVolumeList.hide()
+                R.id.pageFragment -> fabVolumeList.hide()
+                R.id.similarityScoreFragment -> fabVolumeList.hide()
+                R.id.profileFragment -> fabVolumeList.hide()
                 else -> fabVolumeList.show()
             }
         }

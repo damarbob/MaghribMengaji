@@ -71,6 +71,9 @@
         <argument
             android:name="pageIds"
             app:argType="integer[]" />
+        <action
+            android:id="@+id/action_pageListFragment_to_volumeListFragment"
+            app:destination="@id/volumeListFragment" />
     </fragment>
 
 </navigation>

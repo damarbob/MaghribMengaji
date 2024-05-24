@@ -32,6 +32,7 @@
     <string name="quran_page">Page %1$s</string>
     <string name="in_progress">In progress</string>
     <string name="last_written">Last written</string>
+    <string name="quran_page_image_description">Quran Page</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

@@ -38,6 +38,7 @@
         android:text="00"
         android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/similarityScoreCircularProgressScore"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +49,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:progress="0"
+        android:indeterminate="false"
+        app:showAnimationBehavior="inward"
+        app:trackCornerRadius="8dp"
+        style="@style/Widget.Material3.LinearProgressIndicator"
         app:indicatorSize="128dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,6 +66,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminate="true"
+        app:showAnimationBehavior="inward"
+        app:trackCornerRadius="8dp"
         app:indicatorSize="128dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,5 +110,43 @@
         app:layout_constraintBottom_toBottomOf="parent"
         style="@style/Widget.Material3.Button.OutlinedButton.Icon"
         app:icon="@drawable/outline_camera_alt_24"/>
+
+    <TextView
+        android:id="@+id/similarityScoreTextViewDetailLow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/your_score_is_low"
+        android:textAlignment="center"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonUploadLow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/similarityScoreButtonUploadLow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/upload"
+        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonRetryLow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+        app:icon="@drawable/outline_cloud_upload_24"
+        />
+    <!--        app:iconGravity="textStart"-->
+    <!--        />-->
+
+    <Button
+        android:id="@+id/similarityScoreButtonRetryLow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/retry"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/Widget.Material3.Button.Icon"
+        app:icon="@drawable/outline_camera_alt_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

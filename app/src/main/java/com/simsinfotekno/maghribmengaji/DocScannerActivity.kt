@@ -317,6 +317,10 @@ class DocScannerActivity : AppCompatActivity(), OCRAsyncTask.IOCRCallBack {
         binding.textViewResult.text = calculateSimilarityIndex(quranApiText,ocrText).toString()
     }
 
+    override fun onOCRFailure(exception: Exception) {
+        TODO("Not yet implemented")
+    }
+
     /**
      * Convert bitmap to Base64
      */
