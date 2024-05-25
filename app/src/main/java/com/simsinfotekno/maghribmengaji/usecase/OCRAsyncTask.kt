@@ -22,7 +22,7 @@ class OCRAsyncTask {
         fun onOCRFailure(exception: Exception)
     }
 
-    /*private lateinit var imageBase64: String
+    private lateinit var imageBase64: String
     private lateinit var language: String
     private lateinit var iOCRCallBack: IOCRCallBack
     private lateinit var progressBar: CircularProgressIndicator
@@ -117,9 +117,9 @@ class OCRAsyncTask {
 
     companion object {
         private val TAG = OCRAsyncTask::class.simpleName
-    }*/
+    }
 
-    private val mApiKey = "K88528569888957"
+    /*private val mApiKey = "K88528569888957"
     private val isOverlayRequired = false
     private val url = "https://api.ocr.space/parse/image" // OCR API Endpoints
 
@@ -190,5 +190,5 @@ class OCRAsyncTask {
 
     companion object {
         private val TAG = OCRAsyncTask::class.simpleName
-    }
+    }*/
 }

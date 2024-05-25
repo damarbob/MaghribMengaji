@@ -149,4 +149,12 @@
         style="@style/Widget.Material3.Button.Icon"
         app:icon="@drawable/outline_camera_alt_24" />
 
+    <ImageView
+        android:id="@+id/similarityScoreOCRImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

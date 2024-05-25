@@ -233,6 +233,18 @@ class PageFragment : Fragment() {
             val pages = result.pages
             if (!pages.isNullOrEmpty()) {
 
+                // Bundle to pass the data
+                val bundle = Bundle().apply {
+                    putString("image_uri", pages[0].imageUri.toString())
+                    putInt("pageId", pageId!!)
+                }
+
+                // Navigate to the ResultFragment with the Bundle
+                findNavController().navigate(
+                    R.id.action_pageFragment_to_similarityScoreFragment,
+                    bundle
+                )
+
                 val documentFilter = DocumentFilter()
 
                 // To convert URI to drawable->bitmap and to apply filter
