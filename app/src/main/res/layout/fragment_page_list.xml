@@ -33,127 +33,121 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="fill_horizontal"
-        android:layout_marginTop="16dp">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_gravity="fill_horizontal"-->
+<!--        android:layout_marginTop="16dp">-->
 
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Material3.CardView.Elevated"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp">
+<!--        <com.google.android.material.card.MaterialCardView-->
+<!--            style="@style/Widget.Material3.CardView.Elevated"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:layout_marginEnd="8dp">-->
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp">
+<!--            <RelativeLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:padding="16dp">-->
 
-                <TextView
-                    android:id="@+id/textViewPageCompletion"
-                    style="@style/TextAppearance.Material3.BodySmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Page completion" />
+<!--                <TextView-->
+<!--                    android:id="@+id/textViewPageCompletion"-->
+<!--                    style="@style/TextAppearance.Material3.BodySmall"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Page completion" />-->
 
-                <ImageView
-                    android:id="@+id/imageViewPageCompletion"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/outline_book_24"
-                    app:tint="?attr/colorPrimary"
-                    android:layout_below="@id/textViewPageCompletion"
-                    android:layout_marginTop="4dp" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/imageViewPageCompletion"-->
+<!--                    android:layout_width="48dp"-->
+<!--                    android:layout_height="48dp"-->
+<!--                    android:src="@drawable/outline_book_24"-->
+<!--                    app:tint="?attr/colorPrimary"-->
+<!--                    android:layout_below="@id/textViewPageCompletion"-->
+<!--                    android:layout_marginTop="4dp" />-->
 
-                <TextView
-                    android:id="@+id/pageListTextViewPageCompletion"
-                    style="@style/TextAppearance.Material3.DisplayMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@id/imageViewPageCompletion"
-                    android:layout_below="@id/textViewPageCompletion"
-                    android:layout_toEndOf="@id/imageViewPageCompletion"
-                    android:layout_toStartOf="@id/textViewPageCompletion30"
+<!--                <TextView-->
+<!--                    android:id="@+id/pageListTextViewPageCompletion"-->
+<!--                    style="@style/TextAppearance.Material3.DisplayMedium"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignBottom="@id/imageViewPageCompletion"-->
+<!--                    android:layout_below="@id/textViewPageCompletion"-->
+<!--                    android:layout_toEndOf="@id/imageViewPageCompletion"-->
+<!--                    android:layout_toStartOf="@id/textViewPageCompletion30"-->
 
-                    android:text="30"
-                    android:textAlignment="viewEnd"
-                    android:textStyle="bold" />
+<!--                    android:text="30"-->
+<!--                    android:textAlignment="viewEnd"-->
+<!--                    android:textStyle="bold" />-->
 
-                <TextView
-                    android:id="@+id/textViewPageCompletion30"
-                    style="@style/TextAppearance.Material3.LabelLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@id/imageViewPageCompletion"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@id/textViewPageCompletion"
-                    android:layout_marginTop="4dp"
+<!--                <TextView-->
+<!--                    android:id="@+id/textViewPageCompletion30"-->
+<!--                    style="@style/TextAppearance.Material3.LabelLarge"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignBottom="@id/imageViewPageCompletion"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_below="@id/textViewPageCompletion"-->
+<!--                    android:layout_marginTop="4dp"-->
 
-                    android:text="/30"
-                    android:textAlignment="gravity"
-                    android:gravity="bottom"/>
+<!--                    android:text="/30"-->
+<!--                    android:textAlignment="gravity"-->
+<!--                    android:gravity="bottom"/>-->
 
-        </RelativeLayout>
+<!--        </RelativeLayout>-->
 
-    </com.google.android.material.card.MaterialCardView>
+<!--    </com.google.android.material.card.MaterialCardView>-->
 
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Material3.CardView.Elevated"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp">
+<!--        <com.google.android.material.card.MaterialCardView-->
+<!--            style="@style/Widget.Material3.CardView.Elevated"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:layout_marginStart="8dp">-->
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp">
+<!--            <RelativeLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:padding="16dp">-->
 
-                <TextView
-                    android:id="@+id/textViewAverageScore"
-                    style="@style/TextAppearance.Material3.BodySmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Average Score" />
+<!--                <TextView-->
+<!--                    android:id="@+id/textViewAverageScore"-->
+<!--                    style="@style/TextAppearance.Material3.BodySmall"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Average Score" />-->
 
-                <ImageView
-                    android:id="@+id/imageViewAverageScore"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/outline_book_24"
-                    app:tint="?attr/colorPrimary"
-                    android:layout_below="@id/textViewAverageScore"
-                    android:layout_marginTop="4dp" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/imageViewAverageScore"-->
+<!--                    android:layout_width="48dp"-->
+<!--                    android:layout_height="48dp"-->
+<!--                    android:src="@drawable/outline_book_24"-->
+<!--                    app:tint="?attr/colorPrimary"-->
+<!--                    android:layout_below="@id/textViewAverageScore"-->
+<!--                    android:layout_marginTop="4dp" />-->
 
-                <TextView
-                    android:id="@+id/pageListTextViewAverageScore"
-                    style="@style/TextAppearance.Material3.DisplayMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@id/imageViewAverageScore"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@id/textViewAverageScore"
-                    android:layout_toEndOf="@id/imageViewAverageScore"
+<!--                <TextView-->
+<!--                    android:id="@+id/pageListTextViewAverageScore"-->
+<!--                    style="@style/TextAppearance.Material3.DisplayMedium"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignBottom="@id/imageViewAverageScore"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_below="@id/textViewAverageScore"-->
+<!--                    android:layout_toEndOf="@id/imageViewAverageScore"-->
 
-                    android:text="90"
-                    android:textAlignment="viewEnd"
-                    android:textStyle="bold" />
+<!--                    android:text="90"-->
+<!--                    android:textAlignment="viewEnd"-->
+<!--                    android:textStyle="bold" />-->
 
-            </RelativeLayout>
+<!--            </RelativeLayout>-->
 
-        </com.google.android.material.card.MaterialCardView>
+<!--        </com.google.android.material.card.MaterialCardView>-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/in_progress" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pageListRecyclerViewPage"

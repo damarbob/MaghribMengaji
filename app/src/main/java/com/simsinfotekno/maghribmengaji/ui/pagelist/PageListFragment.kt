@@ -82,9 +82,9 @@ class PageListFragment : Fragment() {
             binding.pageListTextViewVolume.context.getString(R.string.quran_volume),
             volumeId
         )
-        binding.pageListTextViewPageCompletion.text =
-            "0" //TODO: add page completion logic or function
-        binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function
+//        binding.pageListTextViewPageCompletion.text =
+//            "0" //TODO: add page completion logic or function
+//        binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function
 
         // Listener
         binding.pageListButtonMenu.setOnClickListener {
