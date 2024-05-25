@@ -7,4 +7,5 @@ class SimilarityScoreViewModel : ViewModel() {
 
     var pageId: Int? = null
     var bitmap: Bitmap? = null
+    var imageUriString: String? = null
 }

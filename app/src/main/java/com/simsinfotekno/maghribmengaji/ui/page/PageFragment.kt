@@ -211,7 +211,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
                 // Bundle to pass the data
                 val bundle = Bundle().apply {
-                    putString("image_uri", pages[0].imageUri.toString())
+                    putString("imageUriString", pages[0].imageUri.toString())
                     putInt("pageId", pageId!!)
                 }
 

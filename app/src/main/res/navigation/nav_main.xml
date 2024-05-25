@@ -75,5 +75,10 @@
             android:id="@+id/action_pageListFragment_to_volumeListFragment"
             app:destination="@id/volumeListFragment" />
     </fragment>
+    <action
+        android:id="@+id/action_global_similarityScoreFragment"
+        app:destination="@id/similarityScoreFragment"
+        app:popUpTo="@id/similarityScoreFragment"
+        app:popUpToInclusive="true" />
 
 </navigation>

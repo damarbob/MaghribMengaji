@@ -1,33 +1,24 @@
 package com.simsinfotekno.maghribmengaji.ui.similarityscore
 
 import android.animation.ValueAnimator
-import android.content.res.Resources.Theme
-import android.content.res.Resources.getAttributeSetSourceResId
+import android.app.Activity
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
@@ -38,6 +29,7 @@ import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromOCRApiJSON
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
 import com.simsinfotekno.maghribmengaji.usecase.FetchQuranPageUseCase
 import com.simsinfotekno.maghribmengaji.usecase.JaccardSimilarityIndex
+import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LoadBitmapFromUri
 import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
-    OCRAsyncTask.IOCRCallBack {
+    OCRAsyncTask.IOCRCallBack, ActivityResultCallback<ActivityResult> {
 
     companion object {
         private val TAG = SimilarityScoreFragment::class.java.simpleName
@@ -94,8 +86,21 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
         _binding = FragmentSimilarityScoreBinding.inflate(inflater, container, false)
 
-        val uriString = arguments?.getString("image_uri")
-        imageUri = Uri.parse(uriString)
+        // Initialize the scanner launcher
+        val scannerLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult(),
+            this
+        )
+
+        // Define image Uri
+        val imageUriString: String
+        if (viewModel.imageUriString != null) {
+            imageUriString = viewModel.imageUriString!!
+        } else {
+            imageUriString = arguments?.getString("imageUriString")!!
+            viewModel.imageUriString = imageUriString
+        }
+        imageUri = Uri.parse(imageUriString)
 
         // Define page ID
         if (viewModel.pageId != null) {
@@ -141,11 +146,11 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         }
 
         binding.similarityScoreButtonRetry.setOnClickListener {
-
+            LaunchScannerUseCase().invoke(this, scannerLauncher)
         }
 
         binding.similarityScoreButtonRetryLow.setOnClickListener {
-
+            LaunchScannerUseCase().invoke(this, scannerLauncher)
         }
 
         binding.similarityScoreButtonClose.setOnClickListener {
@@ -275,5 +280,41 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onActivityResult(result: ActivityResult) {
+        val resultCode = result.resultCode
+        val resultX = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+        if (resultCode == Activity.RESULT_OK && resultX != null) {
+            val pages = resultX.pages
+            if (!pages.isNullOrEmpty()) {
+
+                // Bundle to pass the data
+                val bundle = Bundle().apply {
+                    putString("imageUriString", pages[0].imageUri.toString())
+                    putInt("pageId", pageId!!)
+                }
+
+                // Navigate to the ResultFragment with the Bundle
+                findNavController().navigate(
+                    R.id.action_global_similarityScoreFragment,
+                    bundle
+                )
+
+            }
+
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.error_scanner_cancelled),
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.error_default_message),
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 }
