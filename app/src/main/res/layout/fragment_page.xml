@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.page.PageFragment"
     android:orientation="vertical"
+    android:transitionGroup="true"
     android:padding="@dimen/activity_vertical_margin">
 
     <LinearLayout

@@ -18,6 +18,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialFade
+import com.google.android.material.transition.MaterialSharedAxis
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
 import com.simsinfotekno.maghribmengaji.MainActivity
@@ -32,6 +35,7 @@ import com.simsinfotekno.maghribmengaji.usecase.JaccardSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LoadBitmapFromUri
 import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -52,9 +56,10 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     // Repository
     private val quranPageStudentRepository = MainActivity.quranPageStudentRepository
 
-    // OCR
+    // OCR and Quran API
     private lateinit var quranApiResult: String
     private lateinit var ocrResult: String
+    private val quranApiResultDeferred = CompletableDeferred<String>()
 
     // Use case
     private val loadBitmapFromUri = LoadBitmapFromUri()
@@ -69,6 +74,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private var pageId: Int? = null
     private var bitmap: Bitmap? = null
     private lateinit var imageUri: Uri
+    private lateinit var container: ViewGroup
 
     // Experimental
     private val student = MainActivity.testStudent
@@ -77,6 +83,12 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         super.onCreate(savedInstanceState)
 
         // TODO: Use the ViewModel
+
+        // Set the transition for this fragment
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
     }
 
     override fun onCreateView(
@@ -85,6 +97,8 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     ): View {
 
         _binding = FragmentSimilarityScoreBinding.inflate(inflater, container, false)
+
+        this.container = container!!
 
         // Initialize the scanner launcher
         val scannerLauncher = registerForActivityResult(
@@ -179,6 +193,10 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     }
 
     private fun maximizeView(maximized: Boolean, scorePassed: Boolean) {
+        val materialFade = MaterialFade().apply {
+            duration = 300L
+        }
+        TransitionManager.beginDelayedTransition(container, materialFade)
         // Whether to show all or only progress indicator and close button
         binding.similarityScoreTextView.visibility = if (maximized) View.VISIBLE else View.GONE
         binding.similarityScoreTextViewScore.visibility = if (maximized) View.VISIBLE else View.GONE
@@ -196,10 +214,12 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
      */
     override fun getOCRCallBackResult(response: String?) {
         lifecycleScope.launch {
-            val extractedOCRResult = withContext(Dispatchers.IO) {
+            ocrResult = withContext(Dispatchers.IO) {
                 response?.let { extractTextFromOCRApiJson(it) }.toString()
             }
-            ocrResult = extractedOCRResult
+
+            // Wait until quranApiResult is ready
+            quranApiResult = quranApiResultDeferred.await()
 
             // Ensure quranApiResult is ready before calculating similarity index
             calculateSimilarityIndex()
@@ -220,7 +240,8 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             val extractedQuranResult = withContext(Dispatchers.IO) {
                 extractTextFromQuranApiJson(result)
             }
-            quranApiResult = extractedQuranResult
+//            quranApiResult = extractedQuranResult
+            quranApiResultDeferred.complete(extractedQuranResult)
 
             // If ocrResult is already ready, calculate similarity index
             if (::ocrResult.isInitialized) {
