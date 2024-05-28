@@ -3,6 +3,7 @@ package com.simsinfotekno.maghribmengaji
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.firebase.Firebase
@@ -19,6 +20,10 @@ import com.simsinfotekno.maghribmengaji.repository.QuranVolumeRepository
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    /* View model */
+    private lateinit var viewModel: MainViewModel
+
     private lateinit var navController: NavController
 
     companion object {
@@ -71,31 +76,28 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        /* View models */
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
         navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
 
-        // Views
+        /* Views */
         val fabVolumeList = binding.mainFabVolumeList
 
-        // Listener
+        /* Listeners */
         fabVolumeList.setOnClickListener {
             val fragmentId = navController.currentDestination?.id
             when (fragmentId) {
                 R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
                 R.id.pageListFragment -> navController.navigate(R.id.action_pageListFragment_to_volumeListFragment)
             }
-//            navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
-            // Testing
-//            navController.navigate(R.id.action_homeFragment_to_pageFragment)
         }
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             when (destination.id) {
-                R.id.volumeListFragment -> fabVolumeList.hide()
-                R.id.pageFragment -> fabVolumeList.hide()
-                R.id.similarityScoreFragment -> fabVolumeList.hide()
-                R.id.profileFragment -> fabVolumeList.hide()
-                else -> fabVolumeList.show()
+                R.id.homeFragment -> fabVolumeList.show()
+                else -> fabVolumeList.hide()
             }
         }
 
@@ -103,7 +105,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
     }
 
     private fun testFirestore() {

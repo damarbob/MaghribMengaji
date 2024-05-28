@@ -15,17 +15,17 @@
         android:orientation="vertical">
 
         <TextView
+            style="@style/Widget.App.H1.Bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@string/auth_login"
-            android:textSize="32sp" />
+            android:text="@string/auth_login" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Subtitle" />
+            android:text="@string/continue_your_koran_journey" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -36,6 +36,7 @@
             app:startIconDrawable="@drawable/baseline_person_outline_24">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/loginInputEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -51,6 +52,7 @@
             app:startIconDrawable="@drawable/baseline_password_24">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/loginInputPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
@@ -58,6 +60,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
+            style="@style/Widget.App.P.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -79,7 +82,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/auth_login_google"
-            app:icon="@drawable/outline_login_24" />
+            android:enabled="false"
+            app:icon="@drawable/icon_google" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,10 +94,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Do not have an account?" />
+                android:text="@string/do_not_have_an_account" />
 
             <TextView
                 android:id="@+id/loginSignUpText"
+                style="@style/Widget.App.P.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

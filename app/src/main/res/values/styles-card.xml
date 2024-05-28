@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.App.Card.BottomSheet" parent="Theme.Material3.DayNight">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:translationY">88dp</item>
+        <item name="layout_behavior">com.google.android.material.bottomsheet.BottomSheetBehavior
+        </item>
+        <!-- PeekHeight should be updated in coordinator behaviors too if any -->
+        <item name="behavior_peekHeight">320dp</item>
+<!--        <item name="behavior_hideable">true</item>-->
+        <item name="behavior_draggable">true</item>
+        <item name="cardCornerRadius">48dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerLow</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardMaxElevation">2dp</item>
+    </style>
+</resources>

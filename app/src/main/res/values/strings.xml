@@ -25,7 +25,7 @@
     <string name="auth_fullname">Full Name</string>
     <string name="auth_phone_number">Phone Number</string>
     <string name="auth_forgot_password">Forgot password?</string>
-    <string name="welcome_greeting">Welcome to</string>
+    <string name="welcome_to">Welcome to</string>
     <string name="main_menu_profile">Profile</string>
     <string name="main_menu_contact">Contact Us</string>
     <string name="quran_volume">Volume %1$s</string>
@@ -33,6 +33,21 @@
     <string name="in_progress">In progress</string>
     <string name="last_written">Last written</string>
     <string name="quran_page_image_description">Quran Page</string>
+    <string name="sign_up_successful">Sign Up Successful</string>
+    <string name="login_successful">Login successful</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="reciting_the_koran_is_easy">Reciting the Koran is easy!</string>
+    <string name="continue_your_koran_journey">Continue your Koran journey</string>
+    <string name="start_your_koran_journey">Start your Koran journey</string>
+    <string name="do_not_have_an_account">Do not have an account?</string>
+    <string name="already_have_account">Already have account?</string>
+    <string name="error">Error</string>
+    <string name="close">Close</string>
+    <string name="full_name_is_required">Full name is required</string>
+    <string name="email_is_required">Email is required</string>
+    <string name="password_is_required">Password is required</string>
+    <string name="invalid_email_format">Invalid email format!</string>
+    <string name="password_must_be_at_least_6_characters_long">Password must be at least 6 characters long!</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

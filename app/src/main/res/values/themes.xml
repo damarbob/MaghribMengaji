@@ -12,8 +12,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        
-        <item name="android:windowActivityTransitions">true</item>
     </style>
     <!-- Base application theme. -->
     <style name="Base.Theme.MaghribMengaji" parent="Theme.Material3.DayNight.NoActionBar">
@@ -21,5 +19,7 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
 
         <item name="android:windowActivityTransitions">true</item>
+        <item name="colorPrimary">@color/maghrib_mengaji_primary</item>
+        <item name="colorPrimaryVariant">@color/maghrib_mengaji_primary_variant</item>
     </style>
 </resources>

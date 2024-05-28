@@ -15,17 +15,17 @@
         android:orientation="vertical">
 
         <TextView
+            style="@style/Widget.App.H1.Bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@string/auth_signup"
-            android:textSize="32sp" />
+            android:text="@string/auth_signup" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Subtitle" />
+            android:text="@string/start_your_koran_journey" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -36,6 +36,7 @@
             app:startIconDrawable="@drawable/baseline_person_outline_24">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/signUpInputFullName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -47,9 +48,10 @@
             android:hint="@string/auth_email"
             app:endIconMode="clear_text"
             app:startIconContentDescription="@string/auth_email"
-            app:startIconDrawable="@drawable/baseline_person_outline_24">
+            app:startIconDrawable="@drawable/round_alternate_email_24">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/signUpInputEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -59,9 +61,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/auth_phone_number"
+            android:enabled="false"
             app:endIconMode="clear_text"
             app:startIconContentDescription="@string/auth_phone_number"
-            app:startIconDrawable="@drawable/baseline_person_outline_24">
+            app:startIconDrawable="@drawable/round_call_24">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -79,6 +82,7 @@
             app:startIconDrawable="@drawable/baseline_password_24">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/signUpInputPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
@@ -100,7 +104,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/auth_login_google"
-            app:icon="@drawable/outline_login_24" />
+            android:enabled="false"
+            app:icon="@drawable/icon_google" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -111,10 +116,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Already have account?" />
+                android:text="@string/already_have_account" />
 
             <TextView
                 android:id="@+id/signUpLoginText"
+                style="@style/Widget.App.P.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

@@ -10,5 +10,9 @@
         android:id="@+id/menu_contact"
         android:icon="@drawable/outline_email_24"
         android:title="@string/main_menu_contact" />
+    <item
+        android:id="@+id/menu_sign_out"
+        android:icon="@drawable/round_arrow_back_ios_24"
+        android:title="@string/sign_out" />
 
 </menu>

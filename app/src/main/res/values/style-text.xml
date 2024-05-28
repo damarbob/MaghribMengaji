@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.App.H1" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">36sp</item>
+    </style>
+    <style  name="Widget.App.H1.Bold" parent="Widget.App.H1">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style  name="Widget.App.H1.Bold.Primary" parent="Widget.App.H1.Bold">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.App.P" parent="Widget.AppCompat.TextView">
+    </style>
+    <style name="Widget.App.P.Bold" parent="Widget.App.P">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

@@ -1,11 +1,11 @@
 package com.simsinfotekno.maghribmengaji.ui.welcome
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentWelcomeBinding
@@ -32,12 +32,12 @@ class WelcomeFragment : Fragment() {
     ): View {
         binding = FragmentWelcomeBinding.inflate(layoutInflater)
 
-//        Login button
+        // Login button
         binding.welcomeLoginButton.setOnClickListener {
             findNavController().navigate(R.id.action_welcomeFragment_to_loginFragment)
         }
 
-//        Sign Up button
+        // Sign Up button
         binding.welcomeSignUpButton.setOnClickListener {
             findNavController().navigate(R.id.action_welcomeFragment_to_signUpFragment)
         }

@@ -89,7 +89,7 @@ class DocScannerActivity : AppCompatActivity(), OCRAsyncTask.IOCRCallBack {
 //        resultTextView = findViewById(R.id.textViewResult)
 //        progressBar = findViewById(R.id.progressBar)
 
-//      get client and launcher of scanner
+        // Get client and launcher of scanner
         val scanner = GmsDocumentScanning.getClient(option.build())
         val scannerLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
             handleActivityResult(result)

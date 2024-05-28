@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -56,6 +58,9 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     // Repository
     private val quranPageStudentRepository = MainActivity.quranPageStudentRepository
 
+    // Variables
+    private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
+
     // OCR and Quran API
     private lateinit var quranApiResult: String
     private lateinit var ocrResult: String
@@ -82,7 +87,11 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // TODO: Use the ViewModel
+        // Initialize the scanner launcher
+        scannerLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult(),
+            this
+        )
 
         // Set the transition for this fragment
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
@@ -99,12 +108,6 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         _binding = FragmentSimilarityScoreBinding.inflate(inflater, container, false)
 
         this.container = container!!
-
-        // Initialize the scanner launcher
-        val scannerLauncher = registerForActivityResult(
-            ActivityResultContracts.StartIntentSenderForResult(),
-            this
-        )
 
         // Define image Uri
         val imageUriString: String

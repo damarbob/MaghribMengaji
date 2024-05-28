@@ -1,6 +1,7 @@
 package com.simsinfotekno.maghribmengaji.ui.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.util.TypedValue
@@ -11,12 +12,17 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainActivity
+import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
@@ -24,6 +30,8 @@ import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
+
+    private val mainViewModel: MainViewModel by viewModels()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -45,10 +53,14 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+            ViewModelProvider(this)[HomeViewModel::class.java]
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        /* Views */
+        binding.homeTextTitle.text = Firebase.auth.currentUser?.displayName
+            ?: getString(R.string.app_name)
 
         // Volume adapter
         val volumeAdapter = VolumeAdapter(
@@ -74,7 +86,7 @@ class HomeFragment : Fragment() {
             binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
         }
 
-        // Listener
+        /* Listeners */
         binding.homeButtonMenu.setOnClickListener {
             showMenu(it, R.menu.menu_main)
         }
@@ -108,12 +120,22 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-        popup.setOnMenuItemClickListener { it ->
+        popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_profile -> findNavController().navigate(R.id.action_navigation_home_to_navigation_profile)
+                R.id.menu_sign_out -> {
+                    mainViewModel.logout()
+                    navigateToLoginActivity()
+                }
             }
             return@setOnMenuItemClickListener false
         }
         popup.show()
+    }
+
+    private fun navigateToLoginActivity() {
+        val intent = Intent(activity, LoginActivity::class.java)
+        startActivity(intent)
+        activity?.finish() // Optional: Finish MainActivity to prevent the user from coming back to it
     }
 }

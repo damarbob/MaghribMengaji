@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -44,7 +46,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
     private val quranVolumeRepository = MainActivity.quranVolumeRepository
     private val quranPageStudentRepository = MainActivity.quranPageStudentRepository
 
-    // State
+    // Variables
+    private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
 
     // Use case
     private val uploadImageUseCase = UploadImageUseCase()
@@ -55,6 +58,12 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize the scanner launcher
+        scannerLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult(),
+            this
+        )
 
         // Set the transition for this fragment
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
@@ -76,12 +85,6 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             quranVolumeRepository.getRecordByPageId(page!!.id) // Get QuranVolume instance
         val pageStudent =
             quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
-
-        // Initialize the scanner launcher
-        val scannerLauncher = registerForActivityResult(
-            ActivityResultContracts.StartIntentSenderForResult(),
-            this
-        )
 
         // View
         binding.pageTextViewVolume.text =
@@ -136,7 +139,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         // Submit button
         binding.pageButtonSubmit.setOnClickListener {
 
-            LaunchScannerUseCase().invoke(this, scannerLauncher)
+            launchScannerUseCase(this, scannerLauncher)
 
             // Browse image to upload TODO: Move to use case
 //            val intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -243,11 +246,6 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 Toast.LENGTH_LONG
             ).show()
         }
-    }
-
-    // Handling activity result
-    private fun handleActivityResult(activityResult: ActivityResult) {
-
     }
 
     override fun onDestroyView() {

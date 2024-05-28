@@ -25,7 +25,7 @@
     <string name="auth_fullname">Nama Lengkap</string>
     <string name="auth_phone_number">Nomor HP</string>
     <string name="auth_forgot_password">Lupa sandi?</string>
-    <string name="welcome_greeting">Selamat datang di</string>
+    <string name="welcome_to">Selamat datang di</string>
     <string name="main_menu_profile">Profil</string>
     <string name="main_menu_contact">Hubungi Kami</string>
     <string name="quran_volume">Jilid %1$s</string>
@@ -33,4 +33,19 @@
     <string name="in_progress">Dalam proses</string>
     <string name="last_written">Terakhir ditulis</string>
     <string name="quran_page_image_description">Halaman Quran</string>
+    <string name="sign_up_successful">Pendaftaran Berhasil</string>
+    <string name="login_successful">Berhasil masuk</string>
+    <string name="sign_out">Keluar</string>
+    <string name="reciting_the_koran_is_easy">Mengaji itu mudah!</string>
+    <string name="continue_your_koran_journey">Lanjutkan perjalanan mengaji Anda</string>
+    <string name="start_your_koran_journey">Mulai perjalanan mengaji Anda</string>
+    <string name="do_not_have_an_account">Tidak punya akun?</string>
+    <string name="already_have_account">Sudah punya akun?</string>
+    <string name="error">Galat</string>
+    <string name="close">Tutup</string>
+    <string name="full_name_is_required">Nama panjang diperlukan</string>
+    <string name="email_is_required">Email diperlukan</string>
+    <string name="password_is_required">Kata sandi diperlukan</string>
+    <string name="invalid_email_format">Format email salah!</string>
+    <string name="password_must_be_at_least_6_characters_long">Kata sandi harus setidaknya 6 karakter!</string>
 </resources>
