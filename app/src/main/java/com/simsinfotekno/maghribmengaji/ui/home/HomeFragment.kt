@@ -22,6 +22,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainActivity
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
@@ -63,12 +64,13 @@ class HomeFragment : Fragment() {
             ?: getString(R.string.app_name)
 
         // Volume adapter
+        // Set dataset
         val volumeAdapter = VolumeAdapter(
             // TODO: Handle if onProgressPageIds is null
-            MainActivity.quranVolumeRepository.getRecordsById(MainActivity.testStudent.onProgressPageIds!!.toIntArray()),
+            quranVolumeRepository.getRecordsById(listOf(1, 2, 3, 10).toIntArray()),
             findNavController(),
             this
-        ) // Set dataset
+        )
 
         // Volume list
         val recyclerView: RecyclerView = binding.homeRecyclerViewVolume
@@ -76,15 +78,15 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = volumeAdapter
 
-        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.testStudent.lastPageId) // Last written
+        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.student.lastPageId) // Last written
 
         // Progress indicator
         val allPagesCount = 604
-        val progressPercentage = MainActivity.testStudent.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
-        binding.homeTextPagePercentage.text = (progressPercentage).toString()
-        if (progressPercentage != null) {
-            binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
-        }
+//        val progressPercentage = MainActivity.student.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
+//        binding.homeTextPagePercentage.text = (progressPercentage).toString()
+//        if (progressPercentage != null) {
+//            binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
+//        }
 
         /* Listeners */
         binding.homeButtonMenu.setOnClickListener {

@@ -59,6 +59,7 @@ class LoginActivity : AppCompatActivity() {
 
         if (currentUser != null) {
             Log.d(TAG, "Logged in. Navigating to user dashboard.")
+
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             this.finish()  // Finish the current activity so the user can't navigate back to the login screen

@@ -14,12 +14,12 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.gson.Gson
 import com.simsinfotekno.maghribmengaji.MainActivity
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageListBinding
 import com.simsinfotekno.maghribmengaji.model.QuranPage
@@ -57,7 +57,7 @@ class PageListFragment : Fragment() {
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
 
         // Use case initialization
-        quranPageStatusCheck = QuranPageStatusCheck(MainActivity.testStudent)
+        quranPageStatusCheck = QuranPageStatusCheck(MainActivity.student)
     }
 
     override fun onCreateView(
@@ -73,7 +73,7 @@ class PageListFragment : Fragment() {
 
         // Initialize data set
         pageAdapter = PageAdapter(
-            MainActivity.quranPageRepository.getRecordByIds(pageIds),
+            quranPageRepository.getRecordByIds(pageIds),
             findNavController(),
             quranPageStatusCheck,
             this
@@ -160,7 +160,7 @@ class PageListFragment : Fragment() {
                 pageAdapter.dataSet = quranPagesList
                 pageAdapter.notifyDataSetChanged()
 
-                MainActivity.quranPageRepository.setRecords(quranPagesList, false)
+                quranPageRepository.setRecords(quranPagesList, false)
 
             }
             .addOnFailureListener { exception ->

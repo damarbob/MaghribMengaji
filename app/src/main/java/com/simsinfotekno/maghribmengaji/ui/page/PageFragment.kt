@@ -23,7 +23,9 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
-import com.simsinfotekno.maghribmengaji.MainActivity
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
@@ -40,11 +42,6 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
     private var _binding: FragmentPageBinding? = null
     private val binding get() = _binding!!
-
-    // Repository
-    private val quranPageRepository = MainActivity.quranPageRepository
-    private val quranVolumeRepository = MainActivity.quranVolumeRepository
-    private val quranPageStudentRepository = MainActivity.quranPageStudentRepository
 
     // Variables
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>

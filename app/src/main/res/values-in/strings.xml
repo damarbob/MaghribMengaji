@@ -7,7 +7,7 @@
     <string name="error_default_message">Error</string>
     <string name="failed_to_fetch_data">Gagal memperoleh data</string>
     <string name="submit">Kumpulkan</string>
-    <string name="similarity_score">Nilai Kemiripan</string>
+    <string name="preliminary_score">Nilai sementara</string>
     <string name="upload">Unggah</string>
     <string name="your_score_is_ssr_press_upload_to_send_your_score">Nilai Anda sudah bagus. Tekan <b>Unggah</b> untuk mengirim nilai</string>
     <string name="your_score_is_low">Nilai Anda masih di bawah KKM. Tekan <b>Ulangi</b> untuk melakukan scan ulang</string>

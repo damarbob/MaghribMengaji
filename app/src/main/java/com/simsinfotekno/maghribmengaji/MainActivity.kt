@@ -2,19 +2,21 @@ package com.simsinfotekno.maghribmengaji
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
-import com.simsinfotekno.maghribmengaji.repository.QuranPageRepository
-import com.simsinfotekno.maghribmengaji.repository.QuranPageStudentRepository
-import com.simsinfotekno.maghribmengaji.repository.QuranVolumeRepository
 
 
 class MainActivity : AppCompatActivity() {
@@ -30,20 +32,11 @@ class MainActivity : AppCompatActivity() {
         val TAG: String = MainActivity::class.java.simpleName
 
         // Test user setup
-        val testStudent = MaghribMengajiStudent(
-            "1",
-            "Damar Maulana",
-            "ibn.damr@gmail.com",
-            10,
-            listOf(1, 2, 3, 4, 5, 6, 7),
-            listOf(1, 2, 3, 10),
-            listOf(),
+        val student = MaghribMengajiStudent(
+            fullName = "Damar Maulana",
+            email = "ibn.damr@gmail.com",
+            lastPageId = 10,
         )
-
-        // Repository
-        val quranVolumeRepository = QuranVolumeRepository()
-        val quranPageRepository = QuranPageRepository()
-        val quranPageStudentRepository = QuranPageStudentRepository()
 
         // Test data set
         val quranVolumes = listOf(
@@ -72,6 +65,8 @@ class MainActivity : AppCompatActivity() {
         // Test data insertion to repository
         quranVolumeRepository.setRecords(quranVolumes, false)
         quranPageRepository.setRecords(quranPages, false)
+
+        runAuthentication()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -105,6 +100,46 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+    }
+
+    private fun runAuthentication() {
+        /* Auth */
+        val auth = Firebase.auth // Initialize Firebase Auth
+        val currentUser = auth.currentUser // Get current user
+
+        // Get user data
+        val db = com.google.firebase.ktx.Firebase.firestore.collection(MaghribMengajiStudent.COLLECTION)
+        if (currentUser != null) {
+            db.whereEqualTo("id", currentUser.uid).get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+
+                        // Get user data
+                        val data = document.data
+
+                        Log.d(TAG, "Document found with ID: ${document.id} => $data")
+
+                        val student = MaghribMengajiStudent(
+                            currentUser.uid,
+                            currentUser.displayName,
+                            currentUser.email,
+                            data["lastPageId"] as Int?,
+                            data["teacherId"] as Int?,
+                        )
+
+                        MainApplication.studentRepository.setStudent(student)
+                        Toast.makeText(this, "Berhasil login", Toast.LENGTH_SHORT).show()
+
+                    }
+                    if (documents.isEmpty) {
+                        Log.d(TAG, "No matching documents found.")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        }
+        /* End of auth */
     }
 
     private fun testFirestore() {

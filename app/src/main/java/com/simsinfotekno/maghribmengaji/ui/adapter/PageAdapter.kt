@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
-import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.pagelist.PageListFragment
 import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
@@ -54,7 +52,6 @@ class PageAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         val page = dataSet[position]
-        val status = quranPageStatusCheck(page)
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
@@ -64,34 +61,35 @@ class PageAdapter(
         )
 
         // Set the icon based on the completion status
-        when (status) {
-            QuranItemStatus.FINISHED -> {
-                viewHolder.imageStatus.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        viewHolder.imageStatus.context,
-                        R.drawable.round_check_circle_outline_24
-                    )
-                )
-            }
-
-            QuranItemStatus.ON_PROGRESS -> {
-                viewHolder.imageStatus.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        viewHolder.imageStatus.context,
-                        R.drawable.outline_hourglass_empty_24
-                    )
-                )
-            }
-
-            QuranItemStatus.NONE -> {
-                viewHolder.imageStatus.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        viewHolder.imageStatus.context,
-                        R.drawable.baseline_arrow_forward_ios_24
-                    )
-                )
-            }
-        }
+//        val status = quranPageStatusCheck(page)
+//        when (status) {
+//            QuranItemStatus.FINISHED -> {
+//                viewHolder.imageStatus.setImageDrawable(
+//                    AppCompatResources.getDrawable(
+//                        viewHolder.imageStatus.context,
+//                        R.drawable.round_check_circle_outline_24
+//                    )
+//                )
+//            }
+//
+//            QuranItemStatus.ON_PROGRESS -> {
+//                viewHolder.imageStatus.setImageDrawable(
+//                    AppCompatResources.getDrawable(
+//                        viewHolder.imageStatus.context,
+//                        R.drawable.outline_hourglass_empty_24
+//                    )
+//                )
+//            }
+//
+//            QuranItemStatus.NONE -> {
+//                viewHolder.imageStatus.setImageDrawable(
+//                    AppCompatResources.getDrawable(
+//                        viewHolder.imageStatus.context,
+//                        R.drawable.baseline_arrow_forward_ios_24
+//                    )
+//                )
+//            }
+//        }
 
         // Listener
         viewHolder.cardViewPage.setOnClickListener {

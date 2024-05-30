@@ -45,4 +45,6 @@ class QuranPageStudentRepository() : Repository<QuranPageStudent>() {
 
         return result
     }
+
+
 }

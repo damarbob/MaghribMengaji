@@ -26,6 +26,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
 import com.simsinfotekno.maghribmengaji.MainActivity
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentSimilarityScoreBinding
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
@@ -55,9 +56,6 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private var _binding: FragmentSimilarityScoreBinding? = null
     private val binding get() = _binding!!
 
-    // Repository
-    private val quranPageStudentRepository = MainActivity.quranPageStudentRepository
-
     // Variables
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
 
@@ -82,7 +80,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private lateinit var container: ViewGroup
 
     // Experimental
-    private val student = MainActivity.testStudent
+    private val student = MainActivity.student
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -186,7 +184,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             quranPageStudentRepository.addRecord(
                 QuranPageStudent(
                     pageId!!,
-                    student.id,
+                    student.id!!,
                     null,
                     picture = bitmap
                 )
