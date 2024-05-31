@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
+// TODO: Unfinished use case, fix before use
 class UploadImageUseCase {
 
     private var pageId: Int = -1
@@ -13,7 +14,7 @@ class UploadImageUseCase {
     UPLOAD IMAGE TO FIRESTORE DOCUMENT
      */
 
-    // Find document based on quranPages id then upload image to it TODO: Move to use case
+    // Find document based on quranPages id then upload image to it
     operator fun invoke(
         idValue: Int,
         fileUri: Uri,

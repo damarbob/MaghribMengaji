@@ -1,8 +1,16 @@
 package com.simsinfotekno.maghribmengaji.repository
 
+import com.simsinfotekno.maghribmengaji.event.OnPageStudentRepositoryUpdate
+import com.simsinfotekno.maghribmengaji.event.OnRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
+import org.greenrobot.eventbus.EventBus
 
 class QuranPageStudentRepository() : Repository<QuranPageStudent>() {
+
+    companion object {
+        private val TAG = QuranPageStudentRepository::class.java.simpleName
+    }
+
     override fun onStart() {
 //        TODO("Not yet implemented")
     }
@@ -16,7 +24,12 @@ class QuranPageStudentRepository() : Repository<QuranPageStudent>() {
     }
 
     override fun onRecordAdded(record: QuranPageStudent) {
-//        TODO("Not yet implemented")
+        EventBus.getDefault().post(
+            OnPageStudentRepositoryUpdate(
+                OnRepositoryUpdate.Event.ACTION_ADD,
+                record
+            )
+        )
     }
 
     override fun onRecordDeleted(record: QuranPageStudent) {

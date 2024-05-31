@@ -124,11 +124,11 @@ class MainActivity : AppCompatActivity() {
                             currentUser.displayName,
                             currentUser.email,
                             data["lastPageId"] as Int?,
-                            data["teacherId"] as Int?,
+                            data["teacherId"] as String?,
                         )
 
                         MainApplication.studentRepository.setStudent(student)
-                        Toast.makeText(this, "Berhasil login", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show()
 
                     }
                     if (documents.isEmpty) {

@@ -40,7 +40,7 @@ class SignUpFragment : Fragment() {
         viewModel.authResult.observe(viewLifecycleOwner) { result ->
             result?.onSuccess {
                 // Navigate to the next screen or update UI
-                Toast.makeText(requireContext(), "Sign Up Successful", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.sign_up_successful), Toast.LENGTH_SHORT).show()
 
                 val intent = Intent(activity, MainActivity::class.java)
                 startActivity(intent)
@@ -63,18 +63,23 @@ class SignUpFragment : Fragment() {
                 displayName.isEmpty() -> {
                     showErrorDialog(resources.getString(R.string.full_name_is_required))
                 }
+
                 email.isEmpty() -> {
                     showErrorDialog(resources.getString(R.string.email_is_required))
                 }
+
                 !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                     showErrorDialog(resources.getString(R.string.invalid_email_format))
                 }
+
                 password.isEmpty() -> {
                     showErrorDialog(resources.getString(R.string.password_is_required))
                 }
+
                 password.length < 6 -> { // Example of password length validation
                     showErrorDialog(resources.getString(R.string.password_must_be_at_least_6_characters_long))
                 }
+
                 else -> {
                     // All validations passed, proceed to sign up
                     viewModel.signUpWithEmailPassword(displayName, email, password)

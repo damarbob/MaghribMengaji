@@ -72,13 +72,13 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
 
     // Also add the dependency for the Google Play services library and specify its version
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation(libs.play.services.auth)
 
     //
     implementation(libs.glide)
     implementation(libs.android.document.filter) // Add document filter to bitmap
-    implementation("com.google.code.gson:gson:2.10.1") // Serialization/deserialization dependency
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation(libs.gson) // Serialization/deserialization dependency
+    implementation(libs.kotlinx.serialization.json)
 
-    implementation("org.greenrobot:eventbus:3.3.1") // Event bus
+    implementation(libs.eventbus) // Event bus
 }

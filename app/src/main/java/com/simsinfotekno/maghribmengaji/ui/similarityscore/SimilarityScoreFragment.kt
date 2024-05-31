@@ -25,11 +25,8 @@ import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
-import com.simsinfotekno.maghribmengaji.MainActivity
-import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentSimilarityScoreBinding
-import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromOCRApiJSON
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
@@ -56,15 +53,19 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private var _binding: FragmentSimilarityScoreBinding? = null
     private val binding get() = _binding!!
 
-    // Variables
-    private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
-
     // OCR and Quran API
     private lateinit var quranApiResult: String
     private lateinit var ocrResult: String
     private val quranApiResultDeferred = CompletableDeferred<String>()
 
-    // Use case
+    /* Variables */
+    private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private var pageId: Int? = null
+    private var bitmap: Bitmap? = null
+    private lateinit var imageUri: Uri
+    private lateinit var container: ViewGroup
+
+    /* Use cases */
     private val loadBitmapFromUri = LoadBitmapFromUri()
     private val oCRAsyncTask = OCRAsyncTask()
     private val fetchQuranPageTask = FetchQuranPageUseCase(this)
@@ -72,15 +73,6 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private val extractTextFromQuranApiJson = ExtractTextFromQuranAPIJSON()
     private val extractTextFromOCRApiJson = ExtractTextFromOCRApiJSON()
     private val bitmapToBase64 = BitmapToBase64()
-
-    // Global variables
-    private var pageId: Int? = null
-    private var bitmap: Bitmap? = null
-    private lateinit var imageUri: Uri
-    private lateinit var container: ViewGroup
-
-    // Experimental
-    private val student = MainActivity.student
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,7 +99,26 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
         this.container = container!!
 
-        // Define image Uri
+        /* Observers */
+
+        // Listening to remote db result whether success or failed
+        viewModel.remoteDbResult.observe(viewLifecycleOwner) { uploadResult ->
+            uploadResult?.onSuccess {
+
+                // Navigate to the next screen or update UI
+                Toast.makeText(requireContext(), getString(R.string.upload_successful), Toast.LENGTH_SHORT).show()
+
+                parentFragmentManager.popBackStack() // Back to page
+
+            }?.onFailure { exception ->
+                // Show error message
+                Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        /* Variables and arguments */
+
+        // Get image uri from view model if any, if not, get from arguments
         val imageUriString: String
         if (viewModel.imageUriString != null) {
             imageUriString = viewModel.imageUriString!!
@@ -117,7 +128,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         }
         imageUri = Uri.parse(imageUriString)
 
-        // Define page ID
+        // Get page id from view model if any, if not, get from arguments
         if (viewModel.pageId != null) {
             pageId = viewModel.pageId
         } else {
@@ -125,13 +136,18 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             viewModel.pageId = arguments?.getInt("pageId")
         }
 
-        // Define image
+        // Get bitmap from view model if any, if not, get from arguments
         if (viewModel.bitmap != null) {
-            bitmap = viewModel.bitmap!!
+            bitmap = viewModel.bitmap // Get bitmap from view model (if it exists, it the fragment might had restarted)
         } else {
+
+            // Load new bitmap from uri (local)
+            bitmap = loadBitmapFromUri(requireContext(), imageUri)
+
+            // Apply image filter
             applyImageFilter2{
-                viewModel.bitmap = it
-                bitmap = it
+                viewModel.bitmap = it // Assign bitmap to view model to survive fragment reload
+                bitmap = it // Reassign bitmap with the new ones (with filter)
 
                 // Start OCR API
                 oCRAsyncTask(
@@ -153,11 +169,11 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
         /* Listeners */
         binding.similarityScoreButtonUpload.setOnClickListener {
-            uploadPageStudent()
+            viewModel.uploadPageStudent()
         }
 
         binding.similarityScoreButtonUploadLow.setOnClickListener {
-            uploadPageStudent()
+            viewModel.uploadPageStudent()
         }
 
         binding.similarityScoreButtonRetry.setOnClickListener {
@@ -172,25 +188,6 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             findNavController().popBackStack()
         }
         return binding.root
-    }
-
-    // TODO: move to use case
-    private fun uploadPageStudent() {
-        val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId)
-
-        if (pageStudent != null)
-            pageStudent.picture = bitmap
-        else
-            quranPageStudentRepository.addRecord(
-                QuranPageStudent(
-                    pageId!!,
-                    student.id!!,
-                    null,
-                    picture = bitmap
-                )
-            )
-
-        Log.d(TAG, "${quranPageStudentRepository.getRecordByPageId(pageId)}")
     }
 
     private fun maximizeView(maximized: Boolean, scorePassed: Boolean) {
@@ -224,6 +221,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
             // Ensure quranApiResult is ready before calculating similarity index
             calculateSimilarityIndex()
+
         }
     }
 
@@ -292,8 +290,6 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     }
 
     private fun applyImageFilter2(documentFilterCallback: DocumentFilter.CallBack<Bitmap>) {
-        bitmap = loadBitmapFromUri(requireContext(), imageUri)
-
         val documentFilter = DocumentFilter()
         documentFilter.getGreyScaleFilter(bitmap, documentFilterCallback)
 
