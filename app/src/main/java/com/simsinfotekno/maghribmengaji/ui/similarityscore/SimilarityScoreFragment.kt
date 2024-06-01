@@ -262,6 +262,8 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         withContext(Dispatchers.Main) {
             val similarityIndex = jaccardSimilarityIndex(quranApiResult, ocrResult)
 
+            viewModel.oCRScore = similarityIndex // Set OCR score in view model
+
             // Maximize view and show score
             if (similarityIndex > 70) {
                 binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(

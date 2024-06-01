@@ -27,6 +27,7 @@ class SimilarityScoreViewModel : ViewModel() {
     var pageId: Int? = null
     var bitmap: Bitmap? = null
     var imageUriString: String? = null
+    var oCRScore: Double? = null // Score for upload
 
     /* Live data */
     private val _remoteDbResult = MutableLiveData<Result<QuranPageStudent>?>()
@@ -68,12 +69,13 @@ class SimilarityScoreViewModel : ViewModel() {
     // Event listeners
     // Subscribe to OnSelectedPlaceChangedEvent event
     @Subscribe(threadMode = ThreadMode.POSTING)
-    fun _021405062022(event: OnPageStudentRepositoryUpdate) {
+    fun _083305312024(event: OnPageStudentRepositoryUpdate) {
         if (event.status == OnRepositoryUpdate.Event.ACTION_ADD) {
 
             val remoteDb = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
 
             val record = event.pageStudent ?: return
+            record.OCRScore = oCRScore?.toInt()
 
             remoteDb
                 .whereEqualTo("studentId", record.studentId)
