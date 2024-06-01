@@ -1,6 +1,7 @@
 package com.simsinfotekno.maghribmengaji.ui.pagelist
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.util.Log
@@ -18,8 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.gson.Gson
+import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
+import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageListBinding
 import com.simsinfotekno.maghribmengaji.model.QuranPage
@@ -38,6 +41,7 @@ class PageListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: PageListViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
     private val pageViewModel: PageViewModel by viewModels()
 
     private lateinit var pageAdapter: PageAdapter
@@ -47,8 +51,6 @@ class PageListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
 
         // Set the transition for this fragment
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
@@ -95,9 +97,9 @@ class PageListFragment : Fragment() {
 //        binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function
 
         // Listener
-        binding.pageListButtonMenu.setOnClickListener {
-            showMenu(it, R.menu.menu_main)
-        }
+//        binding.pageListButtonMenu.setOnClickListener {
+//            showMenu(it, R.menu.menu_main)
+//        }
 
         return binding.root
     }
@@ -130,11 +132,21 @@ class PageListFragment : Fragment() {
         }
         popup.setOnMenuItemClickListener { it ->
             when (it.itemId) {
-                R.id.menu_profile -> findNavController().navigate(R.id.action_navigation_home_to_navigation_profile)
+                R.id.menu_profile -> findNavController().navigate(R.id.action_pageListFragment_to_profileFragment)
+                R.id.menu_sign_out -> {
+                    mainViewModel.logout()
+                    navigateToLoginActivity()
+                }
             }
             return@setOnMenuItemClickListener false
         }
         popup.show()
+    }
+
+    private fun navigateToLoginActivity() {
+        val intent = Intent(activity, LoginActivity::class.java)
+        startActivity(intent)
+        activity?.finish() // Optional: Finish MainActivity to prevent the user from coming back to it
     }
 
     // Read quran page from firebase database

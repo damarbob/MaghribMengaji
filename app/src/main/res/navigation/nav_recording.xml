@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_recording"
+    app:startDestination="@id/recordingFragment">
+
+    <fragment
+        android:id="@+id/recordingFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.recording.RecordingFragment"
+        android:label="fragment_recording"
+        tools:layout="@layout/fragment_recording" >
+        <action
+            android:id="@+id/action_recordingFragment_to_audioPlayerFragment"
+            app:destination="@id/audioPlayerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/audioPlayerFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.audioplayer.AudioPlayerFragment"
+        android:label="fragment_audio_player"
+        tools:layout="@layout/fragment_audio_player" />
+</navigation>

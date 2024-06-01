@@ -74,6 +74,9 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private val extractTextFromOCRApiJson = ExtractTextFromOCRApiJSON()
     private val bitmapToBase64 = BitmapToBase64()
 
+    // TODO: KKM decided by ustadh
+    private val kkm = 60
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -119,6 +122,18 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         /* Variables and arguments */
 
         // Get image uri from view model if any, if not, get from arguments
+        // Check if similarityIndex is already defined in ViewModel
+        viewModel.similarityIndex.observe(viewLifecycleOwner) { index ->
+            index?.let {
+                // Maximize view and show score if similarityIndex is already defined
+                maximizeView(true, it > kkm)
+                binding.similarityScoreTextViewScore.text = it.toString()
+                binding.similarityScoreCircularProgressScore.progress = it
+                binding.similarityScoreCircularProgress.visibility = View.GONE
+            }
+        }
+
+        // Define image Uri
         val imageUriString: String
         if (viewModel.imageUriString != null) {
             imageUriString = viewModel.imageUriString!!
@@ -192,7 +207,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
     private fun maximizeView(maximized: Boolean, scorePassed: Boolean) {
         val materialFade = MaterialFade().apply {
-            duration = 300L
+            duration = 500L
         }
         TransitionManager.beginDelayedTransition(container, materialFade)
         // Whether to show all or only progress indicator and close button
@@ -226,7 +241,9 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     }
 
     override fun onOCRFailure(exception: Exception) {
-        Toast.makeText(requireContext(), exception.message, Toast.LENGTH_LONG).show()
+        activity?.runOnUiThread {
+            Toast.makeText(requireContext(), exception.message, Toast.LENGTH_LONG).show()
+        }
         Log.d(TAG, exception.message!!)
     }
 
@@ -251,7 +268,9 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
     // Fetch Quran API Result Handler on failure
     override fun onFailure(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        activity?.runOnUiThread {
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        }
         Log.d(TAG, message)
     }
 
@@ -264,8 +283,11 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
             viewModel.oCRScore = similarityIndex // Set OCR score in view model
 
+            // Save similarityIndex to ViewModel
+            viewModel.similarityIndex.value = similarityIndex.toInt()
+
             // Maximize view and show score
-            if (similarityIndex > 70) {
+            if (similarityIndex > kkm) {
                 binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
                     getString(R.string.your_score_is_ssr_press_upload_to_send_your_score),
                     HtmlCompat.FROM_HTML_MODE_LEGACY

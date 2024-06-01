@@ -33,7 +33,7 @@
             android:hint="@string/auth_fullname"
             app:endIconMode="clear_text"
             app:startIconContentDescription="@string/auth_fullname"
-            app:startIconDrawable="@drawable/baseline_person_outline_24">
+            app:startIconDrawable="@drawable/person_24px">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/signUpInputFullName"
@@ -48,7 +48,7 @@
             android:hint="@string/auth_email"
             app:endIconMode="clear_text"
             app:startIconContentDescription="@string/auth_email"
-            app:startIconDrawable="@drawable/round_alternate_email_24">
+            app:startIconDrawable="@drawable/alternate_email_24px">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/signUpInputEmailAddress"
@@ -64,7 +64,7 @@
             android:enabled="false"
             app:endIconMode="clear_text"
             app:startIconContentDescription="@string/auth_phone_number"
-            app:startIconDrawable="@drawable/round_call_24">
+            app:startIconDrawable="@drawable/call_24px">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -79,7 +79,7 @@
             android:hint="@string/auth_password"
             app:endIconMode="password_toggle"
             app:startIconContentDescription="@string/auth_password"
-            app:startIconDrawable="@drawable/baseline_password_24">
+            app:startIconDrawable="@drawable/password_24px">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/signUpInputPassword"

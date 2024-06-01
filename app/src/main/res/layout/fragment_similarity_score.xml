@@ -13,10 +13,10 @@
         android:id="@+id/similarityScoreButtonClose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="?attr/materialIconButtonFilledTonalStyle"
-        app:icon="@drawable/outline_close_24"
+        style="@style/Widget.Material3.Button.IconButton"
+        app:icon="@drawable/arrow_back_24px"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
         android:id="@+id/similarityScoreTextView"
@@ -29,7 +29,8 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/similarityScoreTextViewScore"
@@ -76,79 +77,182 @@
         app:layout_constraintTop_toTopOf="parent"
         app:trackThickness="16dp" />
 
-    <TextView
-        android:id="@+id/similarityScoreTextViewDetail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/your_score_is_ssr_press_upload_to_send_your_score"
-        android:textAlignment="center"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonUpload"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    <!-- Old view -->
 
-    <Button
-        android:id="@+id/similarityScoreButtonUpload"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/upload"
-        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonRetry"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        style="@style/Widget.Material3.Button.Icon"
-        app:icon="@drawable/outline_cloud_upload_24"/>
-<!--        app:iconGravity="textStart"-->
+<!--    <TextView-->
+<!--        android:id="@+id/similarityScoreTextViewDetail"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/your_score_is_ssr_press_upload_to_send_your_score"-->
+<!--        android:textAlignment="center"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonUpload"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"/>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/similarityScoreButtonUpload"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        android:text="@string/upload"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonRetry"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        style="@style/Widget.Material3.Button.Icon"-->
+<!--        app:icon="@drawable/outline_cloud_upload_24"/>-->
+<!--&lt;!&ndash;        app:iconGravity="textStart"&ndash;&gt;-->
+<!--&lt;!&ndash;        />&ndash;&gt;-->
+
+<!--    <Button-->
+<!--        android:id="@+id/similarityScoreButtonRetry"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/retry"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        style="@style/Widget.Material3.Button.OutlinedButton.Icon"-->
+<!--        app:icon="@drawable/outline_camera_alt_24"/>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/similarityScoreTextViewDetailLow"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/your_score_is_low"-->
+<!--        android:textAlignment="center"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonUploadLow"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:visibility="gone"/>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/similarityScoreButtonUploadLow"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        android:text="@string/upload"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonRetryLow"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        style="@style/Widget.Material3.Button.OutlinedButton.Icon"-->
+<!--        app:icon="@drawable/outline_cloud_upload_24"-->
 <!--        />-->
+<!--    &lt;!&ndash;        app:iconGravity="textStart"&ndash;&gt;-->
+<!--    &lt;!&ndash;        />&ndash;&gt;-->
 
-    <Button
-        android:id="@+id/similarityScoreButtonRetry"
+<!--    <Button-->
+<!--        android:id="@+id/similarityScoreButtonRetryLow"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/retry"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        style="@style/Widget.Material3.Button.Icon"-->
+<!--        app:icon="@drawable/outline_camera_alt_24" />-->
+
+    <!-- New view-->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/retry"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-        app:icon="@drawable/outline_camera_alt_24"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/similarityScoreTextViewDetailLow"
+        <TextView
+            android:id="@+id/similarityScoreTextViewDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/your_score_is_ssr_press_upload_to_send_your_score"
+            android:textAlignment="center"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/similarityScoreButtonRetry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="16dp"
+                android:text="@string/retry"
+                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                app:icon="@drawable/photo_camera_24px"
+                app:iconGravity="textStart"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/similarityScoreButtonUpload"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:text="@string/upload"
+                style="@style/Widget.Material3.Button.Icon"
+                app:icon="@drawable/upload_24px"
+                app:iconGravity="textStart"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/your_score_is_low"
-        android:textAlignment="center"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonUploadLow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/similarityScoreButtonUploadLow"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/upload"
-        app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonRetryLow"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-        app:icon="@drawable/outline_cloud_upload_24"
-        />
-    <!--        app:iconGravity="textStart"-->
-    <!--        />-->
-
-    <Button
-        android:id="@+id/similarityScoreButtonRetryLow"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/retry"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/Widget.Material3.Button.Icon"
-        app:icon="@drawable/outline_camera_alt_24" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/similarityScoreTextViewDetailLow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/your_score_is_low"
+            android:textAlignment="center"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/similarityScoreButtonUploadLow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="16dp"
+                android:text="@string/upload"
+                style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                app:icon="@drawable/upload_24px"
+                app:iconGravity="textStart"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/similarityScoreButtonRetryLow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:text="@string/retry"
+                style="@style/Widget.Material3.Button.Icon"
+                app:icon="@drawable/photo_camera_24px"
+                app:iconGravity="textStart"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/similarityScoreOCRImageView"

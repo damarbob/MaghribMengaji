@@ -49,6 +49,9 @@
     <string name="invalid_email_format">Invalid email format!</string>
     <string name="password_must_be_at_least_6_characters_long">Password must be at least 6 characters long!</string>
     <string name="upload_successful">Upload successful</string>
+    <string name="recite">Recite</string>
+    <string name="recite_page">Recite Page %1$s</string>
+    <string name="audio_page">Audio Page %1$s</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

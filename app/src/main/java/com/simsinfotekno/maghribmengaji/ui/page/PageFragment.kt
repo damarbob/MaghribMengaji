@@ -1,6 +1,7 @@
 package com.simsinfotekno.maghribmengaji.ui.page
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,11 +23,15 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.transition.MaterialSharedAxis
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.R
+import com.simsinfotekno.maghribmengaji.RecordingActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.UploadImageUseCase
@@ -142,6 +147,14 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //            val intent = Intent(Intent.ACTION_GET_CONTENT)
 //            intent.type = "image/*"
 //            startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        }
+
+        binding.pageButtonRecite.setOnClickListener {
+            val intent = Intent(this.context, RecordingActivity::class.java).apply {
+                putExtra("pageId", pageId)
+//                putExtra("studentId", Firebase.auth.currentUser!!.uid)
+            }
+            startActivity(intent)
         }
 
         return binding.root

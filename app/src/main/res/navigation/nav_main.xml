@@ -74,6 +74,9 @@
         <action
             android:id="@+id/action_pageListFragment_to_volumeListFragment"
             app:destination="@id/volumeListFragment" />
+        <action
+            android:id="@+id/action_pageListFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_similarityScoreFragment"

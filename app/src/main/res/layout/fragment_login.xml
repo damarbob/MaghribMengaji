@@ -33,7 +33,7 @@
             android:hint="@string/auth_email"
             app:endIconMode="clear_text"
             app:startIconContentDescription="@string/auth_email"
-            app:startIconDrawable="@drawable/baseline_person_outline_24">
+            app:startIconDrawable="@drawable/person_24px">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/loginInputEmailAddress"
@@ -49,7 +49,7 @@
             android:hint="@string/auth_password"
             app:endIconMode="password_toggle"
             app:startIconContentDescription="@string/auth_password"
-            app:startIconDrawable="@drawable/baseline_password_24">
+            app:startIconDrawable="@drawable/password_24px">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/loginInputPassword"
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/auth_login"
-            app:icon="@drawable/outline_login_24" />
+            app:icon="@drawable/login_24px" />
 
         <Button
             android:id="@+id/loginGoogleButton"

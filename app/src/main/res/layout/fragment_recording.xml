@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.recording.RecordingFragment">
+
+    <TextView
+        android:id="@+id/recordingTextViewPage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:textAlignment="center"
+        android:text="@string/recite_page"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/recordingTextViewTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_below="@id/recordingTextViewPage"
+        android:layout_above="@id/recordingButtonToPlayer"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"
+        android:textAppearance="@style/TextAppearance.Material3.DisplayLarge"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/recordingButtonStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="96dp"
+        style="@style/Widget.Material3.FloatingActionButton.Large.Primary"
+        android:src="@drawable/mic_24px" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/recordingButtonStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="96dp"
+        style="@style/Widget.Material3.FloatingActionButton.Large.Tertiary"
+        android:src="@drawable/stop_24px" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/recordingButtonPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="116dp"
+        android:layout_marginEnd="48dp"
+        android:src="@drawable/pause_24px"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/recordingButtonResume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="116dp"
+        android:layout_marginEnd="48dp"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/play_arrow_24px" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/recordingButtonToPlayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="116dp"
+        style="@style/Widget.Material3.FloatingActionButton.Secondary"
+        android:src="@drawable/folder_open_24px"/>
+
+</RelativeLayout>

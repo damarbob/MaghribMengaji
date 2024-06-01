@@ -48,7 +48,7 @@ class OCRAsyncTask {
         }
     }
 
-    suspend fun executeAsyncTask() {
+    private suspend fun executeAsyncTask() {
         mProgressBar = progressBar
         try {
             mProgressBar.visibility = ProgressBar.VISIBLE
@@ -58,10 +58,20 @@ class OCRAsyncTask {
             }
 
             mProgressBar.visibility = ProgressBar.GONE
-            iOCRCallBack.getOCRCallBackResult(response)
+            // Parse the response JSON
+            val jsonResponse = JSONObject(response)
+            if (jsonResponse.getBoolean("IsErroredOnProcessing")) {
+                val errorMessage = jsonResponse.optJSONArray("ErrorMessage")?.join(", ") ?: "Unknown error"
+                iOCRCallBack.onOCRFailure(Exception(errorMessage))
+            } else {
+                iOCRCallBack.getOCRCallBackResult(response)
+            }
+
             Log.d(TAG, response)
         } catch (e: Exception) {
             e.printStackTrace()
+            mProgressBar.visibility = ProgressBar.GONE
+            iOCRCallBack.onOCRFailure(e)
         }
     }
 

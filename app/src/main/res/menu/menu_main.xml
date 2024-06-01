@@ -3,16 +3,16 @@
 
     <item
         android:id="@+id/menu_profile"
-        android:icon="@drawable/baseline_person_outline_24"
+        android:icon="@drawable/person_24px"
         android:title="@string/main_menu_profile" />
 
     <item
         android:id="@+id/menu_contact"
-        android:icon="@drawable/outline_email_24"
+        android:icon="@drawable/mail_24px"
         android:title="@string/main_menu_contact" />
     <item
         android:id="@+id/menu_sign_out"
-        android:icon="@drawable/round_arrow_back_ios_24"
+        android:icon="@drawable/logout_24px"
         android:title="@string/sign_out" />
 
 </menu>

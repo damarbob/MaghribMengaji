@@ -137,4 +137,6 @@ class SimilarityScoreViewModel : ViewModel() {
         }
     }
 
+
+    val similarityIndex = MutableLiveData<Int>()
 }

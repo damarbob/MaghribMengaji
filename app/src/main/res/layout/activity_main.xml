@@ -21,6 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
-        app:srcCompat="@drawable/outline_menu_book_24"/>
+        app:srcCompat="@drawable/menu_book_24px"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
