@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.Manifest
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -103,6 +104,7 @@ class RecordingFragment : Fragment() {
         binding.recordingButtonToPlayer.setOnClickListener {
             val bundle = Bundle().apply {
                 putInt("pageId", pageId!!)
+                putString("recording", Uri.fromFile(outputFile).toString())
             }
             findNavController().navigate(R.id.action_recordingFragment_to_audioPlayerFragment, bundle)
         }

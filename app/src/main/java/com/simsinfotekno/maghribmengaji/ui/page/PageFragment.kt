@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,7 +69,11 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         )
 
         // Set the transition for this fragment
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        enterTransition = if (arguments?.getBoolean("previous") == true) {
+            MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+        } else {
+            MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        }
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
@@ -81,6 +86,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
 
         pageId = arguments?.getInt("pageId")
+        viewModel.pageId = pageId
         val page =
             quranPageRepository.getRecordById(pageId) // Get QuranPage instance
         val volume =
@@ -92,6 +98,9 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         binding.pageTextViewVolume.text =
             getString(R.string.quran_volume, volume?.id.toString())
         binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
+
+        binding.pageButtonPrevious.isEnabled = pageId != 1
+        binding.pageButtonForward.isEnabled = pageId != 604
 
         if (pageStudent == null) {
             // If student's page is not found or student had not submitted
@@ -130,12 +139,20 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             })
 
         binding.pageButtonForward.setOnClickListener {
-
-
+            val newPageId = pageId!! + 1
+            val bundle = Bundle()
+            bundle.putInt("pageId", newPageId)
+            findNavController().navigate(R.id.action_global_pageFragment, bundle)
         }
 
         binding.pageButtonPrevious.setOnClickListener {
-
+            val newPageId = pageId!! - 1
+            val bundle = Bundle().apply {
+                putInt("pageId", newPageId)
+                putBoolean("previous", true)
+            }
+            findNavController().navigate(R.id.action_global_pageFragment, bundle)
+            exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
         }
 
         // Submit button

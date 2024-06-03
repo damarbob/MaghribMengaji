@@ -15,6 +15,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -85,7 +86,8 @@ class AudioPlayerFragment : Fragment() {
         Log.d(TAG, pageId.toString())
 
         // Use FileProvider to get the URI of the recorded file
-        outputFile = File(requireContext().externalCacheDir?.absolutePath, "audio record page $pageId.webm")
+//        outputFile = File(requireContext().externalCacheDir?.absolutePath, "audio record page $pageId.webm")
+        outputFile = Uri.parse(arguments?.getString("recording")).toFile()
         selectedAudioUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", outputFile!!)
 
         binding.audioPlayerTextViewPage.text = getString(R.string.audio_page, pageId.toString())
@@ -247,6 +249,7 @@ class AudioPlayerFragment : Fragment() {
                 mediaPlayer = null
                 handler.removeCallbacks(updatePlayTimeThread)
                 isPaused = false
+                binding.audioPlayerTextViewTime.text = "00:00"
             }
         }
     }

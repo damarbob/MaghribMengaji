@@ -33,6 +33,9 @@ class SimilarityScoreViewModel : ViewModel() {
     private val _remoteDbResult = MutableLiveData<Result<QuranPageStudent>?>()
     val remoteDbResult: LiveData<Result<QuranPageStudent>?> get() = _remoteDbResult
 
+    private val _progressVisibility = MutableLiveData<Boolean>()
+    val progressVisibility: LiveData<Boolean> get() = _progressVisibility
+
     /* Use cases */
     private val uploadFileToFirebaseStorageUseCase = UploadFileToFirebaseStorageUseCase()
 
@@ -47,12 +50,15 @@ class SimilarityScoreViewModel : ViewModel() {
     }
 
     fun uploadPageStudent() {
+        _progressVisibility.value = true
 
         // Only add record if page student with specified id is not found, if not, update the picture uri instead
         val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId)
 
-        if (pageStudent != null)
+        if (pageStudent != null) {
             pageStudent.pictureUriString = imageUriString
+            _progressVisibility.value = false
+        }
         else {
             quranPageStudentRepository.addRecord(
                 QuranPageStudent(
@@ -102,6 +108,7 @@ class SimilarityScoreViewModel : ViewModel() {
 
                                     // Add the record to remote database
                                     remoteDb.add(record).addOnCompleteListener{
+                                        _progressVisibility.value = false
                                         if (it.isSuccessful) {
                                             _remoteDbResult.value = Result.success(record) // Return user
                                         }
@@ -111,11 +118,13 @@ class SimilarityScoreViewModel : ViewModel() {
                                     }
                                 },
                                 {
+                                    _progressVisibility.value = false
                                     _remoteDbResult.value = Result.failure(it)
                                 }
                             )
 
                         } else {
+                            _progressVisibility.value = false
 
                             for (document in task.result) {
                                 // Process the document data here
@@ -131,6 +140,7 @@ class SimilarityScoreViewModel : ViewModel() {
                     } else {
                         Log.w(TAG, "Error getting documents.", task.exception)
                         _remoteDbResult.value = Result.failure(Exception("Error getting documents. ${task.exception}"))
+                        _progressVisibility.value = false
                     }
                 }
 

@@ -83,5 +83,10 @@
         app:destination="@id/similarityScoreFragment"
         app:popUpTo="@id/similarityScoreFragment"
         app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_pageFragment"
+        app:destination="@id/pageFragment"
+        app:popUpTo="@id/pageFragment"
+        app:popUpToInclusive="true" />
 
 </navigation>

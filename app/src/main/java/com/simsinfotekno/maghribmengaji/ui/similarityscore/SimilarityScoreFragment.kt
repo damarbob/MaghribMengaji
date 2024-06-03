@@ -133,6 +133,14 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             }
         }
 
+        viewModel.progressVisibility.observe(viewLifecycleOwner) { isVisible ->
+            binding.similarityScoreCircularProgress.visibility =
+                if (isVisible) View.VISIBLE else View.GONE
+            binding.similarityScoreCircularProgressScore.visibility =
+                if (isVisible) View.GONE else View.VISIBLE
+        }
+
+
         // Define image Uri
         val imageUriString: String
         if (viewModel.imageUriString != null) {
@@ -207,7 +215,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
     private fun maximizeView(maximized: Boolean, scorePassed: Boolean) {
         val materialFade = MaterialFade().apply {
-            duration = 500L
+            duration = 400L
         }
         TransitionManager.beginDelayedTransition(container, materialFade)
         // Whether to show all or only progress indicator and close button
