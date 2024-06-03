@@ -69,7 +69,7 @@ class PageAdapter(
                 viewHolder.imageStatus.setImageDrawable(
                     AppCompatResources.getDrawable(
                         viewHolder.imageStatus.context,
-                        R.drawable.round_check_circle_outline_24
+                        R.drawable.check_circle_24px
                     )
                 )
             }
@@ -78,7 +78,7 @@ class PageAdapter(
                 viewHolder.imageStatus.setImageDrawable(
                     AppCompatResources.getDrawable(
                         viewHolder.imageStatus.context,
-                        R.drawable.outline_hourglass_empty_24
+                        R.drawable.hourglass_empty_24px
                     )
                 )
             }
@@ -87,7 +87,7 @@ class PageAdapter(
                 viewHolder.imageStatus.setImageDrawable(
                     AppCompatResources.getDrawable(
                         viewHolder.imageStatus.context,
-                        R.drawable.baseline_arrow_forward_ios_24
+                        R.drawable.arrow_forward_ios_24px
                     )
                 )
             }

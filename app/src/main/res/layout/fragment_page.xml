@@ -124,6 +124,19 @@
             app:iconGravity="textStart" />
 
         <Button
+            android:id="@+id/pageButtonCheckResult"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="8dp"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/check_result"
+            app:icon="@drawable/photo_camera_24px"
+            app:iconGravity="textStart"
+            android:visibility="gone"/>
+
+        <Button
             android:id="@+id/pageButtonForward"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
@@ -132,14 +145,15 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/pageTextViewScore"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:text="90"
-        android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
-        android:textStyle="bold"
-        android:visibility="gone"/>
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/pageBottomSheetCheckResult"
+            layout="@layout/bottom_sheet_check_result"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
 </RelativeLayout>

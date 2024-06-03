@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +25,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -51,6 +54,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
     // Variables
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private lateinit var bottomSheetBehaviorCheckResult: BottomSheetBehavior<View>
 
     // Use case
     private val uploadImageUseCase = UploadImageUseCase()
@@ -99,20 +103,46 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             getString(R.string.quran_volume, volume?.id.toString())
         binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
 
+        bottomSheetBehaviorCheckResult = BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)
+        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_HIDDEN
+
         binding.pageButtonPrevious.isEnabled = pageId != 1
         binding.pageButtonForward.isEnabled = pageId != 604
 
         if (pageStudent == null) {
             // If student's page is not found or student had not submitted
 
-            binding.pageTextViewScore.visibility = View.GONE // Hide score
             binding.pageButtonSubmit.visibility = View.VISIBLE // Show submit button
+            binding.pageButtonCheckResult.visibility = View.GONE // Hide check result button
         }
         else {
             // If student had submitted
 
-            binding.pageTextViewScore.visibility = View.VISIBLE // Show score
             binding.pageButtonSubmit.visibility = View.GONE // Show submit button
+            binding.pageButtonCheckResult.visibility = View.VISIBLE // Show check result button
+        }
+
+        binding.pageBottomSheetCheckResult.apply {
+            val ocrScore = pageStudent?.oCRScore ?: 0
+            val tidinessScore = pageStudent?.tidinessScore ?: 0
+            val accuracyScore = pageStudent?.accuracyScore ?: 0
+            val consistencyScore = pageStudent?.consistencyScore ?: 0
+
+            val overallScore = (ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4
+
+            this.checkResultTextViewOverallScore.text = overallScore.toString()
+            this.checkResultTextViewPreliminaryResult.text = ocrScore.toString()
+            this.checkResultTextViewTidinessResult.text = tidinessScore.toString()
+            this.checkResultTextViewAccuracyResult.text = accuracyScore.toString()
+            this.checkResultTextViewConsistencyResult.text = consistencyScore.toString()
+
+            this.checkResultCircularProgressScore.progress = overallScore
+            this.checkResultProgressIndicatorPreliminary.progress = ocrScore
+            this.checkResultProgressIndicatorTidiness.progress = tidinessScore
+            this.checkResultProgressIndicatorAccuracy.progress = accuracyScore
+            this.checkResultProgressIndicatorConsistency.progress = consistencyScore
+
+            pageStudent?.pictureUriString?.let { loadImageIntoImageView(it, this.checkResultImageViewStudentPageImage) }
         }
 
 
@@ -172,6 +202,12 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //                putExtra("studentId", Firebase.auth.currentUser!!.uid)
             }
             startActivity(intent)
+        }
+
+        binding.pageButtonCheckResult.setOnClickListener {
+            Handler(Looper.getMainLooper()).postDelayed({
+                bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
+            }, 250)
         }
 
         return binding.root

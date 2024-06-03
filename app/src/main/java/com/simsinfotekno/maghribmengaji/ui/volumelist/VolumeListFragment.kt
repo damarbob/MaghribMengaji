@@ -15,6 +15,7 @@ import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentVolumeListBinding
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
+import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 
 class VolumeListFragment : Fragment() {
 
@@ -29,6 +30,9 @@ class VolumeListFragment : Fragment() {
 
     // Variables
     private lateinit var volumeAdapter: VolumeAdapter
+
+    // Use case
+    private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +55,11 @@ class VolumeListFragment : Fragment() {
     ): View {
         binding = FragmentVolumeListBinding.inflate(layoutInflater, container, false)
 
-        volumeAdapter = VolumeAdapter(MainActivity.quranVolumes, findNavController(),this) // Set dataset
+        volumeAdapter = VolumeAdapter(
+            MainActivity.quranVolumes,
+            findNavController(),
+            quranVolumeStatusCheck,
+            this) // Set dataset
 
         val recyclerView = binding.volumeListRecyclerViewVolumeList
         recyclerView.layoutManager =

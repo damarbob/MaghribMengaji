@@ -52,6 +52,12 @@
     <string name="recite">Recite</string>
     <string name="recite_page">Recite Page %1$s</string>
     <string name="audio_page">Audio Page %1$s</string>
+    <string name="check_result">Check Result</string>
+    <string name="overall_score">Overall Score</string>
+    <string name="similarity">Similarity</string>
+    <string name="tidiness">Tidiness</string>
+    <string name="accuracy">Accuracy</string>
+    <string name="consistency">Consistency</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

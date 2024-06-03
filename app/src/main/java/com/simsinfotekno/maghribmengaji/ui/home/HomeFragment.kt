@@ -23,6 +23,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainActivity
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
@@ -31,6 +33,7 @@ import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
+import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -54,6 +57,7 @@ class HomeFragment : Fragment() {
 
     // Use case
     private val getQuranVolumeByStatus = GetQuranVolumeByStatus()
+    private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +91,7 @@ class HomeFragment : Fragment() {
         volumeAdapter = VolumeAdapter(
             getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS),
             findNavController(),
+            quranVolumeStatusCheck,
             this
         )
 
@@ -96,15 +101,15 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = volumeAdapter
 
-        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.student.lastPageId) // Last written
+//        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.student.lastPageId) // Last written
 
         // Progress indicator
         val allPagesCount = 604
-        val progressPercentage = MainActivity.student.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
+        val finishedQuranPageStudent = quranPageStudentRepository.getPagesByStatus(QuranItemStatus.FINISHED)
+        val progressPercentage = finishedQuranPageStudent.size / allPagesCount * 100
         binding.homeTextPagePercentage.text = (progressPercentage).toString()
-        if (progressPercentage != null) {
-            binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
-        }
+//        binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
+        binding.homeProgressIndicatorPagePercentage.progress = progressPercentage
 
         /* Listeners */
         binding.homeButtonMenu.setOnClickListener {
@@ -167,6 +172,8 @@ class HomeFragment : Fragment() {
             volumeAdapter.dataSet = getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS)
             volumeAdapter.notifyDataSetChanged()
             Log.d(TAG, "Added dataset to ")
+            val lastPage = studentRepository.getStudent().lastPageId
+            binding.homeTextLastWritten.text = lastPage?.toString() ?: "No data"
         }
     }
 }
