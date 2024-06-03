@@ -9,7 +9,7 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
-import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 
 class SignUpViewModel : ViewModel() {
     private val _authResult = MutableLiveData<Result<FirebaseUser>?>()
@@ -17,7 +17,7 @@ class SignUpViewModel : ViewModel() {
 
     fun signUpWithEmailPassword(displayName: String, email: String, password: String) {
 
-        val db = Firebase.firestore.collection(MaghribMengajiStudent.COLLECTION)
+        val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
         val auth = FirebaseAuth.getInstance()
 
         // Create a new user
@@ -38,7 +38,7 @@ class SignUpViewModel : ViewModel() {
                                 if (profileUpdateTask.isSuccessful) {
 
                                     // Create new student instance
-                                    val newStudent = MaghribMengajiStudent(
+                                    val newStudent = MaghribMengajiUser(
                                         id = user.uid,
                                         fullName = displayName,
                                         email = user.email,

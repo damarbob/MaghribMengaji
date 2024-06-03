@@ -1,8 +1,8 @@
 package com.simsinfotekno.maghribmengaji.repository
 
-import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 
-class StudentRepository() : Repository<MaghribMengajiStudent>() {
+class StudentRepository() : Repository<MaghribMengajiUser>() {
     override fun onStart() {
 //        TODO("Not yet implemented")
     }
@@ -11,15 +11,15 @@ class StudentRepository() : Repository<MaghribMengajiStudent>() {
 //        TODO("Not yet implemented")
     }
 
-    override fun createRecord(record: MaghribMengajiStudent) {
+    override fun createRecord(record: MaghribMengajiUser) {
 //        TODO("Not yet implemented")
     }
 
-    override fun onRecordAdded(record: MaghribMengajiStudent) {
+    override fun onRecordAdded(record: MaghribMengajiUser) {
 //        TODO("Not yet implemented")
     }
 
-    override fun onRecordDeleted(record: MaghribMengajiStudent) {
+    override fun onRecordDeleted(record: MaghribMengajiUser) {
 //        TODO("Not yet implemented")
     }
 
@@ -27,7 +27,7 @@ class StudentRepository() : Repository<MaghribMengajiStudent>() {
 //        TODO("Not yet implemented")
     }
 
-    fun setStudent(student: MaghribMengajiStudent) {
+    fun setStudent(student: MaghribMengajiUser) {
         if (getRecordsCount() < 1) {
             setRecords(
                 listOf(
@@ -38,7 +38,7 @@ class StudentRepository() : Repository<MaghribMengajiStudent>() {
         }
     }
 
-    fun getStudent(): MaghribMengajiStudent {
+    fun getStudent(): MaghribMengajiUser {
         return getRecordByIndex(0)
     }
 

@@ -88,5 +88,15 @@
         app:destination="@id/pageFragment"
         app:popUpTo="@id/pageFragment"
         app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/ustadhListFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.ustadhlist.UstadhListFragment"
+        android:label="fragment_ustadh_list"
+        tools:layout="@layout/fragment_ustadh_list" />
+    <action
+        android:id="@+id/action_global_ustadhListFragment"
+        app:destination="@id/ustadhListFragment"
+        app:popUpTo="@id/ustadhListFragment"
+        app:popUpToInclusive="true" />
 
 </navigation>
