@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
-import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 
 class LoginViewModel : ViewModel() {
 
@@ -23,7 +23,7 @@ class LoginViewModel : ViewModel() {
     fun loginWithEmailPassword(email: String, password: String) {
 
         val auth = FirebaseAuth.getInstance()
-        val db = Firebase.firestore.collection(MaghribMengajiStudent.COLLECTION)
+        val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
 
         // Sign in with email and password
         auth.signInWithEmailAndPassword(email, password)
@@ -49,7 +49,7 @@ class LoginViewModel : ViewModel() {
                                 Log.w(TAG, "Error getting documents: ", exception)
                             }
 
-                        val student = MaghribMengajiStudent(
+                        val student = MaghribMengajiUser(
                             id = user.uid,
                             fullName = user.displayName,
                             email = user.email,

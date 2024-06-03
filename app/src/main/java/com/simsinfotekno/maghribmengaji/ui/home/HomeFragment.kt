@@ -100,11 +100,11 @@ class HomeFragment : Fragment() {
 
         // Progress indicator
         val allPagesCount = 604
-        val progressPercentage = MainActivity.student.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
-        binding.homeTextPagePercentage.text = (progressPercentage).toString()
-        if (progressPercentage != null) {
-            binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
-        }
+//        val progressPercentage = MainActivity.student.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
+//        binding.homeTextPagePercentage.text = (progressPercentage).toString()
+//        if (progressPercentage != null) {
+//            binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
+//        }
 
         /* Listeners */
         binding.homeButtonMenu.setOnClickListener {

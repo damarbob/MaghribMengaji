@@ -13,14 +13,17 @@ import com.google.firebase.firestore.firestore
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
-import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 
 class MainActivity : AppCompatActivity() {
@@ -36,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         val TAG: String = MainActivity::class.java.simpleName
 
         // Test user setup
-        val student = MaghribMengajiStudent(
+        val student = MaghribMengajiUser(
             fullName = "Damar Maulana",
             email = "ibn.damr@gmail.com",
             lastPageId = 10,
@@ -69,9 +72,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Firebase tests
-//        testFirestore()
-//        testFirestoreQuranPage()
+        // Register EventBus
+        EventBus.getDefault().register(this)
 
         // Test data insertion to repository
         quranVolumeRepository.setRecords(quranVolumes, false)
@@ -113,6 +115,14 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // Unregister EventBus
+        EventBus.getDefault().unregister(this)
+
+    }
+
     private fun runAuthentication() {
         /* Auth */
         val auth = Firebase.auth // Initialize Firebase Auth
@@ -121,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         /* Get user data */
 
         // Get profile data
-        val db = Firebase.firestore.collection(MaghribMengajiStudent.COLLECTION)
+        val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
         db.whereEqualTo("id", currentUser.uid).get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
@@ -131,15 +141,24 @@ class MainActivity : AppCompatActivity() {
 
                     Log.d(TAG, "Document found with ID: ${document.id} => $data")
 
-                    val student = MaghribMengajiStudent(
+                    val student = MaghribMengajiUser(
                         currentUser.uid,
                         currentUser.displayName,
                         currentUser.email,
-                        data["lastPageId"] as Int?,
-                        data["teacherId"] as String?,
+                        lastPageId = data["lastPageId"] as Int?,
+                        teacherId = data["teacherId"] as String?,
                     )
 
-                    MainApplication.studentRepository.setStudent(student)
+                    studentRepository.setStudent(student)
+
+                    // Post a user data loaded event
+                    EventBus.getDefault().post(
+                        OnUserDataLoaded(
+                            student,
+                            UserDataEvent.PROFILE
+                        )
+                    )
+
                     Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT)
                         .show()
 
@@ -271,5 +290,19 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Log.w(TAG, "Error adding document", e)
             }
+    }
+
+    // Event listeners
+    // Subscribe to OnSelectedPlaceChangedEvent event
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun _050206032024(event: OnUserDataLoaded) {
+        if (event.userDataEvent == UserDataEvent.PROFILE) {
+
+            // Force student to choose teacher if haven't already
+            if (studentRepository.getStudent().teacherId == null) {
+                navController.navigate(R.id.action_global_ustadhListFragment)
+            }
+
+        }
     }
 }
