@@ -5,7 +5,7 @@ data class QuranPageStudent(
     val studentId: String? = null,
     var teacherId: String? = null,
     var pictureUriString: String? = null,
-    var OCRScore: Int? = null,
+    var oCRScore: Int? = null,
     var tidinessScore: Int? = null,
     var accuracyScore: Int? = null,
     var consistencyScore: Int? = null,

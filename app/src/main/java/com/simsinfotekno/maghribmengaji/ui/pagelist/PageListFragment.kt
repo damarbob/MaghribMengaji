@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.gson.Gson
 import com.simsinfotekno.maghribmengaji.LoginActivity
-import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
@@ -59,7 +58,7 @@ class PageListFragment : Fragment() {
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
 
         // Use case initialization
-        quranPageStatusCheck = QuranPageStatusCheck(MainActivity.student)
+        quranPageStatusCheck = QuranPageStatusCheck()
     }
 
     override fun onCreateView(

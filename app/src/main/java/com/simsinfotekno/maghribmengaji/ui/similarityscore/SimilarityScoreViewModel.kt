@@ -75,7 +75,7 @@ class SimilarityScoreViewModel : ViewModel() {
             val remoteDb = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
 
             val record = event.pageStudent ?: return
-            record.OCRScore = oCRScore?.toInt()
+            record.oCRScore = oCRScore?.toInt()
 
             remoteDb
                 .whereEqualTo("studentId", record.studentId)

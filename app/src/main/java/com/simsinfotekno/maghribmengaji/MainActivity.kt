@@ -10,13 +10,17 @@ import androidx.navigation.findNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.ktx.firestore
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
+import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
+import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiStudent
 import com.simsinfotekno.maghribmengaji.model.QuranPage
+import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
+import org.greenrobot.eventbus.EventBus
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,7 +55,14 @@ class MainActivity : AppCompatActivity() {
             QuranVolume(9, "9", (482..541).toList()),
             QuranVolume(10, "10", (542..604).toList()),
         )
-        val quranPages = (1..604).map { QuranPage(it, "$it") }
+        val quranPages = (1..604).map { pageId ->
+            // Find the volume for this page
+            val volumeId = quranVolumes.find { volume ->
+                pageId in volume.pageIds
+            }?.id ?: throw IllegalArgumentException("Page $pageId does not belong to any volume")
+
+            QuranPage(pageId, "$pageId", volumeId = volumeId)
+        }
 
     }
 
@@ -105,40 +116,100 @@ class MainActivity : AppCompatActivity() {
     private fun runAuthentication() {
         /* Auth */
         val auth = Firebase.auth // Initialize Firebase Auth
-        val currentUser = auth.currentUser // Get current user
+        val currentUser = auth.currentUser ?: return // Get current user
 
-        // Get user data
-        val db = com.google.firebase.ktx.Firebase.firestore.collection(MaghribMengajiStudent.COLLECTION)
-        if (currentUser != null) {
-            db.whereEqualTo("id", currentUser.uid).get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
+        /* Get user data */
 
-                        // Get user data
-                        val data = document.data
+        // Get profile data
+        val db = Firebase.firestore.collection(MaghribMengajiStudent.COLLECTION)
+        db.whereEqualTo("id", currentUser.uid).get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
 
-                        Log.d(TAG, "Document found with ID: ${document.id} => $data")
+                    // Get user data
+                    val data = document.data
 
-                        val student = MaghribMengajiStudent(
-                            currentUser.uid,
-                            currentUser.displayName,
-                            currentUser.email,
-                            data["lastPageId"] as Int?,
-                            data["teacherId"] as String?,
-                        )
+                    Log.d(TAG, "Document found with ID: ${document.id} => $data")
 
-                        MainApplication.studentRepository.setStudent(student)
-                        Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show()
+                    val student = MaghribMengajiStudent(
+                        currentUser.uid,
+                        currentUser.displayName,
+                        currentUser.email,
+                        data["lastPageId"] as Int?,
+                        data["teacherId"] as String?,
+                    )
 
-                    }
-                    if (documents.isEmpty) {
-                        Log.d(TAG, "No matching documents found.")
-                    }
+                    MainApplication.studentRepository.setStudent(student)
+                    Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT)
+                        .show()
+
                 }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
+                if (documents.isEmpty) {
+                    Log.d(TAG, "No matching documents found.")
                 }
-        }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
+
+
+        // Get quran page data
+        val dbPage = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
+        dbPage.whereEqualTo("studentId", currentUser.uid).get()
+            .addOnSuccessListener { documents ->
+
+                val pageStudents = arrayListOf<QuranPageStudent>()
+
+                for (document in documents) {
+
+                    // Get quran page data
+                    val quranPageData = document.data
+
+                    Log.d(TAG, "Document found with ID: ${document.id} => $quranPageData")
+                    Log.d(TAG, quranPageData["pageId"].toString())
+
+                    val pageId = (quranPageData["pageId"] as? Long)?.toInt()
+                    val ocrscore = (quranPageData["ocrscore"] as? Long)?.toInt()
+                    val tidinessScore = (quranPageData["tidinessScore"] as? Long)?.toInt()
+                    val accuracyScore = (quranPageData["accuracyScore"] as? Long)?.toInt()
+                    val consistencyScore = (quranPageData["consistencyScore"] as? Long)?.toInt()
+
+                    val pageStudent = QuranPageStudent(
+                        pageId,
+                        quranPageData["studentId"] as String?,
+                        quranPageData["teacherId"] as String?,
+                        quranPageData["pictureUriString"] as String?,
+                        ocrscore,
+                        tidinessScore,
+                        accuracyScore,
+                        consistencyScore
+                    )
+
+                    pageStudents.add(pageStudent)
+
+                }
+                quranPageStudentRepository.setRecords(pageStudents, true)
+
+                // Post a user data loaded event
+                EventBus.getDefault().post(
+                    OnUserDataLoaded(
+                        student,
+                        UserDataEvent.PAGE
+                    )
+                )
+
+                if (documents.isEmpty) {
+                    Log.d(TAG, "No matching documents found.")
+                }
+
+                Toast.makeText(this, "Data imported", Toast.LENGTH_SHORT)
+                    .show()
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
+
         /* End of auth */
     }
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -22,13 +23,23 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainActivity
-import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
+import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
+import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
+import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
+import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class HomeFragment : Fragment() {
+
+    companion object {
+        private val TAG = HomeFragment::class.java.simpleName
+    }
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -38,8 +49,16 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    // Views
+    private lateinit var volumeAdapter: VolumeAdapter
+
+    // Use case
+    private val getQuranVolumeByStatus = GetQuranVolumeByStatus()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        EventBus.getDefault().register(this)
 
         // Set the transition for this fragment
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
@@ -64,10 +83,9 @@ class HomeFragment : Fragment() {
             ?: getString(R.string.app_name)
 
         // Volume adapter
-        // Set dataset
-        val volumeAdapter = VolumeAdapter(
-            // TODO: Handle if onProgressPageIds is null
-            quranVolumeRepository.getRecordsById(listOf(1, 2, 3, 10).toIntArray()),
+        // Set volume dataset with status on progress
+        volumeAdapter = VolumeAdapter(
+            getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS),
             findNavController(),
             this
         )
@@ -82,11 +100,11 @@ class HomeFragment : Fragment() {
 
         // Progress indicator
         val allPagesCount = 604
-//        val progressPercentage = MainActivity.student.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
-//        binding.homeTextPagePercentage.text = (progressPercentage).toString()
-//        if (progressPercentage != null) {
-//            binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
-//        }
+        val progressPercentage = MainActivity.student.finishedPageIds?.count()?.times(100)?.div(allPagesCount)
+        binding.homeTextPagePercentage.text = (progressPercentage).toString()
+        if (progressPercentage != null) {
+            binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
+        }
 
         /* Listeners */
         binding.homeButtonMenu.setOnClickListener {
@@ -99,6 +117,8 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
+        EventBus.getDefault().unregister(this)
     }
 
     //In the showMenu function from the previous example:
@@ -139,5 +159,14 @@ class HomeFragment : Fragment() {
         val intent = Intent(activity, LoginActivity::class.java)
         startActivity(intent)
         activity?.finish() // Optional: Finish MainActivity to prevent the user from coming back to it
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun _105606032024(event: OnUserDataLoaded) {
+        if (event.userDataEvent == UserDataEvent.PAGE) {
+            volumeAdapter.dataSet = getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS)
+            volumeAdapter.notifyDataSetChanged()
+            Log.d(TAG, "Added dataset to ")
+        }
     }
 }

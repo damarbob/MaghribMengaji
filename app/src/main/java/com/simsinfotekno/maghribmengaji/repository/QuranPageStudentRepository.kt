@@ -1,8 +1,10 @@
 package com.simsinfotekno.maghribmengaji.repository
 
+import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.event.OnPageStudentRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.event.OnRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
+import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
 import org.greenrobot.eventbus.EventBus
 
 class QuranPageStudentRepository() : Repository<QuranPageStudent>() {
@@ -10,6 +12,9 @@ class QuranPageStudentRepository() : Repository<QuranPageStudent>() {
     companion object {
         private val TAG = QuranPageStudentRepository::class.java.simpleName
     }
+
+    // Use case
+    private val quranPageStatusCheck = QuranPageStatusCheck()
 
     override fun onStart() {
 //        TODO("Not yet implemented")
@@ -54,6 +59,39 @@ class QuranPageStudentRepository() : Repository<QuranPageStudent>() {
 
         ids.forEach { i ->
             result.add(getRecordByPageId(i)!!)
+        }
+
+        return result
+    }
+
+    fun getPagesByStatus(quranItemStatus: QuranItemStatus): List<QuranPageStudent> {
+        val result = arrayListOf<QuranPageStudent>()
+
+        getRecords().forEach {
+            if (it.pictureUriString != null && it.pictureUriString!!.length > 1) {
+
+                if (it.accuracyScore != null && it.accuracyScore!! > 0) {
+
+                    // FINISHED
+                    if (quranItemStatus == QuranItemStatus.FINISHED)
+                        result.add(it)
+
+                } else {
+
+                    // ON PROGRESS
+                    if (quranItemStatus == QuranItemStatus.ON_PROGRESS)
+                        result.add(it)
+
+                }
+
+            }
+            else {
+
+                // NONE
+                if (quranItemStatus == QuranItemStatus.NONE)
+                    result.add(it)
+
+            }
         }
 
         return result
