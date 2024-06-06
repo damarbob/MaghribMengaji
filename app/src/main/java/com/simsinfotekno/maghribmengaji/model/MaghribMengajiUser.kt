@@ -6,7 +6,7 @@ data class MaghribMengajiUser(
     var email: String? = null,
     var role: String? = ROLE_STUDENT,
     var lastPageId: Int? = null,
-    var teacherId: String? = null,
+    var ustadhId: String? = null,
 ) {
     companion object {
         val COLLECTION = "users"

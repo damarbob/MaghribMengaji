@@ -14,7 +14,6 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,9 +21,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.LoginActivity
-import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
-import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
@@ -46,6 +43,8 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
 
+    /* View model */
+    private val viewModel: HomeViewModel by viewModels()
     private val mainViewModel: MainViewModel by viewModels()
 
     // This property is only valid between onCreateView and
@@ -76,11 +75,27 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this)[HomeViewModel::class.java]
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        /* Observers */
+        viewModel.lastPageId.observe(viewLifecycleOwner) { lastPageId ->
+            if (lastPageId == null)
+                binding.homeTextLastWritten.text = getString(R.string.no_data)
+            else
+                binding.homeTextLastWritten.text = lastPageId.toString()
+        }
+        viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->
+
+            if (data == null)
+                return@observe
+
+            volumeAdapter.dataSet = data
+            volumeAdapter.notifyDataSetChanged()
+            Log.d(TAG, "Added dataset to volume adapter")
+
+        }
 
         /* Views */
         binding.homeTextTitle.text = Firebase.auth.currentUser?.displayName
@@ -105,7 +120,8 @@ class HomeFragment : Fragment() {
 
         // Progress indicator
         val allPagesCount = 604
-        val finishedQuranPageStudent = quranPageStudentRepository.getPagesByStatus(QuranItemStatus.FINISHED)
+        val finishedQuranPageStudent =
+            quranPageStudentRepository.getPagesByStatus(QuranItemStatus.FINISHED)
         val progressPercentage = finishedQuranPageStudent.size / allPagesCount * 100
         binding.homeTextPagePercentage.text = (progressPercentage).toString()
 //        binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
@@ -169,11 +185,9 @@ class HomeFragment : Fragment() {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun _105606032024(event: OnUserDataLoaded) {
         if (event.userDataEvent == UserDataEvent.PAGE) {
-            volumeAdapter.dataSet = getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS)
-            volumeAdapter.notifyDataSetChanged()
-            Log.d(TAG, "Added dataset to ")
-            val lastPage = studentRepository.getStudent().lastPageId
-            binding.homeTextLastWritten.text = lastPage?.toString() ?: "No data"
+//            val lastPage = MainApplication.studentRepository.getStudent().lastPageId
+//            binding.homeTextLastWritten.text = lastPage?.toString() ?: getString(R.string.no_data)
         }
     }
+
 }

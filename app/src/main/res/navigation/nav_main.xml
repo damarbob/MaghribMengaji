@@ -98,5 +98,10 @@
         app:destination="@id/ustadhListFragment"
         app:popUpTo="@id/ustadhListFragment"
         app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_homeFragment"
+        app:destination="@id/homeFragment"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="true" />
 
 </navigation>

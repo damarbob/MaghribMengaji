@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhListBinding
 import com.simsinfotekno.maghribmengaji.ui.adapter.UstadhAdapter
 
@@ -38,7 +39,39 @@ class UstadhListFragment : Fragment() {
     ): View {
         binding = FragmentUstadhListBinding.inflate(layoutInflater)
 
+        /* Views */
+        ustadhAdapter = UstadhAdapter(listOf(), findNavController())
+
         /* Observers */
+        ustadhAdapter.selectedUstadh.observe(viewLifecycleOwner) { ustadh ->
+
+            if (ustadh == null)
+                return@observe
+
+            binding.ustadhListRecyclerViewPage.visibility = View.GONE
+            binding.ustadhListCircularProgress.visibility = View.VISIBLE
+
+            ustadh.id?.let { viewModel.updateUserUstadhId(it) }
+
+        }
+        viewModel.updateUstadhIdResult.observe(viewLifecycleOwner) { result ->
+            result?.onSuccess {
+
+                // Show success message
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.ustadh_updated_successfully),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Navigate to home
+                findNavController().navigate(findNavController().graph.startDestinationId)
+
+            }?.onFailure { exception ->
+                // Show error message
+                Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+            }
+        }
         viewModel.getUstadhResult.observe(viewLifecycleOwner, Observer { result ->
             result?.onSuccess {
 
@@ -50,9 +83,6 @@ class UstadhListFragment : Fragment() {
                 Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
             }
         })
-
-        /* Views */
-        ustadhAdapter = UstadhAdapter(listOf(), findNavController())
 
         val recyclerView = binding.ustadhListRecyclerViewPage
         recyclerView.layoutManager =

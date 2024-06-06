@@ -64,7 +64,7 @@ class SimilarityScoreViewModel : ViewModel() {
                 QuranPageStudent(
                     pageId!!,
                     studentRepository.getStudent().id!!,
-                    studentRepository.getStudent().teacherId,
+                    studentRepository.getStudent().ustadhId,
                     pictureUriString = imageUriString
                 )
             )

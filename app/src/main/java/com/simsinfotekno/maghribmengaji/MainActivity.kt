@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity() {
                         currentUser.displayName,
                         currentUser.email,
                         lastPageId = data["lastPageId"] as Int?,
-                        teacherId = data["teacherId"] as String?,
+                        ustadhId = data["ustadhId"] as String?,
                     )
 
                     studentRepository.setStudent(student)
@@ -299,7 +299,7 @@ class MainActivity : AppCompatActivity() {
         if (event.userDataEvent == UserDataEvent.PROFILE) {
 
             // Force student to choose teacher if haven't already
-            if (studentRepository.getStudent().teacherId == null) {
+            if (studentRepository.getStudent().ustadhId == null) {
                 navController.navigate(R.id.action_global_ustadhListFragment)
             }
 

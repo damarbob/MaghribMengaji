@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
@@ -20,6 +22,9 @@ class UstadhAdapter(
     companion object {
         private val TAG = this.javaClass.simpleName
     }
+
+    private val _selectedUstadh = MutableLiveData<MaghribMengajiUser>().apply { value = null }
+    val selectedUstadh: LiveData<MaghribMengajiUser> = _selectedUstadh
 
     /**
      * Provide a reference to the type of views that you are using
@@ -58,13 +63,9 @@ class UstadhAdapter(
         // Listener
         viewHolder.cardView.setOnClickListener {
 //            val bundle = Bundle()
-//            bundle.putInt("volumeId", id)
-//            bundle.putIntArray("pageIds", pageIds.toIntArray())
-//            if (invoker is VolumeListFragment) {
-//                navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
-//            } else {
-//                navController.navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
-//            }
+//            bundle.putString("ustadhUserId", id)
+//            navController.navigate(navController.graph.startDestinationId, bundle)
+            _selectedUstadh.value = dataSet[position]
         }
     }
 

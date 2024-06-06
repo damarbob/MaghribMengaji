@@ -43,7 +43,7 @@ class SignUpViewModel : ViewModel() {
                                         fullName = displayName,
                                         email = user.email,
                                         lastPageId = null,
-                                        teacherId = null
+                                        ustadhId = null
                                     )
 
 

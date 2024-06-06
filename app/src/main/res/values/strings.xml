@@ -58,6 +58,8 @@
     <string name="tidiness">Tidiness</string>
     <string name="accuracy">Accuracy</string>
     <string name="consistency">Consistency</string>
+    <string name="ustadh_updated_successfully">Ustadh updated successfully!</string>
+    <string name="no_data">No data</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

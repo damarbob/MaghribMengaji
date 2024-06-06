@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.simsinfotekno.maghribmengaji.MainActivity
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 
 class UstadhListViewModel : ViewModel() {
@@ -17,6 +19,47 @@ class UstadhListViewModel : ViewModel() {
 
     private val _getUstadhResult = MutableLiveData<Result<List<MaghribMengajiUser>>?>()
     val getUstadhResult: LiveData<Result<List<MaghribMengajiUser>>?> get() = _getUstadhResult
+
+    private val _updateUstadhIdResult = MutableLiveData<Result<String>?>()
+    val updateUstadhIdResult: LiveData<Result<String>?> get() = _updateUstadhIdResult
+
+    fun updateUserUstadhId(ustadhId: String) {
+        val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
+        val currentUser = Firebase.auth.currentUser
+
+        if (currentUser != null) {
+            db.whereEqualTo("id", currentUser.uid).get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        for (document in documents) {
+                            db.document(document.id).update("ustadhId", ustadhId)
+                                .addOnSuccessListener {
+                                    Log.d(MainActivity.TAG, "Ustadh ID successfully updated!")
+                                    _updateUstadhIdResult.value = Result.success(ustadhId)
+
+                                    // Update in the repository too
+                                    studentRepository.getStudent().ustadhId = ustadhId
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w(MainActivity.TAG, "Error updating ustadh ID", e)
+                                    _updateUstadhIdResult.value = Result.failure(Exception("Error updating ustadh id"))
+                                }
+                        }
+                    } else {
+                        Log.w(MainActivity.TAG, "No matching documents found")
+                        _updateUstadhIdResult.value = Result.failure(Exception("No matching user found"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(MainActivity.TAG, "Error getting documents: ", exception)
+                    _updateUstadhIdResult.value = Result.failure(Exception("Error updating ustadh id"))
+                }
+        } else {
+            Log.w(MainActivity.TAG, "No current user is logged in")
+            _updateUstadhIdResult.value = Result.failure(Exception("No current user is logged in"))
+        }
+    }
+
 
     fun getUstadhFromDb() {
         val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
