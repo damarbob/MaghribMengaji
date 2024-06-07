@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
@@ -65,7 +66,8 @@ class SimilarityScoreViewModel : ViewModel() {
                     pageId!!,
                     studentRepository.getStudent().id!!,
                     studentRepository.getStudent().ustadhId,
-                    pictureUriString = imageUriString
+                    pictureUriString = imageUriString,
+                    createdAt = Timestamp.now(),
                 )
             )
         }

@@ -18,6 +18,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.MaterialSharedAxis
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
@@ -28,7 +30,6 @@ import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageAdapter
 import com.simsinfotekno.maghribmengaji.ui.page.PageViewModel
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
-import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
 
 class PageListFragment : Fragment() {
 
@@ -46,7 +47,7 @@ class PageListFragment : Fragment() {
     private lateinit var pageAdapter: PageAdapter
 
     // Use case
-    private lateinit var quranPageStatusCheck: QuranPageStatusCheck
+//    private lateinit var quranPageStatusCheck: QuranPageStatusCheck
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +59,7 @@ class PageListFragment : Fragment() {
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
 
         // Use case initialization
-        quranPageStatusCheck = QuranPageStatusCheck()
+//        quranPageStatusCheck = QuranPageStatusCheck()
     }
 
     override fun onCreateView(
@@ -76,7 +77,6 @@ class PageListFragment : Fragment() {
         pageAdapter = PageAdapter(
             quranPageRepository.getRecordByIds(pageIds),
             findNavController(),
-            quranPageStatusCheck,
             this
         )
 
@@ -151,7 +151,7 @@ class PageListFragment : Fragment() {
     // Read quran page from firebase database
     private fun getQuranPage() {
 
-        val db = viewModel.db
+        val db = Firebase.firestore
 
         Log.d(VolumeListFragment.TAG, "db = $db")
 

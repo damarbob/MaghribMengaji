@@ -1,6 +1,5 @@
 package com.simsinfotekno.maghribmengaji.ui.adapter
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,23 +7,25 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
-import androidx.navigation.NavController
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
-import com.simsinfotekno.maghribmengaji.model.QuranPage
-import com.simsinfotekno.maghribmengaji.ui.pagelist.PageListFragment
-import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
+import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
+import com.simsinfotekno.maghribmengaji.usecase.QuranPageStudentStatusCheck
 
-class PageAdapter(
-    var dataSet: List<QuranPage>,
-    private val navController: NavController,
-    private val invoker: Any,
+class PageStudentAdapter(
+    var dataSet: List<QuranPageStudent>,
 ) :
-    RecyclerView.Adapter<PageAdapter.ViewHolder>() {
+    RecyclerView.Adapter<PageStudentAdapter.ViewHolder>() {
+
+    /* Variables */
+    private val _selectedPageStudent = MutableLiveData<QuranPageStudent>().apply { value = null }
+    val selectedPageStudent: LiveData<QuranPageStudent> = _selectedPageStudent
 
     /* Use cases */
-    private val quranPageStatusCheck = QuranPageStatusCheck()
+    private val quranPageStudentStatusCheck = QuranPageStudentStatusCheck()
 
     /**
      * Provide a reference to the type of views that you are using
@@ -61,11 +62,11 @@ class PageAdapter(
         // contents of the view with that element
         viewHolder.textView.text = String.format(
             viewHolder.textView.context.getString(R.string.quran_page),
-            page.name
+            page.pageId
         )
 
         // Set the icon based on the completion status
-        val status = quranPageStatusCheck(page)
+        val status = quranPageStudentStatusCheck(page)
         when (status) {
             QuranItemStatus.FINISHED -> {
                 viewHolder.imageStatus.setImageDrawable(
@@ -93,17 +94,12 @@ class PageAdapter(
                     )
                 )
             }
+
         }
 
         // Listener
         viewHolder.cardViewPage.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putInt("pageId", page.id)
-            if (invoker is PageListFragment) {
-                navController.navigate(R.id.action_pageListFragment_to_pageFragment, bundle)
-            } else {
-                navController.navigate(R.id.action_homeFragment_to_pageFragment)
-            }
+            _selectedPageStudent.value = dataSet[position]
         }
     }
 

@@ -103,5 +103,52 @@
         app:destination="@id/homeFragment"
         app:popUpTo="@id/homeFragment"
         app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/ustadhHomeFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.ustadhhome.UstadhHomeFragment"
+        android:label="fragment_ustadh_home"
+        tools:layout="@layout/fragment_ustadh_home" >
+        <action
+            android:id="@+id/action_ustadhHomeFragment_to_studentVolumeListFragment"
+            app:destination="@id/studentVolumeListFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_ustadhHomeFragment"
+        app:destination="@id/ustadhHomeFragment"
+        app:popUpTo="@id/ustadhHomeFragment"
+        app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/studentVolumeListFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.ustadhvolumeliststudent.UstadhVolumeListStudentFragment"
+        android:label="fragment_student_volume_list"
+        tools:layout="@layout/fragment_ustadh_volume_list_student" >
+        <argument
+            android:name="studentId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_studentVolumeListFragment_to_studentPageListFragment"
+            app:destination="@id/studentPageListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/studentPageListFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.ustadhpageliststudent.UstadhPageListStudentFragment"
+        android:label="fragment_student_page_list"
+        tools:layout="@layout/fragment_ustadh_page_list_student" >
+        <argument
+            android:name="volumeId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_studentPageListFragment_to_ustadhScoringFragment"
+            app:destination="@id/ustadhScoringFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ustadhScoringFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.ustadhscoring.UstadhScoringFragment"
+        android:label="fragment_ustadh_scoring"
+        tools:layout="@layout/fragment_ustadh_scoring" >
+        <argument
+            android:name="pageId"
+            app:argType="integer" />
+    </fragment>
 
 </navigation>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.ustadhscoring.UstadhScoringFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/ustadhScoringPageTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/page" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:textAlignment="center"
+                    android:text="@string/overall_score"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextOverallScore"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="00"
+                    android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/ustadhScoringProgressOverallScore"
+                    app:layout_constraintEnd_toEndOf="@id/ustadhScoringProgressOverallScore"
+                    app:layout_constraintStart_toStartOf="@id/ustadhScoringProgressOverallScore"
+                    app:layout_constraintTop_toTopOf="@+id/ustadhScoringProgressOverallScore" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/ustadhScoringProgressOverallScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:progress="100"
+                    android:indeterminate="false"
+                    app:showAnimationBehavior="outward"
+                    app:trackCornerRadius="8dp"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    app:indicatorSize="128dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringTextResult"
+                    app:trackThickness="16dp" />
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextPreliminary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/similarity"
+                    app:layout_constraintEnd_toEndOf="@+id/ustadhScoringProgressPreliminary"
+                    app:layout_constraintStart_toStartOf="@+id/ustadhScoringProgressPreliminary"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringProgressOverallScore" />
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextPreliminaryResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/ustadhScoringProgressPreliminary"
+                    app:layout_constraintEnd_toEndOf="@+id/ustadhScoringProgressPreliminary"
+                    app:layout_constraintStart_toStartOf="@+id/ustadhScoringProgressPreliminary"
+                    app:layout_constraintTop_toTopOf="@+id/ustadhScoringProgressPreliminary" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/ustadhScoringProgressPreliminary"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:progress="100"
+                    app:indicatorSize="72dp"
+                    app:layout_constraintEnd_toStartOf="@id/ustadhScoringProgressTidiness"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringTextPreliminary"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp"
+                    app:indicatorColor="@color/maghrib_mengaji_primary_variant"/>
+
+                <TextView
+                    android:id="@+id/ustadhTextTidinessTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/tidiness"
+                    app:layout_constraintEnd_toEndOf="@+id/ustadhScoringProgressTidiness"
+                    app:layout_constraintStart_toStartOf="@+id/ustadhScoringProgressTidiness"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringProgressOverallScore" />
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextTidinessResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/ustadhScoringProgressTidiness"
+                    app:layout_constraintEnd_toEndOf="@+id/ustadhScoringProgressTidiness"
+                    app:layout_constraintStart_toStartOf="@+id/ustadhScoringProgressTidiness"
+                    app:layout_constraintTop_toTopOf="@+id/ustadhScoringProgressTidiness" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/ustadhScoringProgressTidiness"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:progress="100"
+                    app:indicatorSize="72dp"
+                    app:layout_constraintStart_toEndOf="@id/ustadhScoringProgressPreliminary"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhTextTidinessTitle"
+                    app:layout_constraintEnd_toStartOf="@id/ustadhScoringProgressAccuracy"
+                    app:trackThickness="8dp"
+                    app:trackCornerRadius="4dp" />
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextAccuracyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/accuracy"
+                    app:layout_constraintEnd_toEndOf="@+id/ustadhScoringProgressAccuracy"
+                    app:layout_constraintStart_toStartOf="@+id/ustadhScoringProgressAccuracy"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringProgressOverallScore" />
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextAccuracyResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/ustadhScoringProgressAccuracy"
+                    app:layout_constraintEnd_toEndOf="@+id/ustadhScoringProgressAccuracy"
+                    app:layout_constraintStart_toStartOf="@+id/ustadhScoringProgressAccuracy"
+                    app:layout_constraintTop_toTopOf="@+id/ustadhScoringProgressAccuracy" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/ustadhScoringProgressAccuracy"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:progress="100"
+                    app:indicatorSize="72dp"
+                    app:layout_constraintStart_toEndOf="@id/ustadhScoringProgressTidiness"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringTextAccuracyText"
+                    app:layout_constraintEnd_toStartOf="@id/ustadhScoringProgressConsistency"
+                    app:trackThickness="8dp"
+                    app:trackCornerRadius="4dp"
+                    app:indicatorColor="@color/md_theme_inversePrimary"/>
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextConsistencyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/consistency"
+                    app:layout_constraintEnd_toEndOf="@+id/ustadhScoringProgressConsistency"
+                    app:layout_constraintStart_toStartOf="@+id/ustadhScoringProgressConsistency"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringProgressOverallScore" />
+
+                <TextView
+                    android:id="@+id/ustadhScoringTextConsistencyResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/ustadhScoringProgressConsistency"
+                    app:layout_constraintEnd_toEndOf="@+id/ustadhScoringProgressConsistency"
+                    app:layout_constraintStart_toStartOf="@+id/ustadhScoringProgressConsistency"
+                    app:layout_constraintTop_toTopOf="@+id/ustadhScoringProgressConsistency" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/ustadhScoringProgressConsistency"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:progress="100"
+                    app:indicatorSize="72dp"
+                    app:layout_constraintStart_toEndOf="@id/ustadhScoringProgressAccuracy"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringTextConsistencyText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:trackThickness="8dp"
+                    app:trackCornerRadius="4dp"
+                    app:indicatorColor="@color/maghrib_mengaji_primary"/>
+
+                <ImageView
+                    android:id="@+id/ustadhScoringImageViewStudentPageImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="24dp"
+                    android:maxHeight="720dp"
+                    android:adjustViewBounds="true"
+                    android:layout_centerInParent="true"
+                    android:contentDescription="@string/quran_page_image_description"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringProgressPreliminary"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                android:id="@+id/ustadhScoringStudentImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_below="@+id/ustadhScoringPageTitle"
+                android:contentDescription="@string/quran_page_image_description" />
+
+            <Button
+                android:id="@+id/ustadhScoringButton"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_below="@+id/ustadhScoringStudentImage"
+                android:text="@string/score"
+                app:icon="@drawable/outline_grade_24"
+                app:iconGravity="textStart" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/ustadhScoringBottomSheet"
+            layout="@layout/bottom_sheet_ustadh_scoring" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+</RelativeLayout>

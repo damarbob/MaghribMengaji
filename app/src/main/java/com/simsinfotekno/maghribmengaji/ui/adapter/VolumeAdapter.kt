@@ -1,6 +1,5 @@
 package com.simsinfotekno.maghribmengaji.ui.adapter
 
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,27 +8,30 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
-import androidx.navigation.NavController
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
-import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
-import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
 import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 
 
 class VolumeAdapter(
     var dataSet: List<QuranVolume>,
-    private val navController: NavController,
-    private val quranVolumeStatusCheck: QuranVolumeStatusCheck,
-    private val invoker: Any
 ) :
     RecyclerView.Adapter<VolumeAdapter.ViewHolder>() {
 
     companion object {
         private val TAG = this.javaClass.simpleName
     }
+
+    /* Variables */
+    private val _selectedVolume = MutableLiveData<QuranVolume>().apply { value = null }
+    val selectedVolume: LiveData<QuranVolume> = _selectedVolume
+
+    /* Use cases */
+    private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
 
     /**
      * Provide a reference to the type of views that you are using
@@ -106,14 +108,17 @@ class VolumeAdapter(
 
         // Listener
         viewHolder.cardView.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putInt("volumeId", id)
-            bundle.putIntArray("pageIds", pageIds.toIntArray())
-            if (invoker is VolumeListFragment) {
-                navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
-            } else {
-                navController.navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
-            }
+//            val bundle = Bundle()
+//            bundle.putInt("volumeId", id)
+//            bundle.putIntArray("pageIds", pageIds.toIntArray())
+//            if (invoker is VolumeListFragment) {
+//                navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
+//            } else if (invoker is HomeFragment) {
+//                navController.navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
+//            }
+
+            // Set selected volume
+            _selectedVolume.value = dataSet[position]
         }
     }
 

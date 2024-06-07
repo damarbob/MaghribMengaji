@@ -3,6 +3,7 @@ package com.simsinfotekno.maghribmengaji.ui.signup
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -43,9 +44,10 @@ class SignUpViewModel : ViewModel() {
                                         fullName = displayName,
                                         email = user.email,
                                         lastPageId = null,
-                                        ustadhId = null
+                                        ustadhId = null,
+                                        createdAt = Timestamp.now(),
+                                        updatedAt = Timestamp.now(),
                                     )
-
 
                                     db.add(newStudent).addOnCompleteListener{
                                         if (it.isSuccessful) {

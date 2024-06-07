@@ -91,6 +91,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
         pageId = arguments?.getInt("pageId")
         viewModel.pageId = pageId
+
         val page =
             quranPageRepository.getRecordById(pageId) // Get QuranPage instance
         val volume =

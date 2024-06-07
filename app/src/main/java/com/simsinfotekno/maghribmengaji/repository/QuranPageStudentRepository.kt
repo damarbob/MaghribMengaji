@@ -64,6 +64,16 @@ class QuranPageStudentRepository() : Repository<QuranPageStudent>() {
         return result
     }
 
+    fun getRecordByIdsNoStrict(ids: IntArray): List<QuranPageStudent> {
+        val result: ArrayList<QuranPageStudent> = arrayListOf()
+
+        ids.forEach { i ->
+            getRecordByPageId(i)?.let { result.add(it) }
+        }
+
+        return result
+    }
+
     fun getPagesByStatus(quranItemStatus: QuranItemStatus): List<QuranPageStudent> {
         val result = arrayListOf<QuranPageStudent>()
 

@@ -10,20 +10,15 @@ import androidx.navigation.findNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
-import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
-import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
-import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPages
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
-import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
-import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 
 class MainActivity : AppCompatActivity() {
@@ -37,47 +32,13 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         val TAG: String = MainActivity::class.java.simpleName
-
-        // Test user setup
-        val student = MaghribMengajiUser(
-            fullName = "Damar Maulana",
-            email = "ibn.damr@gmail.com",
-            lastPageId = 10,
-        )
-
-        // Test data set
-        val quranVolumes = listOf(
-            QuranVolume(1, "1", (1..61).toList()),
-            QuranVolume(2, "2", (62..121).toList()),
-            QuranVolume(3, "3", (122..181).toList()),
-            QuranVolume(4, "4", (182..241).toList()),
-            QuranVolume(5, "5", (242..301).toList()),
-            QuranVolume(6, "6", (302..361).toList()),
-            QuranVolume(7, "7", (362..421).toList()),
-            QuranVolume(8, "8", (422..481).toList()),
-            QuranVolume(9, "9", (482..541).toList()),
-            QuranVolume(10, "10", (542..604).toList()),
-        )
-        val quranPages = (1..604).map { pageId ->
-            // Find the volume for this page
-            val volumeId = quranVolumes.find { volume ->
-                pageId in volume.pageIds
-            }?.id ?: throw IllegalArgumentException("Page $pageId does not belong to any volume")
-
-            QuranPage(pageId, "$pageId", volumeId = volumeId)
-        }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Register EventBus
-        EventBus.getDefault().register(this)
-
-        // Test data insertion to repository
-        quranVolumeRepository.setRecords(quranVolumes, false)
-        quranPageRepository.setRecords(quranPages, false)
+//        EventBus.getDefault().register(this)
 
         runAuthentication()
 
@@ -119,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
 
         // Unregister EventBus
-        EventBus.getDefault().unregister(this)
+//        EventBus.getDefault().unregister(this)
 
     }
 
@@ -145,6 +106,7 @@ class MainActivity : AppCompatActivity() {
                         currentUser.uid,
                         currentUser.displayName,
                         currentUser.email,
+                        role = data["role"] as String?,
                         lastPageId = data["lastPageId"] as Int?,
                         ustadhId = data["ustadhId"] as String?,
                     )
@@ -162,6 +124,15 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT)
                         .show()
 
+                    // Start retrieving user data
+                    retrieveUserData(currentUser.uid)
+
+                    // Adjust nav graph based on the user's role
+                    student.role?.let {
+                        adjustNavGraph(it)
+                        Log.d(TAG, "User's role: $it")
+                    }
+
                 }
                 if (documents.isEmpty) {
                     Log.d(TAG, "No matching documents found.")
@@ -171,10 +142,14 @@ class MainActivity : AppCompatActivity() {
                 Log.w(TAG, "Error getting documents: ", exception)
             }
 
+        /* End of auth */
+    }
+
+    private fun retrieveUserData(uid: String) {
 
         // Get quran page data
         val dbPage = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
-        dbPage.whereEqualTo("studentId", currentUser.uid).get()
+        dbPage.whereEqualTo("studentId", uid).get()
             .addOnSuccessListener { documents ->
 
                 val pageStudents = arrayListOf<QuranPageStudent>()
@@ -207,12 +182,12 @@ class MainActivity : AppCompatActivity() {
                     pageStudents.add(pageStudent)
 
                 }
-                quranPageStudentRepository.setRecords(pageStudents, true)
+                MainApplication.quranPageStudentRepository.setRecords(pageStudents, true)
 
                 // Post a user data loaded event
                 EventBus.getDefault().post(
                     OnUserDataLoaded(
-                        student,
+                        studentRepository.getStudent(),
                         UserDataEvent.PAGE
                     )
                 )
@@ -229,7 +204,6 @@ class MainActivity : AppCompatActivity() {
                 Log.w(TAG, "Error getting documents: ", exception)
             }
 
-        /* End of auth */
     }
 
     private fun testFirestore() {
@@ -292,17 +266,19 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    // Event listeners
-    // Subscribe to OnSelectedPlaceChangedEvent event
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun _050206032024(event: OnUserDataLoaded) {
-        if (event.userDataEvent == UserDataEvent.PROFILE) {
+    private fun adjustNavGraph(role: String) {
 
-            // Force student to choose teacher if haven't already
-            if (studentRepository.getStudent().ustadhId == null) {
-                navController.navigate(R.id.action_global_ustadhListFragment)
-            }
+        if (role == MaghribMengajiUser.ROLE_TEACHER) {
+
+            val navGraph = navController.navInflater.inflate(R.navigation.nav_main)
+            navGraph.setStartDestination(R.id.ustadhHomeFragment)
+            navController.graph = navGraph
+
+            // Navigate to the ustadhHomeFragment
+            navController.navigate(R.id.ustadhHomeFragment)
 
         }
+
     }
+
 }

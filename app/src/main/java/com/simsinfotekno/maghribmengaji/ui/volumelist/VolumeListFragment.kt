@@ -10,8 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.transition.MaterialSharedAxis
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.simsinfotekno.maghribmengaji.MainActivity
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
+import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentVolumeListBinding
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
@@ -26,12 +29,13 @@ class VolumeListFragment : Fragment() {
         fun newInstance() = VolumeListFragment()
     }
 
+    /* View models */
     private val viewModel: VolumeListViewModel by viewModels()
 
-    // Variables
+    /* Views */
     private lateinit var volumeAdapter: VolumeAdapter
 
-    // Use case
+    /* Use cases */
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,16 +59,27 @@ class VolumeListFragment : Fragment() {
     ): View {
         binding = FragmentVolumeListBinding.inflate(layoutInflater, container, false)
 
+        /* Views */
+
+        // Volume dataset are taken from MainActivity local variable
         volumeAdapter = VolumeAdapter(
-            MainActivity.quranVolumes,
-            findNavController(),
-            quranVolumeStatusCheck,
-            this) // Set dataset
+            quranVolumes,
+        ) // Set dataset
 
         val recyclerView = binding.volumeListRecyclerViewVolumeList
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = volumeAdapter
+
+        /* Observers */
+        volumeAdapter.selectedVolume.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+
+            val bundle = Bundle()
+            bundle.putInt("volumeId", it.id)
+            bundle.putIntArray("pageIds", it.pageIds.toIntArray())
+            findNavController().navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
+        }
 
         return binding.root
     }
@@ -72,7 +87,7 @@ class VolumeListFragment : Fragment() {
     // Read quran volume from database
     private fun getQuranVolume() {
 
-        val db = viewModel.db
+        val db = Firebase.firestore
 
         Log.d(TAG, "db = $db")
 

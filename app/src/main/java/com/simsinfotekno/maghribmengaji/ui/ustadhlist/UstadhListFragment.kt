@@ -42,6 +42,11 @@ class UstadhListFragment : Fragment() {
         /* Views */
         ustadhAdapter = UstadhAdapter(listOf(), findNavController())
 
+        val recyclerView = binding.ustadhListRecyclerViewPage
+        recyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = ustadhAdapter
+
         /* Observers */
         ustadhAdapter.selectedUstadh.observe(viewLifecycleOwner) { ustadh ->
 
@@ -83,11 +88,6 @@ class UstadhListFragment : Fragment() {
                 Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
             }
         })
-
-        val recyclerView = binding.ustadhListRecyclerViewPage
-        recyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = ustadhAdapter
 
         /* Get ustadh list */
         viewModel.getUstadhFromDb()

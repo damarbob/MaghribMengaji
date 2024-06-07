@@ -15,24 +15,27 @@ class GetQuranVolumeByStatus {
 
     operator fun invoke(quranItemStatus: QuranItemStatus): List<QuranVolume> {
 
-        val result = arrayListOf<QuranVolume>()
+        val resultSet = mutableSetOf<QuranVolume>()  // Use a set to store unique volumes
 
         Log.d(TAG, "Starting $TAG")
 
         val pages = quranPageStudentRepository.getPagesByStatus(quranItemStatus)
         Log.d(TAG, pages.toString())
 
-        pages.forEach {
-            val volumeId = quranPageRepository.getRecordById(it.pageId)?.volumeId
+        pages.forEach { page ->
+            val volumeId = quranPageRepository.getRecordById(page.pageId)?.volumeId
 
-            quranVolumeRepository.getRecordById(volumeId)?.let { volume -> result.add(volume) }
+            val volume = quranVolumeRepository.getRecordById(volumeId)
+            if (volume != null) {
+                resultSet.add(volume) // Set automatically handles duplicates
+            }
 
             Log.d(TAG, "Found volume $volumeId")
         }
 
         Log.d(TAG, "Ending $TAG")
 
-        return result
+        return resultSet.toList() // Convert set back to list
 
     }
 

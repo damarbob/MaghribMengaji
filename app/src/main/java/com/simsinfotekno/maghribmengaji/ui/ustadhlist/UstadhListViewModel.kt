@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
@@ -32,7 +33,13 @@ class UstadhListViewModel : ViewModel() {
                 .addOnSuccessListener { documents ->
                     if (!documents.isEmpty) {
                         for (document in documents) {
-                            db.document(document.id).update("ustadhId", ustadhId)
+
+                            val updateData = mapOf(
+                                "ustadhId" to ustadhId, // The new ustadh ID
+                                "updatedAt" to FieldValue.serverTimestamp() // Updated at
+                            )
+
+                            db.document(document.id).update(updateData)
                                 .addOnSuccessListener {
                                     Log.d(MainActivity.TAG, "Ustadh ID successfully updated!")
                                     _updateUstadhIdResult.value = Result.success(ustadhId)

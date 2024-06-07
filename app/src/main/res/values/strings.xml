@@ -60,6 +60,8 @@
     <string name="consistency">Consistency</string>
     <string name="ustadh_updated_successfully">Ustadh updated successfully!</string>
     <string name="no_data">No data</string>
+    <string name="student_list">Student List</string>
+    <string name="score">Score</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

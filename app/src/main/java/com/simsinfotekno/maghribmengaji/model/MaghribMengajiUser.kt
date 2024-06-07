@@ -1,5 +1,7 @@
 package com.simsinfotekno.maghribmengaji.model
 
+import com.google.firebase.Timestamp
+
 data class MaghribMengajiUser(
     var id: String? = null,
     var fullName: String? = null,
@@ -7,6 +9,8 @@ data class MaghribMengajiUser(
     var role: String? = ROLE_STUDENT,
     var lastPageId: Int? = null,
     var ustadhId: String? = null,
+    var createdAt: Timestamp? = null,
+    var updatedAt: Timestamp? = null
 ) {
     companion object {
         val COLLECTION = "users"
