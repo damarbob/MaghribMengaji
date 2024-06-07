@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -20,16 +21,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
@@ -104,7 +104,53 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
 
         bottomSheetBehaviorCheckResult = BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)
+
+        // Initial state of check result bottom sheet
         bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_HIDDEN
+
+        // Callback on state change to show button check result
+        val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                // Do something for new state.
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val materialFade = MaterialFade().apply {
+                            duration = 150L
+                        }
+                        container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+                        binding.pageButtonCheckResult.visibility = View.VISIBLE
+                    }, 250)
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                // Do something for slide offset.
+            }
+        }
+
+        // To add the callback:
+        bottomSheetBehaviorCheckResult.addBottomSheetCallback(bottomSheetCallback)
+
+        // Back press when bottom sheet showed
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (bottomSheetBehaviorCheckResult.state != BottomSheetBehavior.STATE_HIDDEN) {
+                    bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_HIDDEN
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val materialFade = MaterialFade().apply {
+                            duration = 150L
+                        }
+                        container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+                        binding.pageButtonCheckResult.visibility = View.VISIBLE
+                    }, 250)
+                } else {
+                    isEnabled = false
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                    bottomSheetBehaviorCheckResult.removeBottomSheetCallback(bottomSheetCallback)
+                }
+            }
+        })
 
         binding.pageButtonPrevious.isEnabled = pageId != 1
         binding.pageButtonForward.isEnabled = pageId != 604
@@ -205,9 +251,14 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         }
 
         binding.pageButtonCheckResult.setOnClickListener {
+            val materialFade = MaterialFade().apply {
+                duration = 84L
+            }
+            container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+            binding.pageButtonCheckResult.visibility = View.GONE
             Handler(Looper.getMainLooper()).postDelayed({
-                bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
-            }, 250)
+            bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
+            }, 100)
         }
 
         return binding.root

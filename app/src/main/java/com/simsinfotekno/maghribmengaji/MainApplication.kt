@@ -3,6 +3,7 @@ package com.simsinfotekno.maghribmengaji
 import android.app.Application
 import com.simsinfotekno.maghribmengaji.repository.QuranPageRepository
 import com.simsinfotekno.maghribmengaji.repository.QuranPageStudentRepository
+import com.simsinfotekno.maghribmengaji.repository.QuranRecordingStudentRepository
 import com.simsinfotekno.maghribmengaji.repository.QuranVolumeRepository
 import com.simsinfotekno.maghribmengaji.repository.StudentRepository
 
@@ -16,6 +17,7 @@ class MainApplication: Application() {
         val quranPageRepository = QuranPageRepository()
         val quranPageStudentRepository = QuranPageStudentRepository()
         val studentRepository = StudentRepository()
+        val quranRecordingStudentRepository = QuranRecordingStudentRepository()
     }
     override fun onCreate() {
         super.onCreate()

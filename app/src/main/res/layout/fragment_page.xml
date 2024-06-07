@@ -1,96 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.page.PageFragment"
     android:orientation="vertical"
     android:transitionGroup="true"
-    android:padding="@dimen/activity_vertical_margin">
+    tools:context=".ui.page.PageFragment">
 
     <LinearLayout
         android:id="@+id/pageLinearLayoutTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginVertical="14dp">
+        android:layout_marginVertical="14dp"
+        android:orientation="horizontal"
+        android:padding="@dimen/activity_vertical_margin">
 
         <TextView
             android:id="@+id/pageTextViewVolume"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
             android:layout_weight="1"
-            android:text="@string/quran_volume"/>
+            android:text="@string/quran_volume"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
 
         <TextView
             android:id="@+id/pageTextViewPage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-            android:text="@string/quran_page" />
+            android:text="@string/quran_page"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/pageButtonShowScannedResult"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:text="scanned result"
-        android:textSize="11sp"
-        android:layout_below="@id/pageLinearLayoutTop"
-        android:visibility="gone"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_centerInParent="true">
+        android:padding="@dimen/activity_vertical_margin">
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:indeterminate="true"
             android:id="@+id/pageProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            />
+            android:indeterminate="true" />
 
         <ImageView
             android:id="@+id/pageImageViewPage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxHeight="720dp"
-            android:adjustViewBounds="true"
             android:layout_centerInParent="true"
-            android:contentDescription="@string/quran_page_image_description" />
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/quran_page_image_description"
+            android:maxHeight="720dp" />
 
         <ImageView
             android:id="@+id/pageImageViewScannedResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxHeight="720dp"
-            android:adjustViewBounds="true"
             android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/quran_page_image_description"
-            android:visibility="gone"/>
+            android:maxHeight="720dp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/pageRelativeLayoutBottom"
         android:layout_width="match_parent"
-        android:layout_gravity="fill"
-        android:gravity="center_vertical"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginVertical="@dimen/activity_vertical_margin"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="fill"
+        android:layout_marginVertical="@dimen/activity_vertical_margin"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/activity_vertical_margin">
 
         <Button
             android:id="@+id/pageButtonPrevious"
@@ -103,38 +94,38 @@
             android:id="@+id/pageButtonRecite"
             style="@style/Widget.Material3.Button.TonalButton.Icon"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
             android:text="@string/recite"
             app:icon="@drawable/auto_stories_24px"
-            app:iconGravity="textStart"/>
+            app:iconGravity="textStart" />
 
         <Button
             android:id="@+id/pageButtonSubmit"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="8dp"
             style="@style/Widget.Material3.Button.Icon"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
             android:text="@string/submit"
             app:icon="@drawable/photo_camera_24px"
             app:iconGravity="textStart" />
 
-        <Button
-            android:id="@+id/pageButtonCheckResult"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="8dp"
-            style="@style/Widget.Material3.Button.Icon"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/check_result"
-            app:icon="@drawable/photo_camera_24px"
-            app:iconGravity="textStart"
-            android:visibility="gone"/>
+        <!--        <Button-->
+        <!--            android:id="@+id/pageButtonCheckResult"-->
+        <!--            android:layout_marginEnd="@dimen/activity_horizontal_margin"-->
+        <!--            android:layout_marginStart="8dp"-->
+        <!--            style="@style/Widget.Material3.Button.Icon"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@string/check_result"-->
+        <!--            app:icon="@drawable/task_24px"-->
+        <!--            app:iconGravity="textStart"-->
+        <!--            android:visibility="gone"/>-->
 
         <Button
             android:id="@+id/pageButtonForward"
@@ -145,15 +136,29 @@
 
     </LinearLayout>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/pageButtonCheckResult"
+        style="@style/Widget.Material3.ExtendedFloatingActionButton.Icon.Tertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/pageRelativeLayoutBottom"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:padding="@dimen/activity_vertical_margin"
+        android:text="@string/check_result"
+        app:icon="@drawable/task_24px"
+        app:iconGravity="textStart" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:transitionGroup="true">
 
         <include
             android:id="@+id/pageBottomSheetCheckResult"
-            layout="@layout/bottom_sheet_check_result"/>
+            layout="@layout/bottom_sheet_check_result" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 
 </RelativeLayout>

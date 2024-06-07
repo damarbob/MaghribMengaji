@@ -19,6 +19,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialSharedAxis
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.RecordingActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentRecordingBinding
@@ -66,6 +68,7 @@ class RecordingFragment : Fragment() {
     }
 
     private var pageId: Int? = -1
+    private var studentId: String = Firebase.auth.currentUser!!.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,9 +107,12 @@ class RecordingFragment : Fragment() {
         binding.recordingButtonToPlayer.setOnClickListener {
             val bundle = Bundle().apply {
                 putInt("pageId", pageId!!)
-                putString("recording", Uri.fromFile(outputFile).toString())
+                if (outputFile != null) putString("recording", Uri.fromFile(outputFile).toString())
             }
-            findNavController().navigate(R.id.action_recordingFragment_to_audioPlayerFragment, bundle)
+            findNavController().navigate(
+                R.id.action_recordingFragment_to_audioPlayerFragment,
+                bundle
+            )
         }
 
         return binding.root
@@ -118,14 +124,27 @@ class RecordingFragment : Fragment() {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(), "Permissions are not granted", Toast.LENGTH_SHORT).show()
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Toast.makeText(requireContext(), "Permissions are not granted", Toast.LENGTH_SHORT)
+                    .show()
                 return
             }
         } else {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(), "Permissions are not granted", Toast.LENGTH_SHORT).show()
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Toast.makeText(requireContext(), "Permissions are not granted", Toast.LENGTH_SHORT)
+                    .show()
                 return
             }
         }
@@ -136,12 +155,18 @@ class RecordingFragment : Fragment() {
                 setOutputFormat(MediaRecorder.OutputFormat.OGG)
                 setAudioEncodingBitRate(450000)
                 setAudioEncoder(MediaRecorder.AudioEncoder.OPUS)
-                outputFile = File(requireContext().externalCacheDir?.absolutePath, "audio record page $pageId.ogg")
+                outputFile = File(
+                    requireContext().externalCacheDir?.absolutePath,
+                    "$studentId-$pageId.ogg"
+                )
             } else {
                 setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
                 setAudioEncodingBitRate(96000)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-                outputFile = File(requireContext().externalCacheDir?.absolutePath, "audio record page $pageId.3gp")
+                outputFile = File(
+                    requireContext().externalCacheDir?.absolutePath,
+                    "$studentId-$pageId.3gp"
+                )
             }
             setOutputFile(outputFile?.absolutePath)
             try {
@@ -209,23 +234,35 @@ class RecordingFragment : Fragment() {
     }
 
     private fun checkPermission(): Boolean {
-        val result = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
+        val result =
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
         val result1 = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_AUDIO)
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_MEDIA_AUDIO
+            )
         } else {
-            Toast.makeText(requireContext(),"Permission not granted", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Permission not granted", Toast.LENGTH_LONG).show()
         }
         return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_MEDIA_AUDIO), 1)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_MEDIA_AUDIO),
+                1
+            )
         }
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             1 -> if (grantResults.isNotEmpty()) {
                 val recordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED
