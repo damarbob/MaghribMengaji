@@ -8,7 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -61,17 +65,35 @@ class VolumeListFragment : Fragment() {
 
         /* Views */
 
-        // Volume dataset are taken from MainActivity local variable
+        // Initialize RecyclerView with default view type
+        setupRecyclerView(VolumeAdapter.VIEW_ITEM_LIST)
+
+        binding.volumeListButtonViewTypeGrid.setOnClickListener {
+            setupRecyclerView(VolumeAdapter.VIEW_ITEM_GRID)
+            it.visibility = View.GONE
+            binding.volumeListButtonViewTypeList.visibility = View.VISIBLE
+        }
+
+        binding.volumeListButtonViewTypeList.setOnClickListener {
+            setupRecyclerView(VolumeAdapter.VIEW_ITEM_LIST)
+            it.visibility = View.GONE
+            binding.volumeListButtonViewTypeGrid.visibility = View.VISIBLE
+        }
+
+        return binding.root
+    }
+
+    // RecyclerView adapter based on view type
+    private fun setupRecyclerView(viewType: Int) {
+        val materialFadeThrough = MaterialFadeThrough()
+        TransitionManager.beginDelayedTransition(binding.root, materialFadeThrough)
         volumeAdapter = VolumeAdapter(
             quranVolumes,
+            viewType
         ) // Set dataset
 
-        val recyclerView = binding.volumeListRecyclerViewVolumeList
-        recyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = volumeAdapter
-
         /* Observers */
+        // Observe the selected volume LiveData
         volumeAdapter.selectedVolume.observe(viewLifecycleOwner) {
             if (it == null) return@observe
 
@@ -81,7 +103,18 @@ class VolumeListFragment : Fragment() {
             findNavController().navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
         }
 
-        return binding.root
+        // Set the RecyclerView layout manager and adapter based on view type
+        binding.volumeListRecyclerViewVolumeList.apply {
+            layoutManager = if (viewType == VolumeAdapter.VIEW_ITEM_LIST) {
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            } else {
+                GridLayoutManager(context, 2, RecyclerView.VERTICAL, false)
+            }
+            adapter = volumeAdapter
+        }
+
+        // Notify adapter of data set change
+        volumeAdapter.notifyDataSetChanged()
     }
 
     // Read quran volume from database

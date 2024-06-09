@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/itemVolumeTwoColumnsCardView"
+    style="@style/Widget.Material3.CardView.Elevated"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:transitionGroup="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="16dp">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/itemVolumeTwoColumnsImageProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/itemVolumeTwoColumnsImageViewCover"
+            android:layout_alignTop="@id/itemVolumeTwoColumnsImageViewCover"
+            android:layout_alignEnd="@id/itemVolumeTwoColumnsImageViewCover"
+            android:layout_alignBottom="@id/itemVolumeTwoColumnsImageViewCover" />
+
+        <ImageView
+            android:id="@+id/itemVolumeTwoColumnsImageViewCover"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:maxHeight="64dp"
+            android:scaleType="fitCenter"
+            app:tint="@color/md_theme_primary" />
+
+        <TextView
+            android:id="@+id/itemVolumeTwoColumnsTextTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/itemVolumeTwoColumnsImageViewCover"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="16dp"
+            android:text="Jilid 0" />
+
+        <ImageView
+            android:id="@+id/itemVolumeTwoColumnsStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/itemVolumeTwoColumnsImageViewCover"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
+            app:tint="@color/md_theme_primary" />
+
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

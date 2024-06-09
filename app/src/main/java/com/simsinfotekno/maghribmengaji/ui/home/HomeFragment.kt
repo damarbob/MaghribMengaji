@@ -82,7 +82,8 @@ class HomeFragment : Fragment() {
         // Volume adapter
         // Set volume dataset with status on progress
         volumeAdapter = VolumeAdapter(
-            getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS)
+            getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS),
+            VolumeAdapter.VIEW_ITEM_LIST
         )
 
         // Volume list
