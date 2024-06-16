@@ -71,4 +71,11 @@
     <string name="your_result_will_be_gone">Hasil Anda akan hilang</string>
     <string name="cancel">Batal</string>
     <string name="yes">Ya</string>
+    <string name="failed_to_load_image">Gagal memuat gambar:</string>
+    <string name="upload_failed">Gagal mengunggah. Coba ulangi lagi</string>
+    <string name="welcome_back">Selamat datang kembali</string>
+    <string name="permission_are_not_granted">Izin tidak diberikan</string>
+    <string name="permission_granted">Izin diberikan</string>
+    <string name="permission_denied">Izin ditolak</string>
+    <string name="failed_to_create_new_student_data">Gagal membuat data Siswa baru</string>
 </resources>

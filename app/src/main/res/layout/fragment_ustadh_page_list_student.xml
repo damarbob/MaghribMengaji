@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/all"
-            android:icon="@drawable/round_format_list_bulleted_24"
+            android:icon="@drawable/format_list_bulleted_24px"
             />
 
         <com.google.android.material.tabs.TabItem

@@ -295,6 +295,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.transition.MaterialSharedAxis
@@ -322,6 +324,8 @@ class AudioPlayerFragment : Fragment() {
     private var handler = Handler(Looper.getMainLooper())
     private var isPaused = false
     private var pauseTime: Long = 0
+
+    private lateinit var pickAudioResultLauncher: ActivityResultLauncher<Intent>
 
     private val updatePlayTimeThread = object : Runnable {
         override fun run() {
@@ -361,12 +365,36 @@ class AudioPlayerFragment : Fragment() {
         pageId = arguments?.getInt("pageId")
         Log.d(TAG, pageId.toString())
 
+        // Get data from recording fragment
         if (arguments?.getString("recording") != null) {
             val recordingUri = Uri.parse(arguments?.getString("recording"))
             viewModel.setSelectedAudioUri(recordingUri)
             binding.audioPlayerTextViewFilename.text =
                 viewModel.selectedAudioUri.value?.lastPathSegment
         }
+
+        // Pick audio from local file activity initialization
+        pickAudioResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    val selectedAudioUri = it.data?.data
+                    selectedAudioUri?.let { uri ->
+                        viewModel.setSelectedAudioUri(uri)
+                        binding.audioPlayerButtonPlay.visibility = View.VISIBLE
+                        binding.audioPlayerButtonPause.visibility = View.GONE
+                        mediaPlayer?.apply {
+                            stop()
+                            release()
+                        }
+                        mediaPlayer = null
+                        handler.removeCallbacks(updatePlayTimeThread)
+                        isPaused = false
+                        binding.audioPlayerTextViewTime.text = "00:00"
+                        binding.audioPlayerTextViewFilename.text =
+                            viewModel.selectedAudioUri.value?.lastPathSegment
+                    }
+                }
+            }
 
         binding.audioPlayerTextViewPage.text = getString(R.string.audio_page, pageId.toString())
         binding.audioPlayerButtonPause.visibility = View.GONE
@@ -395,10 +423,15 @@ class AudioPlayerFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.uploadResult.observe(viewLifecycleOwner) { result ->
             result.onSuccess {
-                Toast.makeText(context, "Upload successful", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.upload_successful), Toast.LENGTH_SHORT)
+                    .show()
                 this.requireActivity().finish()
             }.onFailure { exception ->
-                Toast.makeText(context, "Upload failed: $exception", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "${getString(R.string.upload_failed)}: $exception",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -410,7 +443,7 @@ class AudioPlayerFragment : Fragment() {
     private fun playRecording() {
         val selectedAudioUri = viewModel.selectedAudioUri.value
         if (selectedAudioUri == null) {
-            Toast.makeText(context, "No audio selected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.no_selected_file), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -447,7 +480,7 @@ class AudioPlayerFragment : Fragment() {
     private fun uploadRecording() {
         val selectedAudioUri = viewModel.selectedAudioUri.value
         if (selectedAudioUri == null) {
-            Toast.makeText(context, "No audio selected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.no_selected_file), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -462,9 +495,21 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private fun pickAudioFromStorage() {
-        val intent =
-            Intent(Intent.ACTION_PICK, android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_AUDIO_REQUEST_CODE)
+//        val intent =
+//            Intent(Intent.ACTION_PICK, android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+//        pickAudioResultLauncher.launch(intent)
+//        startActivityForResult(intent, PICK_AUDIO_REQUEST_CODE)
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "audio/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
+            pickAudioResultLauncher.launch(intent)
+        } else {
+            // Handle the case where no activity can handle the intent
+            Toast.makeText(requireContext(), "No app found to pick audio", Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 
     override fun onDestroyView() {
@@ -479,26 +524,26 @@ class AudioPlayerFragment : Fragment() {
         handler.removeCallbacks(updatePlayTimeThread)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_AUDIO_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-            val selectedAudioUri = data.data
-            selectedAudioUri?.let { uri ->
-                viewModel.setSelectedAudioUri(uri)
-                binding.audioPlayerButtonPlay.visibility = View.VISIBLE
-                binding.audioPlayerButtonPause.visibility = View.GONE
-                mediaPlayer?.apply {
-                    stop()
-                    release()
-                }
-                mediaPlayer = null
-                handler.removeCallbacks(updatePlayTimeThread)
-                isPaused = false
-                binding.audioPlayerTextViewTime.text = "00:00"
-                binding.audioPlayerTextViewFilename.text =
-                    viewModel.selectedAudioUri.value?.lastPathSegment
-            }
-        }
-    }
+//    @Deprecated("Deprecated in Java")
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == PICK_AUDIO_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+//            val selectedAudioUri = data.data
+//            selectedAudioUri?.let { uri ->
+//                viewModel.setSelectedAudioUri(uri)
+//                binding.audioPlayerButtonPlay.visibility = View.VISIBLE
+//                binding.audioPlayerButtonPause.visibility = View.GONE
+//                mediaPlayer?.apply {
+//                    stop()
+//                    release()
+//                }
+//                mediaPlayer = null
+//                handler.removeCallbacks(updatePlayTimeThread)
+//                isPaused = false
+//                binding.audioPlayerTextViewTime.text = "00:00"
+//                binding.audioPlayerTextViewFilename.text =
+//                    viewModel.selectedAudioUri.value?.lastPathSegment
+//            }
+//        }
+//    }
 }
