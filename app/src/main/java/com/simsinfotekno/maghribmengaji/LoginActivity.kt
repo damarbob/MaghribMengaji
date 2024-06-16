@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -41,7 +42,9 @@ class LoginActivity : AppCompatActivity() {
         navController =
             (supportFragmentManager.findFragmentById(binding.loginContent.navHostFragmentContentLogin.id) as NavHostFragment).navController
 
-        setStatusBarTextColor(isLightTheme = false)
+        setStatusBarTextColor(isLightTheme = false)// Set the status bar color
+        // Set the status bar color
+        window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary_variant)
 
         // Bottom sheet attributes
         bottomSheetBehavior =

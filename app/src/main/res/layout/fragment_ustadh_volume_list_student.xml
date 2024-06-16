@@ -27,7 +27,7 @@
         android:text="Muhammad Fikri Hizbullah"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/studentVolumeListRecyclerView"
+        android:id="@+id/ustadhVolumeListStudentRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
