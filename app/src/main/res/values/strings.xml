@@ -65,6 +65,12 @@
     <string name="student">Student</string>
     <string name="finished">Finished</string>
     <string name="all">All</string>
+    <string name="saved_in">Saved in %1$s</string>
+    <string name="no_selected_file">No selected file</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="your_result_will_be_gone">Your result will be gone</string>
+    <string name="cancel">cancel</string>
+    <string name="yes">Yes</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:padding="16dp"
     android:transitionGroup="true"
     tools:context=".ui.ustadhvolumeliststudent.UstadhVolumeListStudentFragment"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
     <TextView
         style="@style/Widget.App.P"
@@ -26,7 +27,7 @@
         android:text="Muhammad Fikri Hizbullah"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ustadhVolumeListStudentRecyclerView"
+        android:id="@+id/studentVolumeListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

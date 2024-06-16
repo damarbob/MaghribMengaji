@@ -1,92 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.audioplayer.AudioPlayerFragment">
 
     <TextView
         android:id="@+id/audioPlayerTextViewPage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:textAlignment="center"
-        android:text="@string/audio_page"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="64dp"
+        android:text="@string/audio_page"
+        android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/audioPlayerTextViewFilename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/audioPlayerButtonPick"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="48dp"
+        android:gravity="center"
+        android:text="@string/no_selected_file"
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
     <TextView
         android:id="@+id/audioPlayerTextViewTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00"
-        android:layout_below="@id/audioPlayerTextViewPage"
         android:layout_above="@id/audioPlayerButtonPick"
+        android:layout_below="@id/audioPlayerTextViewPage"
         android:layout_centerInParent="true"
-        android:gravity="center"
         android:layout_marginBottom="24dp"
-        android:textAppearance="@style/TextAppearance.Material3.DisplayLarge"/>
+        android:gravity="center"
+        android:text="00:00"
+        android:textAppearance="@style/TextAppearance.Material3.DisplayLarge" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/audioPlayerCircularProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:showAnimationBehavior="outward"
-        app:trackCornerRadius="8dp"
-        app:indicatorSize="128dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        app:trackThickness="16dp"
-        android:visibility="gone"/>
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorSize="128dp"
+        app:showAnimationBehavior="outward"
+        app:trackCornerRadius="8dp"
+        app:trackThickness="16dp" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/audioPlayerButtonUpload"
+        style="@style/Widget.Material3.ExtendedFloatingActionButton.Icon.Primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="64dp"
-        style="@style/Widget.Material3.ExtendedFloatingActionButton.Icon.Primary"
-        app:icon="@drawable/upload_24px"
-        android:text="@string/upload" />
+        android:text="@string/upload"
+        app:icon="@drawable/upload_24px" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/audioPlayerButtonPick"
+        style="@style/Widget.Material3.FloatingActionButton.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="64dp"
-        android:layout_marginEnd="48dp"
         android:layout_alignParentEnd="true"
-        style="@style/Widget.Material3.FloatingActionButton.Secondary"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="64dp"
         android:src="@drawable/folder_open_24px" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/audioPlayerButtonPlay"
+        style="@style/Widget.Material3.FloatingActionButton.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="48dp"
         android:layout_marginBottom="64dp"
-        style="@style/Widget.Material3.FloatingActionButton.Secondary"
-        android:src="@drawable/play_arrow_24px"/>
+        android:src="@drawable/play_arrow_24px" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/audioPlayerButtonPause"
+        style="@style/Widget.Material3.FloatingActionButton.Tertiary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="48dp"
         android:layout_marginBottom="64dp"
-        style="@style/Widget.Material3.FloatingActionButton.Tertiary"
-        android:src="@drawable/pause_24px"/>
+        android:src="@drawable/pause_24px" />
 
 
 </RelativeLayout>

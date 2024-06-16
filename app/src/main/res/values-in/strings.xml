@@ -65,4 +65,10 @@
     <string name="student">Murid</string>
     <string name="finished">Selesai</string>
     <string name="all">Semua</string>
+    <string name="saved_in">Tersimpan di %1$s</string>
+    <string name="no_selected_file">Tidak ada file terpilih</string>
+    <string name="are_you_sure">Apakah Anda yakin?</string>
+    <string name="your_result_will_be_gone">Hasil Anda akan hilang</string>
+    <string name="cancel">Batal</string>
+    <string name="yes">Ya</string>
 </resources>

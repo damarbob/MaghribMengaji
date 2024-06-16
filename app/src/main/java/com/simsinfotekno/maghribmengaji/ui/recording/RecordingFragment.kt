@@ -1,30 +1,30 @@
 package com.simsinfotekno.maghribmengaji.ui.recording
 
-import androidx.fragment.app.viewModels
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.Manifest
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.R
-import com.simsinfotekno.maghribmengaji.RecordingActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentRecordingBinding
-import com.simsinfotekno.maghribmengaji.ui.audioplayer.AudioPlayerFragment
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -100,8 +100,8 @@ class RecordingFragment : Fragment() {
 //            requestPermission()
 //        }
 
-        binding.recordingButtonStart.setOnClickListener { startRecording() }
-        binding.recordingButtonStop.setOnClickListener { stopRecording() }
+        binding.recordingButtonStart.setOnClickListener { startRecording(container) }
+        binding.recordingButtonStop.setOnClickListener { stopRecording(container) }
         binding.recordingButtonPause.setOnClickListener { pauseRecording() }
         binding.recordingButtonResume.setOnClickListener { resumeRecording() }
         binding.recordingButtonToPlayer.setOnClickListener {
@@ -118,7 +118,7 @@ class RecordingFragment : Fragment() {
         return binding.root
     }
 
-    private fun startRecording() {
+    private fun startRecording(container: ViewGroup?) {
         if (isRecording) {
             return
         }
@@ -179,14 +179,20 @@ class RecordingFragment : Fragment() {
             }
         }
 
+        val materialFade = MaterialFade().apply {
+            duration = 84L
+        }
+        container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+
         isRecording = true
         binding.recordingButtonStart.visibility = View.GONE
         binding.recordingButtonStop.visibility = View.VISIBLE
         binding.recordingButtonPause.visibility = View.VISIBLE
         binding.recordingButtonResume.visibility = View.GONE
+        binding.recordingTextViewFilename.visibility = View.GONE
     }
 
-    private fun stopRecording() {
+    private fun stopRecording(container: ViewGroup?) {
         if (!isRecording) {
             return
         }
@@ -201,11 +207,17 @@ class RecordingFragment : Fragment() {
 
         handler.removeCallbacks(updateRecordingTimeRunnable)
         binding.recordingTextViewTime.text = "00:00"
+        val materialFade = MaterialFade().apply {
+            duration = 150L
+        }
+        container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+        binding.recordingTextViewFilename.text = getString(R.string.saved_in, outputFile?.path)
 
         binding.recordingButtonStart.visibility = View.VISIBLE
         binding.recordingButtonStop.visibility = View.GONE
         binding.recordingButtonPause.visibility = View.GONE
         binding.recordingButtonResume.visibility = View.GONE
+        binding.recordingTextViewFilename.visibility = View.VISIBLE
         pauseOffset = 0L
     }
 

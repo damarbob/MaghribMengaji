@@ -285,18 +285,18 @@ package com.simsinfotekno.maghribmengaji.ui.audioplayer
 
 import android.app.Activity
 import android.content.Intent
-import androidx.fragment.app.viewModels
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -364,6 +364,8 @@ class AudioPlayerFragment : Fragment() {
         if (arguments?.getString("recording") != null) {
             val recordingUri = Uri.parse(arguments?.getString("recording"))
             viewModel.setSelectedAudioUri(recordingUri)
+            binding.audioPlayerTextViewFilename.text =
+                viewModel.selectedAudioUri.value?.lastPathSegment
         }
 
         binding.audioPlayerTextViewPage.text = getString(R.string.audio_page, pageId.toString())
@@ -460,7 +462,8 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private fun pickAudioFromStorage() {
-        val intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+        val intent =
+            Intent(Intent.ACTION_PICK, android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, PICK_AUDIO_REQUEST_CODE)
     }
 
@@ -493,6 +496,8 @@ class AudioPlayerFragment : Fragment() {
                 handler.removeCallbacks(updatePlayTimeThread)
                 isPaused = false
                 binding.audioPlayerTextViewTime.text = "00:00"
+                binding.audioPlayerTextViewFilename.text =
+                    viewModel.selectedAudioUri.value?.lastPathSegment
             }
         }
     }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipToPadding="false"
     android:orientation="vertical"
     android:padding="16dp"
     android:transitionGroup="true"
@@ -12,9 +13,9 @@
     <LinearLayout
         android:id="@+id/main_header"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="fill"
-        android:gravity="center_vertical"
-        android:layout_height="wrap_content">
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/homeTextTitle"
@@ -29,8 +30,7 @@
             style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:icon="@drawable/more_vert_24px"
-            />
+            app:icon="@drawable/more_vert_24px" />
 
     </LinearLayout>
 
@@ -81,16 +81,16 @@
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/homeProgressIndicatorPagePercentage"
+                style="@style/Widget.Material3.LinearProgressIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:progress="80"
                 android:indeterminate="false"
+                android:progress="80"
                 app:indicatorSize="48dp"
-                app:trackCornerRadius="2dp"
-                style="@style/Widget.Material3.LinearProgressIndicator"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:trackCornerRadius="2dp" />
 
             <TextView
                 android:id="@+id/homeTextPagePercentage"
@@ -111,11 +111,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
         android:text="@string/in_progress" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/homeRecyclerViewVolume"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="-16dp" />
 
 </LinearLayout>

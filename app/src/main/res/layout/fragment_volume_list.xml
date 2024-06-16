@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingVertical="16dp"
     android:transitionGroup="true"
-    tools:context=".ui.volumelist.VolumeListFragment"
-    android:padding="16dp">
+    tools:context=".ui.volumelist.VolumeListFragment">
+
+    <Button
+        android:id="@+id/volumeListButtonViewTypeList"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:icon="@drawable/stop_24px" />
+
+    <Button
+        android:id="@+id/volumeListButtonViewTypeGrid"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        app:icon="@drawable/stop_24px" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/volumeListRecyclerViewVolumeList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
