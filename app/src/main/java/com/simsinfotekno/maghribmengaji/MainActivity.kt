@@ -127,10 +127,15 @@ class MainActivity : AppCompatActivity() {
                     // Start retrieving user data
                     retrieveUserData(currentUser.uid)
 
-                    // Adjust nav graph based on the user's role
-                    student.role?.let {
+                    student.role?.let { // If role is not null
+                        // Adjust nav graph based on the user's role
                         adjustNavGraph(it)
                         Log.d(TAG, "User's role: $it")
+
+                        // Navigate to ustadh selection if ustadhId is null
+                        if (it == MaghribMengajiUser.ROLE_STUDENT && student.ustadhId == null) {
+                            navController.navigate(R.id.action_global_ustadhListFragment)
+                        }
                     }
 
                 }
