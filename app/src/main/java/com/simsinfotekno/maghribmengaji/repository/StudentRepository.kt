@@ -42,5 +42,13 @@ class StudentRepository() : Repository<MaghribMengajiUser>() {
         return getRecordByIndex(0)
     }
 
+    fun getStudentById(studentId: String): MaghribMengajiUser? {
+        for (r in getRecords()) {
+            if (r.id?.equals(studentId) == true) {
+                return r
+            }
+        }
+        return null
+    }
 
 }

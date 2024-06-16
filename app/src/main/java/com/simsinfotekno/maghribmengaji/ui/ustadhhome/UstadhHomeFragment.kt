@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.LoginActivity
@@ -49,6 +50,12 @@ class UstadhHomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         EventBus.getDefault().register(this)
+
+        // Set the transition for this fragment
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
     }
 
     override fun onCreateView(
@@ -94,7 +101,7 @@ class UstadhHomeFragment : Fragment() {
         binding.ustadhHomeButtonMenu.setOnClickListener {
             showPopupMenu(requireContext(), it, R.menu.menu_main) {
                 when (it.itemId) {
-                    R.id.menu_profile -> findNavController().navigate(R.id.action_navigation_home_to_navigation_profile)
+                    R.id.menu_profile -> findNavController().navigate(R.id.action_ustadhHomeFragment_to_profileFragment)
                     R.id.menu_sign_out -> {
                         mainViewModel.logout()
                         navigateToLoginActivity()

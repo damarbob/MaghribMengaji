@@ -110,7 +110,10 @@
         tools:layout="@layout/fragment_ustadh_home" >
         <action
             android:id="@+id/action_ustadhHomeFragment_to_studentVolumeListFragment"
-            app:destination="@id/studentVolumeListFragment" />
+            app:destination="@id/ustadhVolumeListStudentFragment" />
+        <action
+            android:id="@+id/action_ustadhHomeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_ustadhHomeFragment"
@@ -118,7 +121,7 @@
         app:popUpTo="@id/ustadhHomeFragment"
         app:popUpToInclusive="true" />
     <fragment
-        android:id="@+id/studentVolumeListFragment"
+        android:id="@+id/ustadhVolumeListStudentFragment"
         android:name="com.simsinfotekno.maghribmengaji.ui.ustadhvolumeliststudent.UstadhVolumeListStudentFragment"
         android:label="fragment_student_volume_list"
         tools:layout="@layout/fragment_ustadh_volume_list_student" >
@@ -127,10 +130,10 @@
             app:argType="string" />
         <action
             android:id="@+id/action_studentVolumeListFragment_to_studentPageListFragment"
-            app:destination="@id/studentPageListFragment" />
+            app:destination="@id/ustadhPageListStudentFragment" />
     </fragment>
     <fragment
-        android:id="@+id/studentPageListFragment"
+        android:id="@+id/ustadhPageListStudentFragment"
         android:name="com.simsinfotekno.maghribmengaji.ui.ustadhpageliststudent.UstadhPageListStudentFragment"
         android:label="fragment_student_page_list"
         tools:layout="@layout/fragment_ustadh_page_list_student" >

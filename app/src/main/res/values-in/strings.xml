@@ -62,4 +62,7 @@
     <string name="no_data">Tidak ada data</string>
     <string name="student_list">Daftar Anggota</string>
     <string name="score">Nilai</string>
+    <string name="student">Murid</string>
+    <string name="finished">Selesai</string>
+    <string name="all">Semua</string>
 </resources>

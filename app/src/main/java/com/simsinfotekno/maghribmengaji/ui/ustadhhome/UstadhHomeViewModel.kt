@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhStudentRepository
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 
 class UstadhHomeViewModel : ViewModel() {
@@ -48,6 +49,9 @@ class UstadhHomeViewModel : ViewModel() {
                 }
 
                 _getStudentResult.value = Result.success(students)
+
+                // Insert into repository
+                ustadhStudentRepository.setRecords(students, false)
 
             }
             .addOnFailureListener { exception ->

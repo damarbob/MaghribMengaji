@@ -62,6 +62,9 @@
     <string name="no_data">No data</string>
     <string name="student_list">Student List</string>
     <string name="score">Score</string>
+    <string name="student">Student</string>
+    <string name="finished">Finished</string>
+    <string name="all">All</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

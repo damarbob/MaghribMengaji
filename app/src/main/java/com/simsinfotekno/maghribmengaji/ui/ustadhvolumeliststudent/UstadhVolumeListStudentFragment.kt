@@ -9,7 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.transition.MaterialSharedAxis
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhQuranVolumeStudentRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhStudentRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhVolumeListStudentBinding
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageStudentAdapter
@@ -32,7 +34,11 @@ class UstadhVolumeListStudentFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // TODO: Use the ViewModel
+        // Set the transition for this fragment
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
     }
 
     override fun onCreateView(
@@ -59,7 +65,7 @@ class UstadhVolumeListStudentFragment : Fragment() {
             listOf(),
         ) // Set dataset
 
-        val recyclerView = binding.studentVolumeListRecyclerView
+        val recyclerView = binding.ustadhVolumeListStudentRecyclerView
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = volumeAdapter
@@ -83,6 +89,10 @@ class UstadhVolumeListStudentFragment : Fragment() {
                 // Go to view model to see more
                 volumeAdapter.dataSet = ustadhQuranVolumeStudentRepository.getRecords()
                 volumeAdapter.notifyDataSetChanged()
+
+                if (studentId == null) return@observe
+
+                binding.ustadhVolumeListStudentTextName.text = ustadhStudentRepository.getStudentById(studentId)?.fullName
 
             }?.onFailure { exception ->
                 // Show error message

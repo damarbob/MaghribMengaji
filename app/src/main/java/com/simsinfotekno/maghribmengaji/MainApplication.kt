@@ -24,6 +24,7 @@ class MainApplication: Application() {
         val quranRecordingStudentRepository = QuranRecordingStudentRepository()
 
         // Ustadh repos
+        val ustadhStudentRepository = StudentRepository()
         val ustadhQuranVolumeStudentRepository = QuranVolumeRepository()
         val ustadhQuranPageStudentRepository = QuranPageStudentRepository()
 
