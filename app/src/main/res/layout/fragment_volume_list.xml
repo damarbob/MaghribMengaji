@@ -31,6 +31,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/volumeListRecyclerViewVolumeList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false" />
 
 </LinearLayout>

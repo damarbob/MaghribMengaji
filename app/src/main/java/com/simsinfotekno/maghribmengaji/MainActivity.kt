@@ -2,14 +2,17 @@ package com.simsinfotekno.maghribmengaji
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPages
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
@@ -17,7 +20,8 @@ import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
-import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
+import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
+import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 import org.greenrobot.eventbus.EventBus
 
 
@@ -25,10 +29,14 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    /* View model */
+    /* View models */
     private lateinit var viewModel: MainViewModel
 
     private lateinit var navController: NavController
+
+    /* Use cases */
+    private val retrieveUserProfile = RetrieveUserProfile()
+    private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
 
     companion object {
         val TAG: String = MainActivity::class.java.simpleName
@@ -36,6 +44,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Set the status bar color
+        window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary)
+        setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
         // Register EventBus
 //        EventBus.getDefault().register(this)
@@ -72,6 +84,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun setStatusBarTextColor(isLightTheme: Boolean) {
+        val decor = window.decorView
+        if (isLightTheme) {
+            decor.systemUiVisibility =
+                decor.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            decor.systemUiVisibility =
+                decor.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        }
+    }
+
     override fun onStart() {
         super.onStart()
     }
@@ -92,122 +115,64 @@ class MainActivity : AppCompatActivity() {
         /* Get user data */
 
         // Get profile data
-        val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
-        db.whereEqualTo("id", currentUser.uid).get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
+        retrieveUserProfile(currentUser.uid) { student ->
 
-                    // Get user data
-                    val data = document.data
+            // Actions to perform when the user profile is retrieved
+            studentRepository.setStudent(student)
 
-                    Log.d(TAG, "Document found with ID: ${document.id} => $data")
+            // Post a user data loaded event
+            EventBus.getDefault().post(
+                OnUserDataLoaded(
+                    student,
+                    UserDataEvent.PROFILE
+                )
+            )
 
-                    val student = MaghribMengajiUser(
-                        currentUser.uid,
-                        currentUser.displayName,
-                        currentUser.email,
-                        role = data["role"] as String?,
-                        lastPageId = data["lastPageId"] as Int?,
-                        ustadhId = data["ustadhId"] as String?,
-                    )
+            Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT)
+                .show()
 
-                    studentRepository.setStudent(student)
+            // Start retrieving user data
+            retrieveUstadhProfile(student.ustadhId!!)
+            retrieveQuranPageStudent(student.id!!)
 
-                    // Post a user data loaded event
-                    EventBus.getDefault().post(
-                        OnUserDataLoaded(
-                            student,
-                            UserDataEvent.PROFILE
-                        )
-                    )
+            student.role?.let { // If role is not null
+                // Adjust nav graph based on the user's role
+                adjustNavGraph(it)
+                Log.d(TAG, "User's role: $it")
 
-                    Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT)
-                        .show()
-
-                    // Start retrieving user data
-                    retrieveUserData(currentUser.uid)
-
-                    student.role?.let { // If role is not null
-                        // Adjust nav graph based on the user's role
-                        adjustNavGraph(it)
-                        Log.d(TAG, "User's role: $it")
-
-                        // Navigate to ustadh selection if ustadhId is null
-                        if (it == MaghribMengajiUser.ROLE_STUDENT && student.ustadhId == null) {
-                            navController.navigate(R.id.action_global_ustadhListFragment)
-                        }
-                    }
-
-                }
-                if (documents.isEmpty) {
-                    Log.d(TAG, "No matching documents found.")
+                // Navigate to ustadh selection if ustadhId is null
+                if (it == MaghribMengajiUser.ROLE_STUDENT && student.ustadhId == null) {
+                    navController.navigate(R.id.action_global_ustadhListFragment)
                 }
             }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
-            }
+        }
 
         /* End of auth */
     }
 
-    private fun retrieveUserData(uid: String) {
+    private fun retrieveUstadhProfile(ustadhId: String) {
+        retrieveUserProfile(ustadhId) { ustadh ->
+            studentRepository.setUstadh(ustadh)
+        }
+    }
+
+    private fun retrieveQuranPageStudent(uid: String) {
 
         // Get quran page data
-        val dbPage = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
-        dbPage.whereEqualTo("studentId", uid).get()
-            .addOnSuccessListener { documents ->
+        retrieveQuranPageStudent(uid) { pageStudents ->
+            // Actions to perform when the list of QuranPageStudents is retrieved
+            quranPageStudentRepository.setRecords(pageStudents, true)
 
-                val pageStudents = arrayListOf<QuranPageStudent>()
-
-                for (document in documents) {
-
-                    // Get quran page data
-                    val quranPageData = document.data
-
-                    Log.d(TAG, "Document found with ID: ${document.id} => $quranPageData")
-                    Log.d(TAG, quranPageData["pageId"].toString())
-
-                    val pageId = (quranPageData["pageId"] as? Long)?.toInt()
-                    val ocrscore = (quranPageData["ocrscore"] as? Long)?.toInt()
-                    val tidinessScore = (quranPageData["tidinessScore"] as? Long)?.toInt()
-                    val accuracyScore = (quranPageData["accuracyScore"] as? Long)?.toInt()
-                    val consistencyScore = (quranPageData["consistencyScore"] as? Long)?.toInt()
-
-                    val pageStudent = QuranPageStudent(
-                        pageId,
-                        quranPageData["studentId"] as String?,
-                        quranPageData["teacherId"] as String?,
-                        quranPageData["pictureUriString"] as String?,
-                        ocrscore,
-                        tidinessScore,
-                        accuracyScore,
-                        consistencyScore
-                    )
-
-                    pageStudents.add(pageStudent)
-
-                }
-                MainApplication.quranPageStudentRepository.setRecords(pageStudents, true)
-
-                // Post a user data loaded event
-                EventBus.getDefault().post(
-                    OnUserDataLoaded(
-                        studentRepository.getStudent(),
-                        UserDataEvent.PAGE
-                    )
+            // Post a user data loaded event
+            EventBus.getDefault().post(
+                OnUserDataLoaded(
+                    studentRepository.getStudent(),
+                    UserDataEvent.PAGE
                 )
+            )
 
-                if (documents.isEmpty) {
-                    Log.d(TAG, "No matching documents found.")
-                }
-
-                Toast.makeText(this, "Data imported", Toast.LENGTH_SHORT)
-                    .show()
-
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
-            }
+            Toast.makeText(this, "Data imported", Toast.LENGTH_SHORT).show()
+        }
 
     }
 

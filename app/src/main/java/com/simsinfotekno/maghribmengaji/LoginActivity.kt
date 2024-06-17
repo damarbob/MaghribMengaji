@@ -42,9 +42,9 @@ class LoginActivity : AppCompatActivity() {
         navController =
             (supportFragmentManager.findFragmentById(binding.loginContent.navHostFragmentContentLogin.id) as NavHostFragment).navController
 
-        setStatusBarTextColor(isLightTheme = false)// Set the status bar color
         // Set the status bar color
         window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary_variant)
+        setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
         // Bottom sheet attributes
         bottomSheetBehavior =

@@ -16,6 +16,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
@@ -115,10 +117,14 @@ class HomeFragment : Fragment() {
 
         }
         viewModel.lastPageId.observe(viewLifecycleOwner) { lastPageId ->
-            if (lastPageId == null)
+            if (lastPageId == null) {
                 binding.homeTextLastWritten.text = getString(R.string.no_data)
-            else
-                binding.homeTextLastWritten.text = lastPageId.toString()
+                binding.homeTextLastWrittenVolume.text = getString(R.string.no_data)
+            }
+            else {
+                binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), lastPageId.toString())
+                binding.homeTextLastWrittenVolume.text = String.format(requireContext().getString(R.string.quran_volume), quranVolumeRepository.getRecordByPageId(lastPageId)?.name)
+            }
         }
         viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->
 
@@ -129,6 +135,11 @@ class HomeFragment : Fragment() {
             volumeAdapter.notifyDataSetChanged()
             Log.d(TAG, "Added dataset to volume adapter")
 
+        }
+        studentRepository.ustadhLiveData.observe(viewLifecycleOwner) {
+            Log.d(TAG, "Ustadh: $it")
+            binding.homeTextUstadhName.text =
+                if (it != null) it.fullName else getString(R.string.no_data)
         }
 
         /* Listeners */
