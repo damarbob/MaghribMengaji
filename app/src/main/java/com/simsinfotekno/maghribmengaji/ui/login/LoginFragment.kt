@@ -40,7 +40,7 @@ class LoginFragment : Fragment() {
         viewModel.loginResult.observe(viewLifecycleOwner, Observer { result ->
             result?.onSuccess {
                 // Navigate to the next screen or update UI
-                Toast.makeText(requireContext(), "Welcome back, ${it.displayName}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "${getString(R.string.salam)}\n${getString(R.string.welcome_back)}, ${it.displayName}", Toast.LENGTH_SHORT).show()
 
                 val intent = Intent(activity, MainActivity::class.java)
                 startActivity(intent)

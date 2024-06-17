@@ -133,7 +133,7 @@ class RecordingFragment : Fragment() {
                     Manifest.permission.READ_MEDIA_AUDIO
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                Toast.makeText(requireContext(), "Permissions are not granted", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), getString(R.string.permission_are_not_granted), Toast.LENGTH_SHORT)
                     .show()
                 return
             }
@@ -143,7 +143,7 @@ class RecordingFragment : Fragment() {
                     Manifest.permission.RECORD_AUDIO
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                Toast.makeText(requireContext(), "Permissions are not granted", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), getString(R.string.permission_are_not_granted), Toast.LENGTH_SHORT)
                     .show()
                 return
             }
@@ -254,7 +254,7 @@ class RecordingFragment : Fragment() {
                 Manifest.permission.READ_MEDIA_AUDIO
             )
         } else {
-            Toast.makeText(requireContext(), "Permission not granted", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.permission_are_not_granted), Toast.LENGTH_LONG).show()
         }
         return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
     }
@@ -280,9 +280,9 @@ class RecordingFragment : Fragment() {
                 val recordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED
                 val readAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED
                 if (recordAccepted && readAccepted) {
-                    Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.permission_granted), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
                 }
             }
         }

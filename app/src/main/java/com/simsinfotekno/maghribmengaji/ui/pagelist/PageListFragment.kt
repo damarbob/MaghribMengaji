@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.MenuRes
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
@@ -176,6 +177,11 @@ class PageListFragment : Fragment() {
             }
             .addOnFailureListener { exception ->
                 Log.d(VolumeListFragment.TAG, "get failed with ", exception)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.failed_to_fetch_data),
+                    Toast.LENGTH_LONG
+                ).show()
             }
     }
 

@@ -17,7 +17,7 @@
         android:layout_gravity="end"
         android:layout_marginEnd="16dp"
         android:visibility="gone"
-        app:icon="@drawable/stop_24px" />
+        app:icon="@drawable/view_list_24px" />
 
     <Button
         android:id="@+id/volumeListButtonViewTypeGrid"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginEnd="16dp"
-        app:icon="@drawable/stop_24px" />
+        app:icon="@drawable/grid_view_24px" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/volumeListRecyclerViewVolumeList"

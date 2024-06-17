@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -92,16 +91,12 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         pageId = arguments?.getInt("pageId")
         viewModel.pageId = pageId
 
-        val page =
-            quranPageRepository.getRecordById(pageId) // Get QuranPage instance
-        val volume =
-            quranVolumeRepository.getRecordByPageId(page!!.id) // Get QuranVolume instance
-        val pageStudent =
-            quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
+        val page = quranPageRepository.getRecordById(pageId) // Get QuranPage instance
+        val volume = quranVolumeRepository.getRecordByPageId(page!!.id) // Get QuranVolume instance
+        val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
 
         // View
-        binding.pageTextViewVolume.text =
-            getString(R.string.quran_volume, volume?.id.toString())
+        binding.pageTextViewVolume.text = getString(R.string.quran_volume, volume?.id.toString())
         binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
 
         bottomSheetBehaviorCheckResult = BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)
@@ -116,11 +111,15 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 // Do something for new state.
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     Handler(Looper.getMainLooper()).postDelayed({
-                        val materialFade = MaterialFade().apply {
-                            duration = 150L
+                        if (isAdded) {
+                            val materialFade = MaterialFade().apply {
+                                duration = 150L
+                            }
+                            container?.let {
+                                TransitionManager.beginDelayedTransition(it, materialFade)
+                            }
+                            binding.pageButtonCheckResult.visibility = View.VISIBLE
                         }
-                        container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
-                        binding.pageButtonCheckResult.visibility = View.VISIBLE
                     }, 250)
                 }
             }
@@ -134,24 +133,31 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         bottomSheetBehaviorCheckResult.addBottomSheetCallback(bottomSheetCallback)
 
         // Back press when bottom sheet showed
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (bottomSheetBehaviorCheckResult.state != BottomSheetBehavior.STATE_HIDDEN) {
-                    bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_HIDDEN
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        val materialFade = MaterialFade().apply {
-                            duration = 150L
-                        }
-                        container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
-                        binding.pageButtonCheckResult.visibility = View.VISIBLE
-                    }, 250)
-                } else {
-                    isEnabled = false
-                    requireActivity().onBackPressedDispatcher.onBackPressed()
-                    bottomSheetBehaviorCheckResult.removeBottomSheetCallback(bottomSheetCallback)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (bottomSheetBehaviorCheckResult.state != BottomSheetBehavior.STATE_HIDDEN) {
+                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_HIDDEN
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            if (isAdded) {
+                                val materialFade = MaterialFade().apply {
+                                    duration = 150L
+                                }
+                                container?.let {
+                                    TransitionManager.beginDelayedTransition(it, materialFade)
+                                }
+                                binding.pageButtonCheckResult.visibility = View.VISIBLE
+                            }
+                        }, 250)
+                        TransitionManager.endTransitions(container)
+                    } else {
+                        isEnabled = false
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
+                        bottomSheetBehaviorCheckResult.removeBottomSheetCallback(bottomSheetCallback)
+                    }
                 }
-            }
-        })
+            })
 
         binding.pageButtonPrevious.isEnabled = pageId != 1
         binding.pageButtonForward.isEnabled = pageId != 604
@@ -161,8 +167,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
             binding.pageButtonSubmit.visibility = View.VISIBLE // Show submit button
             binding.pageButtonCheckResult.visibility = View.GONE // Hide check result button
-        }
-        else {
+        } else {
             // If student had submitted
 
             binding.pageButtonSubmit.visibility = View.GONE // Show submit button
@@ -189,37 +194,39 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             this.checkResultProgressIndicatorAccuracy.progress = accuracyScore
             this.checkResultProgressIndicatorConsistency.progress = consistencyScore
 
-            pageStudent?.pictureUriString?.let { loadImageIntoImageView(it, this.checkResultImageViewStudentPageImage) }
+            pageStudent?.pictureUriString?.let {
+                loadImageIntoImageView(it, this.checkResultImageViewStudentPageImage)
+            }
         }
-
-
 
         // Get the document from Firestore and load the image to ImageView
         val pageImage = binding.pageImageViewPage
 
         quranPageRepository.getFirebaseRecordById(pageId!!,
             { imageUrl ->
-
                 // Load image to ImageView
-                loadImageIntoImageView(imageUrl, pageImage)
-
+                if (isAdded) {
+                    loadImageIntoImageView(imageUrl, pageImage)
+                }
             },
             { exception ->
-
-                Toast.makeText(
-                    requireContext(),
-                    "Failed to load image: ${exception.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-                binding.pageProgressBar.visibility = View.GONE // Hide progress bar
-
+                if (isAdded) {
+                    Toast.makeText(
+                        requireContext(),
+                        "${getString(R.string.failed_to_load_image)} ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    binding.pageProgressBar.visibility = View.GONE // Hide progress bar
+                }
             })
 
         binding.pageButtonForward.setOnClickListener {
             val newPageId = pageId!! + 1
             val bundle = Bundle()
             bundle.putInt("pageId", newPageId)
-            findNavController().navigate(R.id.action_global_pageFragment, bundle)
+            if (isAdded) {
+                findNavController().navigate(R.id.action_global_pageFragment, bundle)
+            }
         }
 
         binding.pageButtonPrevious.setOnClickListener {
@@ -228,38 +235,41 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 putInt("pageId", newPageId)
                 putBoolean("previous", true)
             }
-            findNavController().navigate(R.id.action_global_pageFragment, bundle)
-            exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+            if (isAdded) {
+                findNavController().navigate(R.id.action_global_pageFragment, bundle)
+                exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+            }
         }
 
         // Submit button
         binding.pageButtonSubmit.setOnClickListener {
-
-            launchScannerUseCase(this, scannerLauncher)
-
-            // Browse image to upload TODO: Move to use case
-//            val intent = Intent(Intent.ACTION_GET_CONTENT)
-//            intent.type = "image/*"
-//            startActivityForResult(intent, PICK_IMAGE_REQUEST)
+            if (isAdded) {
+                launchScannerUseCase(this, scannerLauncher)
+            }
         }
 
         binding.pageButtonRecite.setOnClickListener {
-            val intent = Intent(this.context, RecordingActivity::class.java).apply {
-                putExtra("pageId", pageId)
-//                putExtra("studentId", Firebase.auth.currentUser!!.uid)
+            if (isAdded) {
+                val intent = Intent(this.context, RecordingActivity::class.java).apply {
+                    putExtra("pageId", pageId)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
         }
 
         binding.pageButtonCheckResult.setOnClickListener {
-            val materialFade = MaterialFade().apply {
-                duration = 84L
+            if (isAdded) {
+                val materialFade = MaterialFade().apply {
+                    duration = 84L
+                }
+                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+                binding.pageButtonCheckResult.visibility = View.GONE
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (isAdded) {
+                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
+                }, 100)
             }
-            container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
-            binding.pageButtonCheckResult.visibility = View.GONE
-            Handler(Looper.getMainLooper()).postDelayed({
-            bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
-            }, 100)
         }
 
         return binding.root
@@ -280,8 +290,10 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     dataSource: DataSource,
                     isFirstResource: Boolean
                 ): Boolean {
-                    binding.pageProgressBar.visibility = View.GONE
-                    imageView.visibility = View.VISIBLE
+                    if (isAdded) {
+                        binding.pageProgressBar.visibility = View.GONE
+                        imageView.visibility = View.VISIBLE
+                    }
                     return false
                 }
 
@@ -291,9 +303,16 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     target: Target<Drawable>,
                     isFirstResource: Boolean
                 ): Boolean {
-                    binding.pageProgressBar.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Failed to load image", Toast.LENGTH_SHORT)
-                        .show()
+                    if (isAdded) {
+                        binding.pageProgressBar.visibility = View.GONE
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.failed_to_load_image),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+
+                    }
                     return false
                 }
             })
