@@ -78,4 +78,5 @@
     <string name="permission_granted">Izin diberikan</string>
     <string name="permission_denied">Izin ditolak</string>
     <string name="failed_to_create_new_student_data">Gagal membuat data Siswa baru</string>
+    <string name="your_similarity_score">Nilai kemiripan Anda %1$s</string>
 </resources>

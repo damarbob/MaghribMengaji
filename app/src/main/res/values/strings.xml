@@ -79,6 +79,7 @@
     <string name="permission_granted">Permission granted</string>
     <string name="permission_denied">Permission denied</string>
     <string name="failed_to_create_new_student_data">Failed to create new Student data</string>
+    <string name="your_similarity_score">Your similarity score is %1$s</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

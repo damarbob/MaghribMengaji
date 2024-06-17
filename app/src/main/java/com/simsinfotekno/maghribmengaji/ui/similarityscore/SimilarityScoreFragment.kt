@@ -57,8 +57,8 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private val binding get() = _binding!!
 
     // OCR and Quran API
-    private lateinit var quranApiResult: String
-    private lateinit var ocrResult: String
+    private var quranApiResult: String? = null
+    private var ocrResult: String? = null
     private val quranApiResultDeferred = CompletableDeferred<String>()
 
     /* Variables */
@@ -67,6 +67,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private var bitmap: Bitmap? = null
     private lateinit var imageUri: Uri
     private lateinit var container: ViewGroup
+    private var similarityIndex: Int = 0
 
     /* Use cases */
     private val loadBitmapFromUri = LoadBitmapFromUri()
@@ -97,6 +98,8 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+
+        materialAlertDialog = MaterialAlertDialogBuilder(requireContext()).create()
 
         // Set up the back button callback
         backPressedCallback = object : OnBackPressedCallback(true) {
@@ -143,6 +146,10 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             }?.onFailure { exception ->
                 // Show error message
                 Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+                binding.similarityScoreButtonUpload.isEnabled = true
+                binding.similarityScoreButtonUploadLow.isEnabled = true
+                binding.similarityScoreButtonRetry.isEnabled = true
+                binding.similarityScoreButtonRetryLow.isEnabled = true
             }
         }
 
@@ -157,6 +164,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                 binding.similarityScoreTextViewScore.text = it.toString()
                 binding.similarityScoreCircularProgressScore.progress = it
                 binding.similarityScoreCircularProgress.visibility = View.GONE
+                similarityIndex = it
             }
         }
 
@@ -214,7 +222,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         /* View */
         maximizeView(
             maximized = false,
-            scorePassed = true,
+            scorePassed = false,
             onCreateView = true
         ) // Show only progress indicator and close button
 
@@ -224,23 +232,66 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
         /* Listeners */
         binding.similarityScoreButtonUpload.setOnClickListener {
-            viewModel.uploadPageStudent()
+            materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.are_you_sure))
+                .setMessage(getString(R.string.your_similarity_score, similarityIndex.toString()))
+                .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                    viewModel.uploadPageStudent()
+                    binding.similarityScoreButtonUpload.isEnabled = false
+                    binding.similarityScoreButtonUploadLow.isEnabled = false
+                    binding.similarityScoreButtonRetry.isEnabled = false
+                    binding.similarityScoreButtonRetryLow.isEnabled = false
+                }
+                .show()
         }
 
         binding.similarityScoreButtonUploadLow.setOnClickListener {
-            viewModel.uploadPageStudent()
+            materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.are_you_sure))
+                .setMessage(getString(R.string.your_similarity_score, similarityIndex.toString()))
+                .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                    viewModel.uploadPageStudent()
+                    binding.similarityScoreButtonUpload.isEnabled = false
+                    binding.similarityScoreButtonUploadLow.isEnabled = false
+                    binding.similarityScoreButtonRetry.isEnabled = false
+                    binding.similarityScoreButtonRetryLow.isEnabled = false
+                }
+                .show()
         }
 
         binding.similarityScoreButtonRetry.setOnClickListener {
-            LaunchScannerUseCase().invoke(this, scannerLauncher)
+            materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.are_you_sure))
+                .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                    LaunchScannerUseCase().invoke(this, scannerLauncher)
+                }
+                .show()
         }
 
         binding.similarityScoreButtonRetryLow.setOnClickListener {
-            LaunchScannerUseCase().invoke(this, scannerLauncher)
+            materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.are_you_sure))
+                .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                    LaunchScannerUseCase().invoke(this, scannerLauncher)
+                }
+                .show()
         }
 
         binding.similarityScoreButtonClose.setOnClickListener {
-            if (binding.similarityScoreButtonUpload.visibility == View.GONE || binding.similarityScoreButtonUploadLow.visibility == View.GONE || binding.similarityScoreCircularProgress.visibility == View.VISIBLE) {
+//            if (binding.similarityScoreButtonUpload.visibility == View.GONE || binding.similarityScoreButtonUploadLow.visibility == View.GONE || binding.similarityScoreCircularProgress.visibility == View.VISIBLE) {
+            if (binding.similarityScoreTextViewScore.visibility == View.GONE || binding.similarityScoreCircularProgress.visibility == View.VISIBLE) {
                 backPressedCallback.handleOnBackPressed()
             } else findNavController().popBackStack()
         }
@@ -249,27 +300,33 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     }
 
     private fun maximizeView(maximized: Boolean, scorePassed: Boolean, onCreateView: Boolean) {
-        if (!onCreateView) {
+        if (!onCreateView) { // When onCreateView not animated
             val materialFade = MaterialFade().apply {
-                duration = 400L
+                duration = 150L
             }
             TransitionManager.beginDelayedTransition(container, materialFade)
         }
         // Whether to show all or only progress indicator and close button
-        binding.similarityScoreTextView.visibility = if (maximized) View.VISIBLE else View.GONE
+//        binding.similarityScoreTextView.visibility = if (maximized) View.VISIBLE else View.GONE
         binding.similarityScoreTextViewScore.visibility = if (maximized) View.VISIBLE else View.GONE
         binding.similarityScoreButtonUpload.visibility =
-            if (maximized && scorePassed) View.VISIBLE else View.GONE
+//            if (maximized && scorePassed) View.VISIBLE else View.GONE
+            if (scorePassed) View.VISIBLE else View.GONE
         binding.similarityScoreButtonRetry.visibility =
-            if (maximized && scorePassed) View.VISIBLE else View.GONE
+//            if (maximized && scorePassed) View.VISIBLE else View.GONE
+            if (scorePassed) View.VISIBLE else View.GONE
         binding.similarityScoreTextViewDetail.visibility =
-            if (maximized && scorePassed) View.VISIBLE else View.GONE
+//            if (maximized && scorePassed) View.VISIBLE else View.GONE
+            if (scorePassed) View.VISIBLE else View.GONE
         binding.similarityScoreButtonUploadLow.visibility =
-            if (maximized && !scorePassed) View.VISIBLE else View.GONE
+//            if (maximized && !scorePassed) View.VISIBLE else View.GONE
+            if (!scorePassed) View.VISIBLE else View.GONE
         binding.similarityScoreButtonRetryLow.visibility =
-            if (maximized && !scorePassed) View.VISIBLE else View.GONE
+//            if (maximized && !scorePassed) View.VISIBLE else View.GONE
+            if (!scorePassed) View.VISIBLE else View.GONE
         binding.similarityScoreTextViewDetailLow.visibility =
-            if (maximized && !scorePassed) View.VISIBLE else View.GONE
+//            if (maximized && !scorePassed) View.VISIBLE else View.GONE
+            if (!scorePassed) View.VISIBLE else View.GONE
         binding.similarityScoreCircularProgressScore.visibility =
             if (maximized) View.VISIBLE else View.GONE
     }
@@ -298,7 +355,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             activity?.runOnUiThread {
                 Toast.makeText(requireContext(), exception.toString(), Toast.LENGTH_LONG).show()
             }
-            binding.similarityScoreButtonRetryLow.visibility = View.VISIBLE
+            maximizeView(true, scorePassed = false, onCreateView = false)
             Log.d(TAG, exception.toString())
         } else {
             Log.e(TAG, "Binding is null in onOCRFailure: $exception")
@@ -318,7 +375,8 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             quranApiResultDeferred.complete(extractedQuranResult)
 
             // If ocrResult is already ready, calculate similarity index
-            if (::ocrResult.isInitialized) {
+//            if (::ocrResult.isInitialized) {
+            if (::ocrResult != null) {
                 calculateSimilarityIndex()
             }
         }
@@ -331,7 +389,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             activity?.runOnUiThread {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
             }
-            binding.similarityScoreButtonRetryLow.visibility = View.VISIBLE
+            maximizeView(true, scorePassed = false, onCreateView = false)
             Log.d(TAG, message)
         } else {
             Log.e(TAG, "Binding is null in onQuranAPIResultFailure: $message")
@@ -343,37 +401,45 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     */
     private suspend fun calculateSimilarityIndex() {
         withContext(Dispatchers.Main) {
-            val similarityIndex = jaccardSimilarityIndex(quranApiResult, ocrResult)
+            val similarityIndex = quranApiResult?.let { ocrResult?.let { it1 ->
+                jaccardSimilarityIndex(it,
+                    it1
+                )
+            } }
 
             viewModel.oCRScore = similarityIndex // Set OCR score in view model
 
             // Save similarityIndex to ViewModel
-            viewModel.similarityIndex.value = similarityIndex.toInt()
+            viewModel.similarityIndex.value = similarityIndex?.toInt()
 
             // Maximize view and show score
-            if (similarityIndex > kkm) {
-                binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
-                    getString(R.string.your_score_is_ssr_press_upload_to_send_your_score),
-                    HtmlCompat.FROM_HTML_MODE_LEGACY
-                )
-                maximizeView(maximized = true, scorePassed = true, onCreateView = false)
-            } else {
-                binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
-                    getString(R.string.your_score_is_low),
-                    HtmlCompat.FROM_HTML_MODE_LEGACY
-                )
-                maximizeView(maximized = true, scorePassed = false, onCreateView = false)
+            if (similarityIndex != null) {
+                if (similarityIndex > kkm) {
+                    binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
+                        getString(R.string.your_score_is_ssr_press_upload_to_send_your_score),
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                    maximizeView(maximized = true, scorePassed = true, onCreateView = false)
+                } else {
+                    binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
+                        getString(R.string.your_score_is_low),
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                    maximizeView(maximized = true, scorePassed = false, onCreateView = false)
+                }
             }
 
             // Add animation
-            ValueAnimator.ofInt(similarityIndex.toInt()).apply {
-                duration = 1000
-                addUpdateListener {
-                    val animationValue = it.animatedValue as Int
-                    binding.similarityScoreTextViewScore.text = animationValue.toString()
-                    binding.similarityScoreCircularProgressScore.progress = animationValue
-                }
-            }.start()
+            if (similarityIndex != null) {
+                ValueAnimator.ofInt(similarityIndex.toInt()).apply {
+                    duration = 1000
+                    addUpdateListener {
+                        val animationValue = it.animatedValue as Int
+                        binding.similarityScoreTextViewScore.text = animationValue.toString()
+                        binding.similarityScoreCircularProgressScore.progress = animationValue
+                    }
+                }.start()
+            }
         }
     }
 
