@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="Text.H1">36sp</dimen>
+    <dimen name="Text.H2">32sp</dimen>
+    <dimen name="Text.H3">28sp</dimen>
+    <dimen name="Text.H4">24sp</dimen>
+    <dimen name="Text.H5">20sp</dimen>
+    <dimen name="Text.P">16sp</dimen>
+
     <style name="Widget.App.H1" parent="Widget.AppCompat.TextView">
-        <item name="android:textSize">36sp</item>
+        <item name="android:textSize">@dimen/Text.H1</item>
     </style>
     <style  name="Widget.App.H1.Bold" parent="Widget.App.H1">
         <item name="android:textStyle">bold</item>
@@ -10,10 +17,35 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
+    <style name="Widget.App.H2" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">@dimen/Text.H2</item>
+    </style>
+    <style name="Widget.App.H3" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">@dimen/Text.H3</item>
+    </style>
+
+    <style name="Widget.App.H4" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">@dimen/Text.H4</item>
+    </style>
+    <style  name="Widget.App.H4.Bold" parent="Widget.App.H4">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.App.H5" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">@dimen/Text.H5</item>
+    </style>
+    <style  name="Widget.App.H5.Bold" parent="Widget.App.H5">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Widget.App.P" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">@dimen/Text.P</item>
     </style>
     <style name="Widget.App.P.Bold" parent="Widget.App.P">
         <item name="android:textStyle">bold</item>
+    </style>
+    <style name="Widget.App.P.Primary" parent="Widget.App.P">
+        <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
 </resources>

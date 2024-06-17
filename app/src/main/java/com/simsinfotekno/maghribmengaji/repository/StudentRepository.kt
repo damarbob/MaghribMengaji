@@ -1,8 +1,16 @@
 package com.simsinfotekno.maghribmengaji.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 
 class StudentRepository() : Repository<MaghribMengajiUser>() {
+
+    /* Variables */
+//    var ustadh: MaghribMengajiUser? = null // Will be filled by retrieveUserProfile(ustadhId) invocation in MainActivity
+    private val _ustadhLiveData = MutableLiveData<MaghribMengajiUser>(null)
+    val ustadhLiveData: LiveData<MaghribMengajiUser> = _ustadhLiveData
+
     override fun onStart() {
 //        TODO("Not yet implemented")
     }
@@ -49,6 +57,14 @@ class StudentRepository() : Repository<MaghribMengajiUser>() {
             }
         }
         return null
+    }
+
+    fun setUstadh(ustadh: MaghribMengajiUser) {
+        _ustadhLiveData.value = ustadh
+    }
+
+    fun getUstadh(): MaghribMengajiUser? {
+        return _ustadhLiveData.value
     }
 
 }

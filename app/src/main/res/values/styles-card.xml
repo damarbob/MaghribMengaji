@@ -16,4 +16,22 @@
         <item name="cardElevation">2dp</item>
         <item name="cardMaxElevation">2dp</item>
     </style>
+
+    <style name="Widget.App.Card" parent="Theme.Material3.DayNight">
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerLowest</item>
+    </style>
+    <style name="Widget.App.Card.Home" parent="Widget.App.Card">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cardElevation">8dp</item>
+        <item name="cardMaxElevation">16dp</item>
+    </style>
+    <style name="Widget.App.Card.List" parent="Widget.App.Card">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardMaxElevation">8dp</item>
+    </style>
 </resources>
