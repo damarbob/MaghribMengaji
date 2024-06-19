@@ -66,7 +66,7 @@ class VolumeListFragment : Fragment() {
         /* Views */
 
         // Initialize RecyclerView with default view type
-        setupRecyclerView(VolumeAdapter.VIEW_ITEM_LIST)
+        setupRecyclerView(VolumeAdapter.VIEW_ITEM_GRID)
 
         binding.volumeListButtonViewTypeGrid.setOnClickListener {
             setupRecyclerView(VolumeAdapter.VIEW_ITEM_GRID)

@@ -93,13 +93,15 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
         val page = quranPageRepository.getRecordById(pageId) // Get QuranPage instance
         val volume = quranVolumeRepository.getRecordByPageId(page!!.id) // Get QuranVolume instance
-        val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
+        val pageStudent =
+            quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
 
         // View
         binding.pageTextViewVolume.text = getString(R.string.quran_volume, volume?.id.toString())
         binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
 
-        bottomSheetBehaviorCheckResult = BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)
+        bottomSheetBehaviorCheckResult =
+            BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)
 
         // Initial state of check result bottom sheet
         bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_HIDDEN
@@ -121,11 +123,15 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                             binding.pageButtonCheckResult.visibility = View.VISIBLE
                         }
                     }, 250)
+                    container?.let{
+                        TransitionManager.endTransitions(it)
+                    }
                 }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 // Do something for slide offset.
+
             }
         }
 
@@ -139,18 +145,6 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 override fun handleOnBackPressed() {
                     if (bottomSheetBehaviorCheckResult.state != BottomSheetBehavior.STATE_HIDDEN) {
                         bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_HIDDEN
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            if (isAdded) {
-                                val materialFade = MaterialFade().apply {
-                                    duration = 150L
-                                }
-                                container?.let {
-                                    TransitionManager.beginDelayedTransition(it, materialFade)
-                                }
-                                binding.pageButtonCheckResult.visibility = View.VISIBLE
-                            }
-                        }, 250)
-                        TransitionManager.endTransitions(container)
                     } else {
                         isEnabled = false
                         requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -269,6 +263,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                         bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
                     }
                 }, 100)
+                TransitionManager.endTransitions(container)
             }
         }
 
