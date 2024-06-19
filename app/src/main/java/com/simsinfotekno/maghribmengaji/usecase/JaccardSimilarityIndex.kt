@@ -6,18 +6,36 @@ class JaccardSimilarityIndex {
 
     /**
      * Calculate similarity index of 2 strings
-     * with Jaccard method
+     * with Jaccard method and normalize to a scale
+     * of 0 to 100 where 70 is scaled to 100.
      */
     operator fun invoke(str1: String, str2: String): Double {
-
         val removeDiacritics = RemoveDiacritics()
 
+        // Clean and convert strings to sets
         val cleanStr1 = removeDiacritics(str1).toSet()
         val cleanStr2 = removeDiacritics(str2).toSet()
 
+        // Calculate intersection and union sizes
         val intersectionSize = cleanStr1.intersect(cleanStr2).size.toDouble()
         val unionSize = cleanStr1.union(cleanStr2).size.toDouble()
 
-        return round(intersectionSize / unionSize * 100)
+        // Calculate the raw Jaccard index
+        val rawScore = intersectionSize / unionSize
+
+        // Normalize the raw score
+        return normalizeScore(rawScore)
+    }
+
+    /**
+     * Normalize the Jaccard index to a scale of 0 to 100
+     * where 70 is scaled to 100.
+     */
+    private fun normalizeScore(rawScore: Double): Double {
+        // Normalize to a 0-100 scale where 70 maps to 100
+        val normalizedScore = (rawScore / (70.0 / 100.0))
+
+        // Round and return the normalized score
+        return round(normalizedScore * 100) / 100
     }
 }

@@ -82,7 +82,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private val kkm = 60
 
     private lateinit var backPressedCallback: OnBackPressedCallback
-    private lateinit var materialAlertDialog: AlertDialog
+    private var materialAlertDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -451,7 +451,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
     override fun onDestroyView() {
         super.onDestroyView()
-        materialAlertDialog.dismiss()
+        materialAlertDialog?.dismiss()
         _binding = null
         quranApiResultDeferred.cancel()
     }

@@ -42,8 +42,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:clipToPadding="false"
+        android:orientation="vertical"
         android:padding="24dp">
 
         <TextView
@@ -69,10 +69,10 @@
                     android:id="@+id/imageView"
                     android:layout_width="192dp"
                     android:layout_height="0dp"
-                    android:src="@drawable/img_quran"
-                    android:scaleType="fitCenter"
-                    android:rotation="60"
                     android:layout_marginBottom="-0dp"
+                    android:rotation="60"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/img_quran"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -131,8 +131,8 @@
             style="@style/Widget.App.Card.Home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:visibility="gone">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -180,8 +180,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="-16dp"
-            android:paddingBottom="16dp"
-            android:clipToPadding="false"/>
+            android:clipToPadding="false"
+            android:paddingBottom="16dp" />
 
     </LinearLayout>
 

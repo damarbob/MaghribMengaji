@@ -71,7 +71,7 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pageRelativeLayoutBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,31 +89,38 @@
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:icon="@drawable/round_arrow_back_ios_24" />
+            app:icon="@drawable/round_arrow_back_ios_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/pageButtonRecite"
             style="@style/Widget.Material3.Button.TonalButton.Icon"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:text="@string/recite"
+            android:visibility="gone"
             app:icon="@drawable/auto_stories_24px"
-            app:iconGravity="textStart" />
+            app:iconGravity="textStart"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/pageButtonPrevious"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/pageButtonSubmit"
             style="@style/Widget.Material3.Button.Icon"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_weight="1"
             android:text="@string/submit"
             app:icon="@drawable/photo_camera_24px"
-            app:iconGravity="textStart" />
+            app:iconGravity="textStart"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/pageButtonForward"
+            app:layout_constraintStart_toEndOf="@+id/pageButtonPrevious"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!--        <Button-->
         <!--            android:id="@+id/pageButtonCheckResult"-->
@@ -133,9 +140,13 @@
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:icon="@drawable/round_arrow_forward_ios_24" />
+            android:layout_gravity="end"
+            app:icon="@drawable/round_arrow_forward_ios_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/pageButtonCheckResult"
@@ -158,6 +169,7 @@
 
         <include
             android:id="@+id/pageBottomSheetCheckResult"
+            android:visibility="gone"
             layout="@layout/bottom_sheet_check_result" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

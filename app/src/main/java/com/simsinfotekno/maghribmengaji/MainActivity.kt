@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                 .show()
 
             // Start retrieving user data
-            retrieveUstadhProfile(student.ustadhId!!)
+            student.ustadhId?.let { retrieveUstadhProfile(it) }
             retrieveQuranPageStudent(student.id!!)
 
             student.role?.let { // If role is not null
@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                 )
             )
 
-            Toast.makeText(this, "Data imported", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "Page students imported")
         }
 
     }
