@@ -11,6 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -134,7 +136,11 @@ class HomeFragment : Fragment() {
             volumeAdapter.dataSet = data
             volumeAdapter.notifyDataSetChanged()
             Log.d(TAG, "Added dataset to volume adapter")
-
+            val materialFade = MaterialFade().apply {
+                duration = 150L
+            }
+            TransitionManager.beginDelayedTransition(binding.root, materialFade)
+            binding.homeRecyclerViewVolume.visibility = View.VISIBLE
         }
         studentRepository.ustadhLiveData.observe(viewLifecycleOwner) {
             Log.d(TAG, "Ustadh: $it")
