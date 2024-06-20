@@ -14,6 +14,7 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentReposit
 import com.simsinfotekno.maghribmengaji.event.OnPageStudentRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.event.OnRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
+import com.simsinfotekno.maghribmengaji.usecase.UpdateLastPageId
 import com.simsinfotekno.maghribmengaji.usecase.UploadFileToFirebaseStorageUseCase
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -39,6 +40,7 @@ class SimilarityScoreViewModel : ViewModel() {
 
     /* Use cases */
     private val uploadFileToFirebaseStorageUseCase = UploadFileToFirebaseStorageUseCase()
+    private val updateLastPageId = UpdateLastPageId()
 
     init {
         EventBus.getDefault().register(this)
@@ -59,8 +61,8 @@ class SimilarityScoreViewModel : ViewModel() {
         if (pageStudent != null) {
             pageStudent.pictureUriString = imageUriString
             _progressVisibility.value = false
-        }
-        else {
+        } else {
+
             quranPageStudentRepository.addRecord(
                 QuranPageStudent(
                     pageId!!,
@@ -70,12 +72,17 @@ class SimilarityScoreViewModel : ViewModel() {
                     createdAt = Timestamp.now(),
                 )
             )
+
+            // Update last page id in the db
+            updateLastPageId(pageId!!, { Log.d(TAG, "Successfully updated last page id") }) {
+                Log.e(TAG, "Failed to update last page id: $it")
+            }
         }
 
     }
 
     // Event listeners
-    // Subscribe to OnSelectedPlaceChangedEvent event
+    // Subscribe to OnPageStudentRepositoryUpdate event
     @Subscribe(threadMode = ThreadMode.POSTING)
     fun _083305312024(event: OnPageStudentRepositoryUpdate) {
         if (event.status == OnRepositoryUpdate.Event.ACTION_ADD) {
@@ -109,13 +116,16 @@ class SimilarityScoreViewModel : ViewModel() {
                                     record.pictureUriString = url
 
                                     // Add the record to remote database
-                                    remoteDb.add(record).addOnCompleteListener{
+                                    remoteDb.add(record).addOnCompleteListener {
                                         _progressVisibility.value = false
                                         if (it.isSuccessful) {
-                                            _remoteDbResult.value = Result.success(record) // Return user
-                                        }
-                                        else {
-                                            _remoteDbResult.value = Result.failure(it.exception ?: Exception("Failed to upload QuranPageStudent data to remote database"))
+                                            _remoteDbResult.value =
+                                                Result.success(record) // Return user
+                                        } else {
+                                            _remoteDbResult.value = Result.failure(
+                                                it.exception
+                                                    ?: Exception("Failed to upload QuranPageStudent data to remote database")
+                                            )
                                         }
                                     }
                                 },
@@ -141,7 +151,8 @@ class SimilarityScoreViewModel : ViewModel() {
 
                     } else {
                         Log.w(TAG, "Error getting documents.", task.exception)
-                        _remoteDbResult.value = Result.failure(Exception("Error getting documents. ${task.exception}"))
+                        _remoteDbResult.value =
+                            Result.failure(Exception("Error getting documents. ${task.exception}"))
                         _progressVisibility.value = false
                     }
                 }
