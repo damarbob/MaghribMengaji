@@ -4,6 +4,7 @@ import android.net.Uri
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.simsinfotekno.maghribmengaji.model.QuranPage
 
 // TODO: Unfinished use case, fix before use
 class UploadImageUseCase {
@@ -24,7 +25,7 @@ class UploadImageUseCase {
         pageId = idValue
 
         val db = FirebaseFirestore.getInstance()
-        db.collection("quranPages").whereEqualTo("id", idValue).get()
+        db.collection(QuranPage.COLLECTION).whereEqualTo("id", idValue).get()
             .addOnSuccessListener { querySnapshot ->
                 if (querySnapshot.documents.isNotEmpty()) {
                     val document = querySnapshot.documents[0]
@@ -58,7 +59,7 @@ class UploadImageUseCase {
     ) {
         val storage = FirebaseStorage.getInstance()
         val storageRef: StorageReference = storage.reference
-        val imageRef: StorageReference = storageRef.child("quranPages/$pageId")
+        val imageRef: StorageReference = storageRef.child("${QuranPage.COLLECTION}/$pageId")
 
         val uploadTask = imageRef.putFile(fileUri)
         uploadTask.addOnSuccessListener {
@@ -84,13 +85,13 @@ class UploadImageUseCase {
             "timestamp" to com.google.firebase.Timestamp.now()
         )
 
-        db.collection("quranPages").document(documentId)
+        db.collection(QuranPage.COLLECTION).document(documentId)
             .update(imageInfo as Map<String, Any>)
             .addOnSuccessListener {
                 onSuccess()
             }
             .addOnFailureListener { exception ->
-                db.collection("quranPages").document(documentId)
+                db.collection(QuranPage.COLLECTION).document(documentId)
                     .set(imageInfo)
                     .addOnSuccessListener {
                         onSuccess()

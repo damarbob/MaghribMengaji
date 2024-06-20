@@ -17,6 +17,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import com.simsinfotekno.maghribmengaji.MainApplication
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentVolumeListBinding
@@ -63,7 +64,24 @@ class VolumeListFragment : Fragment() {
     ): View {
         binding = FragmentVolumeListBinding.inflate(layoutInflater, container, false)
 
+        /* Variables */
+        val lastPageId = MainApplication.studentRepository.getStudent().lastPageId
+
         /* Views */
+        if (lastPageId == null) {
+            binding.volumeListTextLastWritten.text = getString(R.string.no_data)
+            binding.volumeListTextLastWrittenVolume.text = getString(R.string.no_data)
+        }
+        else {
+            binding.volumeListTextLastWritten.text = String.format(
+                requireContext().getString(R.string.quran_page),
+                lastPageId.toString()
+            )
+            binding.volumeListTextLastWrittenVolume.text = String.format(
+                requireContext().getString(R.string.quran_volume),
+                MainApplication.quranVolumeRepository.getRecordByPageId(lastPageId)?.name
+            )
+        }
 
         // Initialize RecyclerView with default view type
         setupRecyclerView(VolumeAdapter.VIEW_ITEM_LIST)

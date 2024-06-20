@@ -29,7 +29,7 @@ class RetrieveUserProfile {
                         fullName = data["fullName"] as String?,
                         email = data["email"] as String?,
                         role = data["role"] as String?,
-                        lastPageId = data["lastPageId"] as Int?,
+                        lastPageId = (data["lastPageId"] as Long?)?.toInt(),
                         ustadhId = data["ustadhId"] as String?,
                     )
 
