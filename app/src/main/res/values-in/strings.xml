@@ -80,4 +80,6 @@
     <string name="permission_denied">Izin ditolak</string>
     <string name="failed_to_create_new_student_data">Gagal membuat data Siswa baru</string>
     <string name="your_similarity_score">Nilai kemiripan Anda %1$s</string>
+    <string name="cant_pick_audio">Tidak bisa mengambil audio</string>
+    <string name="cant_pick_image">Tidak bisa mengambil gambar</string>
 </resources>

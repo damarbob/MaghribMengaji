@@ -81,6 +81,8 @@
     <string name="permission_denied">Permission denied</string>
     <string name="failed_to_create_new_student_data">Failed to create new Student data</string>
     <string name="your_similarity_score">Your similarity score is %1$s</string>
+    <string name="cant_pick_audio">Can\'t pick audio</string>
+    <string name="cant_pick_image">Can\'t pick image</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

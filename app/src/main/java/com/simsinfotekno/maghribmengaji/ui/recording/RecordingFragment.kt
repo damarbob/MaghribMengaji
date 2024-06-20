@@ -249,10 +249,7 @@ class RecordingFragment : Fragment() {
         val result =
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
         val result1 = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_MEDIA_AUDIO
-            )
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_AUDIO)
         } else {
             Toast.makeText(requireContext(), getString(R.string.permission_are_not_granted), Toast.LENGTH_LONG).show()
         }

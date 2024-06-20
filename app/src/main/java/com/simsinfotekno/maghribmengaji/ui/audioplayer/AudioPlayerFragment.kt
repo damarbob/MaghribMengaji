@@ -507,7 +507,7 @@ class AudioPlayerFragment : Fragment() {
             pickAudioResultLauncher.launch(intent)
         } else {
             // Handle the case where no activity can handle the intent
-            Toast.makeText(requireContext(), "No app found to pick audio", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), getString(R.string.cant_pick_audio), Toast.LENGTH_SHORT)
                 .show()
         }
     }
