@@ -14,7 +14,9 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhPageListStudentBinding
+import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageStudentAdapter
+import com.simsinfotekno.maghribmengaji.usecase.GetQuranPageRangeString
 
 class UstadhPageListStudentFragment : Fragment() {
 
@@ -29,6 +31,9 @@ class UstadhPageListStudentFragment : Fragment() {
 
     /* Views */
     private lateinit var pageStudentAdapter: PageStudentAdapter
+
+    // Use case
+    private val getQuranPageRangeString = GetQuranPageRangeString()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +65,14 @@ class UstadhPageListStudentFragment : Fragment() {
         viewModel.init(volumeId ?: viewModel.volumeId ?: 0) //
 
         /* Views */
+
+        // Recycler view
+        // Define the test dataset TODO: Remove if unnecessary
+        val testPages = List(30) {
+            val index = it + 1
+            QuranPageStudent(index, index.toString())
+        }
+
         pageStudentAdapter = PageStudentAdapter(
             listOf(),
         ) // Set dataset
@@ -70,7 +83,10 @@ class UstadhPageListStudentFragment : Fragment() {
         recyclerView.adapter = pageStudentAdapter
 
         binding.ustadhPageListStudentTextVolume.text =
-            getString(R.string.quran_volume, volumeId.toString())
+            getString(R.string.volume_x, volumeId.toString())
+        binding.ustadhPageListStudentCollapsingToolbarLayout.title = binding.ustadhPageListStudentTextVolume.text
+        binding.ustadhPageListStudentTextPageRange.text = volumeId?.let { getQuranPageRangeString(it, getString(R.string.page)) }
+
         binding.ustadhPageListStudentTab.addOnTabSelectedListener(object :
             TabLayout.OnTabSelectedListener {
 
@@ -109,6 +125,23 @@ class UstadhPageListStudentFragment : Fragment() {
                 bundle
             )
 
+        }
+
+        /* Listeners */
+        binding.ustadhPageListStudentToolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.ustadhPageListStudentAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val limitOffset = appBarLayout.totalScrollRange * 0.25
+
+            if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
+                // Half expanded
+                binding.ustadhPageListStudentCollapsingToolbarLayout.isTitleEnabled = false
+            }
+            else if (Math.abs(verticalOffset) >= limitOffset) {
+                // Half collapsed
+                binding.ustadhPageListStudentCollapsingToolbarLayout.isTitleEnabled = true
+            }
         }
 
         return binding.root

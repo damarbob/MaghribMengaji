@@ -1,58 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".ui.ustadhpageliststudent.UstadhPageListStudentFragment"
-    android:padding="16dp">
+    tools:context=".ui.ustadhpageliststudent.UstadhPageListStudentFragment">
 
-    <TextView
-        android:id="@+id/ustadhPageListStudentTextVolume"
-        style="@style/Widget.App.H1"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/ustadhPageListStudentAppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/ustadhPageListStudentCollapsingToolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:collapsedTitleTextAppearance="@style/Widget.App.P.Bold"
+            app:expandedTitleGravity="top"
+            app:expandedTitleMarginTop="0dp"
+            app:extraMultilineHeightEnabled="false"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+            app:maxLines="1"
+            app:title="@string/volume_x"
+            app:titleCollapseMode="fade"
+            app:titleEnabled="false">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/gradient_background_horizontal"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="16dp"
+                app:layout_collapseMode="parallax">
+
+                <TextView
+                    android:id="@+id/ustadhPageListStudentTextVolume"
+                    style="@style/Widget.App.H1.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/volume_x" />
+
+                <TextView
+                    android:id="@+id/ustadhPageListStudentTextPageRange"
+                    style="@style/Widget.App.H5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/page_x" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="120dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="-0dp"
+                app:layout_collapseMode="parallax">
+
+                <ImageView
+                    android:layout_width="192dp"
+                    android:layout_height="192dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/img_quran"
+                    android:translationY="-16dp" />
+
+            </FrameLayout>
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/ustadhPageListStudentToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/arrow_back_24px" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:lineBreakStyle="normal"
-        android:text="@string/quran_volume"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/ustadhPageListStudentTab"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabMode="fixed">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/all"
-            android:icon="@drawable/format_list_bulleted_24px"
-            />
+            android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/in_progress"
-            android:icon="@drawable/hourglass_empty_24px"
-            />
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/ustadhPageListStudentTab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabMode="fixed">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/finished"
-            android:icon="@drawable/check_circle_24px"
-            />
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:icon="@drawable/format_list_bulleted_24px"
+                    android:text="@string/all" />
 
-    </com.google.android.material.tabs.TabLayout>
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:icon="@drawable/hourglass_empty_24px"
+                    android:text="@string/in_progress" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/studentPageListRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:paddingBottom="16dp"
-        android:clipToPadding="false"/>
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:icon="@drawable/check_circle_24px"
+                    android:text="@string/finished" />
 
-</LinearLayout>
+            </com.google.android.material.tabs.TabLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/studentPageListRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

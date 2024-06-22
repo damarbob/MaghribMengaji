@@ -60,7 +60,7 @@ class PageAdapter(
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         viewHolder.textView.text = String.format(
-            viewHolder.textView.context.getString(R.string.quran_page),
+            viewHolder.textView.context.getString(R.string.page_x),
             page.name
         )
 

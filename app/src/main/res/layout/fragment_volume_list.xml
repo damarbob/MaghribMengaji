@@ -37,10 +37,11 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
             android:paddingVertical="16dp"
+            android:gravity="bottom"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -57,7 +58,7 @@
                 android:textColor="@color/design_default_color_on_primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/quran_page" />
+                android:text="@string/page_x" />
 
             <TextView
                 android:id="@+id/volumeListTextLastWrittenVolume"
@@ -65,14 +66,7 @@
                 android:textColor="@color/design_default_color_on_primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/quran_volume" />
-
-            <TextView
-                style="@style/Widget.App.P"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16sp"
-                android:text="@string/with_ustadh" />
+                android:text="@string/volume_x" />
 
         </LinearLayout>
 
@@ -120,6 +114,7 @@
             android:id="@+id/volumeListRecyclerViewVolumeList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:clipToPadding="false"
             android:paddingBottom="16dp"
             android:paddingEnd="16dp" />

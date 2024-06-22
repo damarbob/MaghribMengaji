@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:transitionGroup="true"
+    app:strokeWidth="0dp"
+    app:cardElevation="1dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
     <androidx.core.widget.NestedScrollView

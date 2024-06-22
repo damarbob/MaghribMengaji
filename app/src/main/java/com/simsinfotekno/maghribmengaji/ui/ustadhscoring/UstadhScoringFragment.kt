@@ -55,13 +55,18 @@ class UstadhScoringFragment : Fragment() {
 
         /* Views */
         bottomSheetBehavior = BottomSheetBehavior.from(binding.ustadhScoringBottomSheet.bottomSheetUstadhScoring)
-        binding.ustadhScoringPageTitle.text = getString(R.string.quran_page, page?.pageId.toString())
+
         Glide
             .with(requireContext())
             .load(Uri.parse(page?.pictureUriString))
             .into(binding.ustadhScoringStudentImage)
+            .clearOnDetach()
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN // Hide bottom sheet
+
+        // Text
+        binding.ustadhScoringCollapsingToolbarLayout.title = getString(R.string.page_x, page?.pageId.toString())
+//        binding.ustadhScoringStudentName.text = "" // TODO: Set to student name
 
         // Scores
         val ocrScore = page?.oCRScore ?: 0
@@ -101,6 +106,30 @@ class UstadhScoringFragment : Fragment() {
             val consistency = binding.ustadhScoringBottomSheet.ustadhScoringInputConsistency.text.toString()
 
             viewModel.updateStudentScore(page.studentId, pageId!!, tidiness.toInt(), accuracy.toInt(), consistency.toInt())
+        }
+
+        // Toolbar
+        binding.ustadhScoringToolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_score -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                    return@setOnMenuItemClickListener true
+                }
+                else -> return@setOnMenuItemClickListener false
+            }
+        }
+        binding.ustadhScoringAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            if (Math.abs(verticalOffset) == appBarLayout.totalScrollRange) {
+                // Collapsed
+                binding.ustadhScoringToolbar.menu.findItem(R.id.menu_score).setVisible(
+                    true)
+            } else if (verticalOffset == 0) {
+                // Expanded
+            } else {
+                // Somewhere in between
+                binding.ustadhScoringToolbar.menu.findItem(R.id.menu_score).setVisible(
+                    false )
+            }
         }
 
         /* Observers */

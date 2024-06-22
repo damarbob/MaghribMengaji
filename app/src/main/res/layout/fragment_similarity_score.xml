@@ -85,7 +85,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="@string/your_score_is_ssr_press_upload_to_send_your_score"
+        android:text="@string/your_score_is_great_press_upload_to_send_your_score"
         android:textAlignment="center"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/similarityScoreButtonUpload"

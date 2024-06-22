@@ -74,11 +74,11 @@ class VolumeListFragment : Fragment() {
         }
         else {
             binding.volumeListTextLastWritten.text = String.format(
-                requireContext().getString(R.string.quran_page),
+                requireContext().getString(R.string.page_x),
                 lastPageId.toString()
             )
             binding.volumeListTextLastWrittenVolume.text = String.format(
-                requireContext().getString(R.string.quran_volume),
+                requireContext().getString(R.string.volume_x),
                 MainApplication.quranVolumeRepository.getRecordByPageId(lastPageId)?.name
             )
         }

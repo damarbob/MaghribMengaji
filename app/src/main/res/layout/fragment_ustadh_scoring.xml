@@ -1,26 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     tools:context=".ui.ustadhscoring.UstadhScoringFragment">
 
-    <ScrollView
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/ustadhScoringAppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/ustadhScoringCollapsingToolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:collapsedTitleTextAppearance="@style/Widget.App.P.Bold"
+            app:expandedTitleGravity="bottom"
+            app:expandedTitleMarginBottom="48dp"
+            app:expandedTitleTextAppearance="@style/Widget.App.H1.Bold"
+            app:extraMultilineHeightEnabled="false"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+            app:maxLines="1"
+            app:title="@string/page_x"
+            app:titleCollapseMode="scale"
+            app:titleEnabled="true">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/gradient_background_horizontal"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="120dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="-0dp"
+                app:layout_collapseMode="parallax">
+
+                <ImageView
+                    android:layout_width="192dp"
+                    android:layout_height="192dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/img_quran"
+                    android:translationY="-16dp" />
+
+            </FrameLayout>
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/ustadhScoringToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:menu="@menu/menu_score"
+                app:navigationIcon="@drawable/arrow_back_24px" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/ustadhScoringButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/rounded_checkbook_24"
+        app:layout_anchor="@id/ustadhScoringAppBarLayout"
+        app:layout_anchorGravity="bottom|end" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/ustadhScoringPageTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/page" />
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -31,8 +92,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:textAlignment="center"
                     android:text="@string/overall_score"
+                    android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -43,8 +104,8 @@
                     android:id="@+id/ustadhScoringTextOverallScore"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
                     android:text="00"
+                    android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/ustadhScoringProgressOverallScore"
@@ -54,18 +115,18 @@
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/ustadhScoringProgressOverallScore"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:progress="100"
                     android:indeterminate="false"
-                    app:showAnimationBehavior="outward"
-                    app:trackCornerRadius="8dp"
-                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:progress="100"
                     app:indicatorSize="128dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ustadhScoringTextResult"
+                    app:showAnimationBehavior="outward"
+                    app:trackCornerRadius="8dp"
                     app:trackThickness="16dp" />
 
                 <TextView
@@ -99,13 +160,13 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:progress="100"
+                    app:indicatorColor="@color/maghrib_mengaji_primary_variant"
                     app:indicatorSize="72dp"
                     app:layout_constraintEnd_toStartOf="@id/ustadhScoringProgressTidiness"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ustadhScoringTextPreliminary"
                     app:trackCornerRadius="4dp"
-                    app:trackThickness="8dp"
-                    app:indicatorColor="@color/maghrib_mengaji_primary_variant"/>
+                    app:trackThickness="8dp" />
 
                 <TextView
                     android:id="@+id/ustadhTextTidinessTitle"
@@ -134,16 +195,16 @@
                     style="@style/Widget.Material3.LinearProgressIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:progress="100"
                     app:indicatorSize="72dp"
+                    app:layout_constraintEnd_toStartOf="@id/ustadhScoringProgressAccuracy"
                     app:layout_constraintStart_toEndOf="@id/ustadhScoringProgressPreliminary"
                     app:layout_constraintTop_toBottomOf="@id/ustadhTextTidinessTitle"
-                    app:layout_constraintEnd_toStartOf="@id/ustadhScoringProgressAccuracy"
-                    app:trackThickness="8dp"
-                    app:trackCornerRadius="4dp" />
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp" />
 
                 <TextView
                     android:id="@+id/ustadhScoringTextAccuracyText"
@@ -172,17 +233,17 @@
                     style="@style/Widget.Material3.LinearProgressIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:progress="100"
+                    app:indicatorColor="@color/md_theme_inversePrimary"
                     app:indicatorSize="72dp"
+                    app:layout_constraintEnd_toStartOf="@id/ustadhScoringProgressConsistency"
                     app:layout_constraintStart_toEndOf="@id/ustadhScoringProgressTidiness"
                     app:layout_constraintTop_toBottomOf="@id/ustadhScoringTextAccuracyText"
-                    app:layout_constraintEnd_toStartOf="@id/ustadhScoringProgressConsistency"
-                    app:trackThickness="8dp"
                     app:trackCornerRadius="4dp"
-                    app:indicatorColor="@color/md_theme_inversePrimary"/>
+                    app:trackThickness="8dp" />
 
                 <TextView
                     android:id="@+id/ustadhScoringTextConsistencyText"
@@ -211,31 +272,31 @@
                     style="@style/Widget.Material3.LinearProgressIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:progress="100"
+                    app:indicatorColor="@color/maghrib_mengaji_primary"
                     app:indicatorSize="72dp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/ustadhScoringProgressAccuracy"
                     app:layout_constraintTop_toBottomOf="@id/ustadhScoringTextConsistencyText"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:trackThickness="8dp"
                     app:trackCornerRadius="4dp"
-                    app:indicatorColor="@color/maghrib_mengaji_primary"/>
+                    app:trackThickness="8dp" />
 
                 <ImageView
                     android:id="@+id/ustadhScoringImageViewStudentPageImage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="24dp"
-                    android:maxHeight="720dp"
-                    android:adjustViewBounds="true"
                     android:layout_centerInParent="true"
+                    android:layout_marginVertical="24dp"
+                    android:adjustViewBounds="true"
                     android:contentDescription="@string/quran_page_image_description"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:maxHeight="720dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringProgressPreliminary"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ustadhScoringProgressPreliminary" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -243,34 +304,29 @@
                 android:id="@+id/ustadhScoringStudentImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_below="@+id/ustadhScoringPageTitle"
+                android:layout_marginTop="16dp"
                 android:contentDescription="@string/quran_page_image_description" />
 
-            <Button
-                android:id="@+id/ustadhScoringButton"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_below="@+id/ustadhScoringStudentImage"
-                android:text="@string/score"
-                app:icon="@drawable/outline_grade_24"
-                app:iconGravity="textStart" />
+<!--            <Button-->
+<!--                android:id="@+id/ustadhScoringButton"-->
+<!--                style="@style/Widget.Material3.Button"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_below="@+id/ustadhScoringStudentImage"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:text="@string/score"-->
+<!--                app:icon="@drawable/outline_grade_24"-->
+<!--                app:iconGravity="textStart" />-->
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <include
-            android:id="@+id/ustadhScoringBottomSheet"
-            layout="@layout/bottom_sheet_ustadh_scoring" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <include
+        android:id="@+id/ustadhScoringBottomSheet"
+        layout="@layout/bottom_sheet_ustadh_scoring"
+        android:visibility="visible" />
 
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

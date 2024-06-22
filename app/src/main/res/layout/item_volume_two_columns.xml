@@ -2,56 +2,93 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/itemVolumeTwoColumnsCardView"
-    style="@style/Widget.App.Card.List"
+    style="@style/Widget.Material3.CardView.Elevated"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
     android:layout_marginVertical="8dp"
+    android:layout_marginStart="16dp"
     android:transitionGroup="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+        android:gravity="center_vertical">
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/itemVolumeTwoColumnsImageProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@id/itemVolumeTwoColumnsImageViewCover"
-            android:layout_alignTop="@id/itemVolumeTwoColumnsImageViewCover"
-            android:layout_alignEnd="@id/itemVolumeTwoColumnsImageViewCover"
-            android:layout_alignBottom="@id/itemVolumeTwoColumnsImageViewCover" />
-
-        <ImageView
-            android:id="@+id/itemVolumeTwoColumnsImageViewCover"
+        <FrameLayout
+            android:id="@+id/itemVolumeHeader"
             android:layout_width="match_parent"
             android:layout_height="160dp"
-            android:layout_alignParentStart="true"
+            android:background="?attr/colorSurfaceContainerHighest">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/itemVolumeTwoColumnsImageProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+            <ImageView
+                android:id="@+id/itemVolumeTwoColumnsImageViewCover"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:alpha="0.2"
+                android:scaleX="2"
+                android:scaleY="2"
+                app:tint="@color/md_theme_primary" />
+
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:layout_below="@id/itemVolumeHeader">
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:maxHeight="64dp"
-            android:scaleType="fitCenter"
-            app:tint="@color/md_theme_primary" />
+            android:layout_alignParentStart="true">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_star"
+                app:tint="?attr/colorPrimary" />
+
+            <TextView
+                android:id="@+id/itemVolumeTextVolume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0"
+                android:textColor="?attr/colorOnPrimary" />
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/itemVolumeTwoColumnsTextTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/itemVolumeTwoColumnsImageViewCover"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="16dp"
+            android:layout_alignTop="@+id/frameLayout"
+            android:layout_alignBottom="@+id/frameLayout"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/frameLayout"
+            android:gravity="center"
             android:text="Jilid 0" />
 
         <ImageView
             android:id="@+id/itemVolumeTwoColumnsStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/itemVolumeTwoColumnsImageViewCover"
+            android:layout_alignTop="@+id/frameLayout"
+            android:layout_alignBottom="@+id/frameLayout"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="16dp"
             app:tint="@color/md_theme_primary" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 

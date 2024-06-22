@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Maghrib Mengaji</string>
     <string name="title_home">Beranda</string>
     <string name="title_dashboard">Dasbor</string>
     <string name="title_notifications">Notifikasi</string>
@@ -9,7 +8,7 @@
     <string name="submit">Kumpulkan</string>
     <string name="preliminary_score">Nilai sementara</string>
     <string name="upload">Unggah</string>
-    <string name="your_score_is_ssr_press_upload_to_send_your_score">Nilai Anda sudah bagus. Tekan <b>Unggah</b> untuk mengirim nilai</string>
+    <string name="your_score_is_great_press_upload_to_send_your_score">Nilai Anda sudah bagus. Tekan <b>Unggah</b> untuk mengirim nilai</string>
     <string name="your_score_is_low">Nilai Anda masih di bawah KKM. Tekan <b>Ulangi</b> untuk melakukan scan ulang</string>
     <string name="volume">Jilid</string>
     <string name="page">Halaman</string>
@@ -28,8 +27,8 @@
     <string name="welcome_to">Selamat datang di</string>
     <string name="main_menu_profile">Profil</string>
     <string name="main_menu_contact">Hubungi Kami</string>
-    <string name="quran_volume">Jilid %1$s</string>
-    <string name="quran_page">Halaman %1$s</string>
+    <string name="volume_x">Jilid %1$s</string>
+    <string name="page_x">Halaman %1$s</string>
     <string name="in_progress">Dalam proses</string>
     <string name="last_written">Terakhir ditulis</string>
     <string name="quran_page_image_description">Halaman Quran</string>
@@ -80,4 +79,6 @@
     <string name="permission_denied">Izin ditolak</string>
     <string name="failed_to_create_new_student_data">Gagal membuat data Siswa baru</string>
     <string name="your_similarity_score">Nilai kemiripan Anda %1$s</string>
+    <string name="remove_student">Hapus murid</string>
+    <string name="contact">Hubungi</string>
 </resources>

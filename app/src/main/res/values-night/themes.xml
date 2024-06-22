@@ -68,6 +68,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.MaghribMengaji" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
+        <item name="fontFamily">@font/plus_jakarta_sans_variable</item>
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
 
         <item name="android:windowActivityTransitions">true</item>

@@ -8,32 +8,107 @@
     android:transitionGroup="true"
     tools:context=".ui.page.PageFragment">
 
-    <LinearLayout
-        android:id="@+id/pageLinearLayoutTop"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main_headerx"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginVertical="14dp"
-        android:orientation="horizontal"
-        android:padding="@dimen/activity_vertical_margin">
+        android:background="@color/maghrib_mengaji_primary">
 
-        <TextView
-            android:id="@+id/pageTextViewVolume"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/quran_volume"
-            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="96dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="-0dp"
+            android:visibility="gone">
 
-        <TextView
-            android:id="@+id/pageTextViewPage"
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="192dp"
+                android:layout_height="192dp"
+                android:translationY="-16dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_quran"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="16dp"
+            android:gravity="bottom"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/pageTextViewVolume"
+                style="@style/Widget.App.H5.Bold"
+                android:textColor="@color/design_default_color_on_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/volume_x" />
+
+            <TextView
+                android:id="@+id/pageTextViewPage"
+                style="@style/Widget.App.H5"
+                android:textColor="@color/design_default_color_on_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/page_x" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/homeButtonMenu"
+            style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/quran_page"
-            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
-    </LinearLayout>
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="32dp"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            app:icon="@drawable/more_vert_24px"
+            app:iconTint="?attr/colorOnPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/pageLinearLayoutTop"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentStart="true"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_marginVertical="14dp"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:padding="@dimen/activity_vertical_margin">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/pageTextViewVolume"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="@string/quran_volume"-->
+<!--            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/pageTextViewPage"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/quran_page"-->
+<!--            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />-->
+
+
+<!--    </LinearLayout>-->
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -121,19 +196,6 @@
             app:layout_constraintEnd_toStartOf="@+id/pageButtonForward"
             app:layout_constraintStart_toEndOf="@+id/pageButtonPrevious"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <!--        <Button-->
-        <!--            android:id="@+id/pageButtonCheckResult"-->
-        <!--            android:layout_marginEnd="@dimen/activity_horizontal_margin"-->
-        <!--            android:layout_marginStart="8dp"-->
-        <!--            style="@style/Widget.Material3.Button.Icon"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_weight="1"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:text="@string/check_result"-->
-        <!--            app:icon="@drawable/task_24px"-->
-        <!--            app:iconGravity="textStart"-->
-        <!--            android:visibility="gone"/>-->
 
         <Button
             android:id="@+id/pageButtonForward"

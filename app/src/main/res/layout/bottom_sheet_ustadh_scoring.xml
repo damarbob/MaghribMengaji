@@ -87,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/submit"
-                app:icon="@drawable/check_circle_24px"
+                app:icon="@drawable/rounded_checkbook_24"
                 app:iconGravity="textStart"/>
 
         </LinearLayout>

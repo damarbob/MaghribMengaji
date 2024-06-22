@@ -8,155 +8,84 @@
     android:transitionGroup="true"
     tools:context=".ui.pagelist.PageListFragment">
 
-    <LinearLayout
-        android:id="@+id/main_header"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main_headerx"
         android:layout_width="match_parent"
-        android:layout_gravity="fill"
-        android:gravity="center_vertical"
-        android:paddingVertical="@dimen/activity_vertical_margin"
-        android:layout_marginVertical="14dp"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="115dp"
+        android:background="@color/maghrib_mengaji_primary">
 
-        <TextView
-            android:id="@+id/pageListTextViewVolume"
-            style="@style/TextAppearance.Material3.TitleSmall"
-            android:layout_width="0dp"
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="96dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="-0dp">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="192dp"
+                android:layout_height="192dp"
+                android:translationY="-16dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_quran"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="16dp"
+            android:gravity="bottom"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/pageListTextViewVolume"
+                style="@style/Widget.App.H5.Bold"
+                android:textColor="@color/design_default_color_on_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/volume_x" />
+
+            <TextView
+                android:id="@+id/pageListTextPageRange"
+                style="@style/Widget.App.H5"
+                android:textColor="@color/design_default_color_on_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/page_x" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/homeButtonMenu"
+            style="?attr/materialIconButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/quran_volume" />
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="32dp"
+            android:gravity="center_vertical"
+            app:icon="@drawable/more_vert_24px"
+            app:iconTint="?attr/colorOnPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-<!--        <Button-->
-<!--            android:id="@+id/pageListButtonMenu"-->
-<!--            style="?attr/materialIconButtonStyle"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:icon="@drawable/baseline_arrow_drop_down_24"-->
-<!--            />-->
-
-    </LinearLayout>
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:layout_gravity="fill_horizontal"-->
-<!--        android:layout_marginTop="16dp">-->
-
-<!--        <com.google.android.material.card.MaterialCardView-->
-<!--            style="@style/Widget.Material3.CardView.Elevated"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:layout_marginEnd="8dp">-->
-
-<!--            <RelativeLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:padding="16dp">-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/textViewPageCompletion"-->
-<!--                    style="@style/TextAppearance.Material3.BodySmall"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Page completion" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/imageViewPageCompletion"-->
-<!--                    android:layout_width="48dp"-->
-<!--                    android:layout_height="48dp"-->
-<!--                    android:src="@drawable/outline_book_24"-->
-<!--                    app:tint="?attr/colorPrimary"-->
-<!--                    android:layout_below="@id/textViewPageCompletion"-->
-<!--                    android:layout_marginTop="4dp" />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/pageListTextViewPageCompletion"-->
-<!--                    style="@style/TextAppearance.Material3.DisplayMedium"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_alignBottom="@id/imageViewPageCompletion"-->
-<!--                    android:layout_below="@id/textViewPageCompletion"-->
-<!--                    android:layout_toEndOf="@id/imageViewPageCompletion"-->
-<!--                    android:layout_toStartOf="@id/textViewPageCompletion30"-->
-
-<!--                    android:text="30"-->
-<!--                    android:textAlignment="viewEnd"-->
-<!--                    android:textStyle="bold" />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/textViewPageCompletion30"-->
-<!--                    style="@style/TextAppearance.Material3.LabelLarge"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_alignBottom="@id/imageViewPageCompletion"-->
-<!--                    android:layout_alignParentEnd="true"-->
-<!--                    android:layout_below="@id/textViewPageCompletion"-->
-<!--                    android:layout_marginTop="4dp"-->
-
-<!--                    android:text="/30"-->
-<!--                    android:textAlignment="gravity"-->
-<!--                    android:gravity="bottom"/>-->
-
-<!--        </RelativeLayout>-->
-
-<!--    </com.google.android.material.card.MaterialCardView>-->
-
-<!--        <com.google.android.material.card.MaterialCardView-->
-<!--            style="@style/Widget.Material3.CardView.Elevated"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:layout_marginStart="8dp">-->
-
-<!--            <RelativeLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:padding="16dp">-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/textViewAverageScore"-->
-<!--                    style="@style/TextAppearance.Material3.BodySmall"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Average Score" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/imageViewAverageScore"-->
-<!--                    android:layout_width="48dp"-->
-<!--                    android:layout_height="48dp"-->
-<!--                    android:src="@drawable/outline_book_24"-->
-<!--                    app:tint="?attr/colorPrimary"-->
-<!--                    android:layout_below="@id/textViewAverageScore"-->
-<!--                    android:layout_marginTop="4dp" />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/pageListTextViewAverageScore"-->
-<!--                    style="@style/TextAppearance.Material3.DisplayMedium"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_alignBottom="@id/imageViewAverageScore"-->
-<!--                    android:layout_alignParentEnd="true"-->
-<!--                    android:layout_below="@id/textViewAverageScore"-->
-<!--                    android:layout_toEndOf="@id/imageViewAverageScore"-->
-
-<!--                    android:text="90"-->
-<!--                    android:textAlignment="viewEnd"-->
-<!--                    android:textStyle="bold" />-->
-
-<!--            </RelativeLayout>-->
-
-<!--        </com.google.android.material.card.MaterialCardView>-->
-
-<!--    </LinearLayout>-->
-
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pageListRecyclerViewPage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:paddingBottom="16dp"
+        android:paddingEnd="16dp"
         android:clipToPadding="false"/>
 
 </LinearLayout>

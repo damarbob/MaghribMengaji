@@ -31,6 +31,7 @@ import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageAdapter
 import com.simsinfotekno.maghribmengaji.ui.page.PageViewModel
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
+import com.simsinfotekno.maghribmengaji.usecase.GetQuranPageRangeString
 
 class PageListFragment : Fragment() {
 
@@ -48,7 +49,7 @@ class PageListFragment : Fragment() {
     private lateinit var pageAdapter: PageAdapter
 
     // Use case
-//    private lateinit var quranPageStatusCheck: QuranPageStatusCheck
+    private val getQuranPageRangeString = GetQuranPageRangeString()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +75,8 @@ class PageListFragment : Fragment() {
         val volumeId = arguments?.getInt("volumeId")
         val pageIds = arguments?.getIntArray("pageIds")!!
 
+        /* Views */
+
         // Initialize data set
         pageAdapter = PageAdapter(
             quranPageRepository.getRecordByIds(pageIds),
@@ -89,9 +92,10 @@ class PageListFragment : Fragment() {
 
         // Page info
         binding.pageListTextViewVolume.text = String.format(
-            binding.pageListTextViewVolume.context.getString(R.string.quran_volume),
+            binding.pageListTextViewVolume.context.getString(R.string.volume_x),
             volumeId
         )
+        binding.pageListTextPageRange.text = volumeId?.let { getQuranPageRangeString(it, getString(R.string.page)) }
 //        binding.pageListTextViewPageCompletion.text =
 //            "0" //TODO: add page completion logic or function
 //        binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function

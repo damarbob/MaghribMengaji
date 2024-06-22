@@ -63,6 +63,7 @@ class VolumeAdapter(
         /* End of Old */
 
         val textView: TextView = view.findViewById(R.id.itemVolumeTextTitle)
+        val textVolume: TextView = view.findViewById(R.id.itemVolumeTextVolume)
         val cardView: CardView = view.findViewById(R.id.itemVolumeCardView)
         val imageStatus: ImageView = view.findViewById(R.id.itemVolumeStatus)
 
@@ -75,9 +76,11 @@ class VolumeAdapter(
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
             textView.text = String.format(
-                textView.context.getString(R.string.quran_volume),
+                textView.context.getString(R.string.volume_x),
                 name
             )
+
+            textVolume.text = name
 
             // Set the icon based on the completion status
             val status = quranVolumeStatusCheck(dataSet[position])
@@ -146,6 +149,7 @@ class VolumeAdapter(
         /* End of Old */
 
         val textView: TextView = view.findViewById(R.id.itemVolumeTwoColumnsTextTitle)
+        val textVolume: TextView = view.findViewById(R.id.itemVolumeTextVolume)
         val cardView: CardView = view.findViewById(R.id.itemVolumeTwoColumnsCardView)
         val imageStatus: ImageView = view.findViewById(R.id.itemVolumeTwoColumnsStatus)
         val imageCover: ImageView = view.findViewById(R.id.itemVolumeTwoColumnsImageViewCover)
@@ -161,14 +165,16 @@ class VolumeAdapter(
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
             textView.text = String.format(
-                textView.context.getString(R.string.quran_volume),
+                textView.context.getString(R.string.volume_x),
                 name
             )
 
+            textVolume.text = name
+
             // Load image cover
             Glide.with(imageCover.context)
-                .load(R.mipmap.vector_maghrib_mengaji) // TODO: change to volume cover
-                .override(Target.SIZE_ORIGINAL)
+                .load(R.drawable.ic_maghrib_mengaji_notext) // TODO: change to volume cover
+                .override(64)//Target.SIZE_ORIGINAL)
                 .listener(object : RequestListener<Drawable> {
 
                     override fun onResourceReady(

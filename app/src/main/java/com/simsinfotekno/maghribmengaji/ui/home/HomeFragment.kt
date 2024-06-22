@@ -124,8 +124,8 @@ class HomeFragment : Fragment() {
                 binding.homeTextLastWrittenVolume.text = getString(R.string.no_data)
             }
             else {
-                binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), lastPageId.toString())
-                binding.homeTextLastWrittenVolume.text = String.format(requireContext().getString(R.string.quran_volume), quranVolumeRepository.getRecordByPageId(lastPageId)?.name)
+                binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.page_x), lastPageId.toString())
+                binding.homeTextLastWrittenVolume.text = String.format(requireContext().getString(R.string.volume_x), quranVolumeRepository.getRecordByPageId(lastPageId)?.name)
             }
         }
         viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->

@@ -6,6 +6,25 @@
     <dimen name="Text.H4">24sp</dimen>
     <dimen name="Text.H5">20sp</dimen>
     <dimen name="Text.P">16sp</dimen>
+    <dimen name="Text.Small">12sp</dimen>
+
+    <!-- Toolbar collapsed/expanded text appearance -->
+    <style name="TextAppearance.Widget.MaghribMengaji.Toolbar.Expanded" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="fontFamily">@font/plus_jakarta_sans_variable</item>
+        <item name="android:textSize">@dimen/Text.H1</item> <!-- Adjust as needed -->
+        <item name="android:textColor">@color/design_default_color_secondary</item>
+    </style>
+
+    <style name="TextAppearance.Widget.MaghribMengaji.Toolbar.Collapsed" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="fontFamily">@font/plus_jakarta_sans_variable</item>
+        <item name="android:textSize">16sp</item> <!-- Adjust as needed -->
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.App.None" parent="Widget.AppCompat.TextView">
+        <item name="android:visibility">invisible</item>
+        <item name="android:visible">false</item>
+    </style>
 
     <style name="Widget.App.H1" parent="Widget.AppCompat.TextView">
         <item name="android:textSize">@dimen/Text.H1</item>
@@ -46,6 +65,10 @@
     </style>
     <style name="Widget.App.P.Primary" parent="Widget.App.P">
         <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.App.Small" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">@dimen/Text.Small</item>
     </style>
 
 </resources>

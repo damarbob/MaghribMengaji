@@ -416,7 +416,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             if (similarityIndex != null) {
                 if (similarityIndex > kkm) {
                     binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
-                        getString(R.string.your_score_is_ssr_press_upload_to_send_your_score),
+                        getString(R.string.your_score_is_great_press_upload_to_send_your_score),
                         HtmlCompat.FROM_HTML_MODE_LEGACY
                     )
                     maximizeView(maximized = true, scorePassed = true, onCreateView = false)

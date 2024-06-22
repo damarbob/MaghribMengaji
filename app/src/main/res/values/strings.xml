@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Maghrib Mengaji</string>
+    <string name="app_name" translatable="false">Maghrib Mengaji</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -9,7 +9,7 @@
     <string name="submit">Submit</string>
     <string name="preliminary_score">Preliminary Score</string>
     <string name="upload">Upload</string>
-    <string name="your_score_is_ssr_press_upload_to_send_your_score">Your Score is great. Press <b>Upload</b> to send your score</string>
+    <string name="your_score_is_great_press_upload_to_send_your_score">Your Score is great. Press <b>Upload</b> to send your score</string>
     <string name="your_score_is_low">Your Score is below the KKM. Press <b>Retry</b> to rescan</string>
     <string name="volume">Volume</string>
     <string name="page">Page</string>
@@ -28,8 +28,8 @@
     <string name="welcome_to">Welcome to</string>
     <string name="main_menu_profile">Profile</string>
     <string name="main_menu_contact">Contact Us</string>
-    <string name="quran_volume">Volume %1$s</string>
-    <string name="quran_page">Page %1$s</string>
+    <string name="volume_x">Volume %1$s</string>
+    <string name="page_x">Page %1$s</string>
     <string name="in_progress">In progress</string>
     <string name="last_written">Last written</string>
     <string name="quran_page_image_description">Quran Page</string>
@@ -81,6 +81,8 @@
     <string name="permission_denied">Permission denied</string>
     <string name="failed_to_create_new_student_data">Failed to create new Student data</string>
     <string name="your_similarity_score">Your similarity score is %1$s</string>
+    <string name="remove_student">Remove student</string>
+    <string name="contact">Contact</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

@@ -11,11 +11,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_header"
-        android:background="@drawable/gradient_background_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="32dp"
-        android:paddingHorizontal="24dp">
+        android:background="@drawable/gradient_background_rounded_start_bottom"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="32dp">
 
         <ImageView
             android:id="@+id/imageView5"
@@ -46,68 +46,100 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <TextView
-            android:id="@+id/homeTextTitle"
-            style="@style/Widget.App.H5.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/app_name" />
-
         <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.App.Card.Home"
+            style="@style/Widget.Material3.CardView.Elevated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="?attr/colorPrimary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/homeTextTitle"
+                    style="@style/Widget.App.P.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginVertical="8dp"
+                    android:text="@string/app_name"
+                    android:textColor="?attr/colorOnPrimary" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Material3.CardView.Elevated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="192dp"
+                <FrameLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_gravity="bottom|end"
                     android:layout_marginBottom="-0dp"
-                    android:rotation="60"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/img_quran"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="192dp"
+                        android:layout_height="192dp"
+                        android:rotation="60"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/img_quran"
+                        android:translationX="16dp"
+                        android:translationY="-16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </FrameLayout>
+
 
                 <LinearLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        style="@style/Widget.App.P.Primary"
+                        style="@style/Widget.App.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/last_written" />
+                        android:text="@string/last_written"
+                        android:textColor="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/homeTextLastWritten"
-                        style="@style/Widget.App.H5.Bold"
+                        style="@style/Widget.App.P.Bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/quran_page" />
+                        android:text="@string/page_x" />
 
                     <TextView
                         android:id="@+id/homeTextLastWrittenVolume"
-                        style="@style/Widget.App.H5"
+                        style="@style/Widget.App.P"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/quran_volume" />
+                        android:text="@string/volume_x" />
 
                     <TextView
-                        style="@style/Widget.App.P"
+                        style="@style/Widget.App.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16sp"
@@ -115,7 +147,7 @@
 
                     <TextView
                         android:id="@+id/homeTextUstadhName"
-                        style="@style/Widget.App.H5.Bold"
+                        style="@style/Widget.App.P.Bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Muhammad Fikri Hizbullah"
@@ -168,7 +200,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
-            style="@style/Widget.App.H5.Bold"
+            style="@style/Widget.App.P.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -180,10 +212,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="-16dp"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp"
             android:paddingEnd="16dp"
-            android:visibility="gone"/>
+            android:paddingBottom="16dp"
+            android:clipToPadding="false" />
 
     </LinearLayout>
 

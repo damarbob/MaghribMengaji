@@ -97,8 +97,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
 
         // View
-        binding.pageTextViewVolume.text = getString(R.string.quran_volume, volume?.id.toString())
-        binding.pageTextViewPage.text = getString(R.string.quran_page, pageId.toString())
+        binding.pageTextViewVolume.text = getString(R.string.volume_x, volume?.id.toString())
+        binding.pageTextViewPage.text = getString(R.string.page_x, pageId.toString())
 
         bottomSheetBehaviorCheckResult =
             BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_student_profile"
+        android:icon="@drawable/person_24px"
+        android:title="@string/main_menu_profile"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/menu_student_contact"
+        android:icon="@drawable/rounded_chat_24"
+        android:title="@string/contact"
+        android:visible="false"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_student_remove"
+        android:icon="@drawable/outline_remove_circle_outline_24"
+        android:title="@string/remove_student"
+        android:visible="false"/>
+
+</menu>

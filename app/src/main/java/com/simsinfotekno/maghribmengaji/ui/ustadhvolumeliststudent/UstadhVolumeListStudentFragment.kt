@@ -14,6 +14,7 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhQuranVol
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhStudentRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhVolumeListStudentBinding
+import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageStudentAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 
@@ -56,6 +57,34 @@ class UstadhVolumeListStudentFragment : Fragment() {
         }
 
         /* Views */
+
+        // Toolbar
+        binding.ustadhVolumeListAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            if (Math.abs(verticalOffset) == appBarLayout.totalScrollRange) {
+                // Collapsed
+                binding.ustadhVolumeListToolbar.menu.findItem(R.id.menu_student_contact).setVisible(
+                    true)
+            } else if (verticalOffset == 0) {
+                // Expanded
+            } else {
+                // Somewhere in between
+                binding.ustadhVolumeListToolbar.menu.findItem(R.id.menu_student_contact).setVisible(
+                    false )
+            }
+        }
+        binding.ustadhVolumeListToolbar.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.menu_sign_out -> findNavController().popBackStack()
+                else -> {return@setOnMenuItemClickListener false}
+            }
+        }
+
+        // Define the test dataset TODO: Remove if unnecessary
+        val testVolumes = List(30) {
+            val index = it + 1
+            QuranVolume(index, index.toString())
+        }
+
         // Volume dataset are taken from App local variable
         volumeAdapter = VolumeAdapter(
             listOf(),
@@ -96,12 +125,17 @@ class UstadhVolumeListStudentFragment : Fragment() {
 
                 if (studentId == null) return@observe
 
-                binding.ustadhVolumeListStudentTextName.text = ustadhStudentRepository.getStudentById(studentId)?.fullName
+                binding.ustadhVolumeListCollapsingToolbarLayout.title = ustadhStudentRepository.getStudentById(studentId)?.fullName
 
             }?.onFailure { exception ->
                 // Show error message
                 Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
             }
+        }
+
+        /* Listeners */
+        binding.ustadhVolumeListToolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
 
         return binding.root

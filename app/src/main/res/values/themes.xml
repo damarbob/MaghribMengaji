@@ -16,6 +16,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.MaghribMengaji" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
+        <item name="fontFamily">@font/plus_jakarta_sans_variable</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
 
         <item name="android:windowActivityTransitions">true</item>
@@ -79,4 +80,5 @@
     <style name="Theme.MaghribMengaji.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.MaghribMengaji.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>
