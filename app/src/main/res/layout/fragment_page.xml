@@ -231,7 +231,6 @@
 
         <include
             android:id="@+id/pageBottomSheetCheckResult"
-            android:visibility="gone"
             layout="@layout/bottom_sheet_check_result" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

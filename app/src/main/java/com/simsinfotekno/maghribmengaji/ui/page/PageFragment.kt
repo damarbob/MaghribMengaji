@@ -2,7 +2,10 @@ package com.simsinfotekno.maghribmengaji.ui.page
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -36,8 +39,12 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRep
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.RecordingActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
+import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
+import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
+import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.UploadImageUseCase
+import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtils
 
 class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
@@ -53,11 +60,17 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
     // Variables
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
+    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
+    private lateinit var requestCameraPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var requestGalleryPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var bottomSheetBehaviorCheckResult: BottomSheetBehavior<View>
 
     // Use case
     private val uploadImageUseCase = UploadImageUseCase()
     private val launchScannerUseCase = LaunchScannerUseCase()
+    private val launchCameraUseCase = LaunchCameraUseCase()
+    private val launchGalleryUseCase = LaunchGalleryUseCase()
 
     private val PICK_IMAGE_REQUEST = 1
     private var pageId: Int? = null
@@ -70,6 +83,87 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             ActivityResultContracts.StartIntentSenderForResult(),
             this
         )
+        cameraLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    val imageBitmap = it.data?.extras?.get("data") as Bitmap
+                    val imageUri = BitmapToUriUtils.saveBitmapToFile(requireContext(), imageBitmap)
+
+                    // Submit image to similarity fragment
+                    submitImage(imageUri)
+
+                } else if (it.resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_scanner_cancelled),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_default_message),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+        requestCameraPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    launchCameraUseCase(
+                        requireContext(),
+                        cameraLauncher,
+                        requestCameraPermissionLauncher
+                    )
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Camera permission is required to take a photo",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+        galleryLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    val imageUri = it.data?.data
+
+                    // Submit image to similarity fragment
+                    submitImage(imageUri)
+
+                } else if (it.resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_scanner_cancelled),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_default_message),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+        requestGalleryPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                launchGalleryUseCase(
+                    requireContext(),
+                    galleryLauncher,
+                    requestGalleryPermissionLauncher
+                )
+            } else {
+                Toast.makeText(
+                    context,
+                    "Camera permission is required to take a photo",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
         // Set the transition for this fragment
         enterTransition = if (arguments?.getBoolean("previous") == true) {
@@ -80,6 +174,24 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+    }
+
+    private fun submitImage(imageUri: Uri?) {
+        // Bundle to pass the data
+        val bundle = Bundle().apply {
+            putString(
+                "imageUriString",
+                imageUri
+                    .toString()
+            )
+            putInt("pageId", pageId!!)
+        }
+
+        // Navigate to the ResultFragment with the Bundle
+        findNavController().navigate(
+            R.id.action_pageFragment_to_similarityScoreFragment,
+            bundle
+        )
     }
 
     override fun onCreateView(
@@ -123,7 +235,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                             binding.pageButtonCheckResult.visibility = View.VISIBLE
                         }
                     }, 250)
-                    container?.let{
+                    container?.let {
                         TransitionManager.endTransitions(it)
                     }
                 }
@@ -189,7 +301,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             this.checkResultProgressIndicatorConsistency.progress = consistencyScore
 
             pageStudent?.pictureUriString?.let {
-                loadImageIntoImageView(it, this.checkResultImageViewStudentPageImage)
+                loadImageIntoImageView(it, this.checkResultImageViewStudentPageImage, true)
+                this.checkResultLinearProgress.visibility = View.GONE
             }
         }
 
@@ -200,7 +313,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             { imageUrl ->
                 // Load image to ImageView
                 if (isAdded) {
-                    loadImageIntoImageView(imageUrl, pageImage)
+                    loadImageIntoImageView(imageUrl, pageImage, isBottomSheet = false)
                 }
             },
             { exception ->
@@ -238,7 +351,31 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         // Submit button
         binding.pageButtonSubmit.setOnClickListener {
             if (isAdded) {
-                launchScannerUseCase(this, scannerLauncher)
+                if (Build.VERSION.SDK_INT >= 30) {
+                    launchScannerUseCase(this, scannerLauncher)
+                }
+                val bottomSheet = ImagePickerBottomSheetDialog().apply {
+                    onCameraClick = {
+                        launchCameraUseCase(
+                            requireContext(),
+                            cameraLauncher,
+                            requestCameraPermissionLauncher
+                        )
+                    }
+                    onGalleryClick = {
+                        launchGalleryUseCase(
+                            requireContext(),
+                            galleryLauncher,
+                            requestGalleryPermissionLauncher
+                        )
+                    }
+                }
+                activity?.let { it1 ->
+                    bottomSheet.show(
+                        it1.supportFragmentManager,
+                        ImagePickerBottomSheetDialog.TAG
+                    )
+                }
             }
         }
 
@@ -271,8 +408,15 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
     }
 
     // Load image to imageview
-    private fun loadImageIntoImageView(imageUrl: String, imageView: ImageView) {
-        binding.pageProgressBar.visibility = View.VISIBLE
+    private fun loadImageIntoImageView(
+        imageUrl: String,
+        imageView: ImageView,
+        isBottomSheet: Boolean // Check position of imageView
+    ) {
+        val progress =
+            if (isBottomSheet) binding.pageBottomSheetCheckResult.checkResultLinearProgress else binding.pageProgressBar
+//        binding.pageProgressBar.visibility = View.VISIBLE
+        progress.visibility = View.VISIBLE
 
         Glide.with(imageView.context)
             .load(imageUrl)
@@ -286,7 +430,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     isFirstResource: Boolean
                 ): Boolean {
                     if (isAdded) {
-                        binding.pageProgressBar.visibility = View.GONE
+//                        binding.pageProgressBar.visibility = View.GONE
+                        progress.visibility = View.GONE
                         imageView.visibility = View.VISIBLE
                     }
                     return false
@@ -299,7 +444,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     isFirstResource: Boolean
                 ): Boolean {
                     if (isAdded) {
-                        binding.pageProgressBar.visibility = View.GONE
+//                        binding.pageProgressBar.visibility = View.GONE
+                        progress.visibility = View.GONE
                         Toast.makeText(
                             requireContext(),
                             getString(R.string.failed_to_load_image),

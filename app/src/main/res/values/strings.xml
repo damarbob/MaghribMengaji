@@ -83,6 +83,8 @@
     <string name="your_similarity_score">Your similarity score is %1$s</string>
     <string name="remove_student">Remove student</string>
     <string name="contact">Contact</string>
+    <string name="cant_pick_audio">Can\'t pick audio</string>
+    <string name="cant_pick_image">Can\'t pick image</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>
