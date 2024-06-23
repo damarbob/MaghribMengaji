@@ -28,6 +28,7 @@ class RetrieveUserProfile {
                         userId,
                         fullName = data["fullName"] as String?,
                         email = data["email"] as String?,
+                        phone = data["phone"] as String?,
                         role = data["role"] as String?,
                         lastPageId = (data["lastPageId"] as Long?)?.toInt(),
                         ustadhId = data["ustadhId"] as String?,

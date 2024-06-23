@@ -142,16 +142,21 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_studentPageListFragment_to_ustadhScoringFragment"
-            app:destination="@id/ustadhScoringFragment" />
+            app:destination="@id/ustadhPageStudentFragment" />
     </fragment>
     <fragment
-        android:id="@+id/ustadhScoringFragment"
-        android:name="com.simsinfotekno.maghribmengaji.ui.ustadhscoring.UstadhScoringFragment"
+        android:id="@+id/ustadhPageStudentFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.ustadhscoring.UstadhPageStudentFragment"
         android:label="fragment_ustadh_scoring"
-        tools:layout="@layout/fragment_ustadh_scoring" >
+        tools:layout="@layout/fragment_ustadh_page_student" >
         <argument
             android:name="pageId"
             app:argType="integer" />
     </fragment>
+    <action
+        android:id="@+id/action_global_ustadhPageStudentFragment"
+        app:destination="@id/ustadhPageStudentFragment"
+        app:popUpTo="@id/ustadhPageStudentFragment"
+        app:popUpToInclusive="true" />
 
 </navigation>

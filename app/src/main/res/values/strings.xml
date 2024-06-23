@@ -85,6 +85,16 @@
     <string name="contact">Contact</string>
     <string name="cant_pick_audio">Can\'t pick audio</string>
     <string name="cant_pick_image">Can\'t pick image</string>
+    <string name="press_back_to_close">Press back to close</string>
+    <string name="invalid_score">Invalid score</string>
+    <string name="score_cannot_be_more_than_100">Score cannot be more than 100</string>
+    <string name="invalid_input">Invalid input</string>
+    <string name="please_enter_valid_numbers">Please enter valid numbers</string>
+    <string name="okay">Okay</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="user_do_not_have_phone_number">User do not have phone number</string>
+    <string name="there_are_no_volumes_that_x_has_worked_on_yet">There are no volumes that %1$s has worked on yet</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

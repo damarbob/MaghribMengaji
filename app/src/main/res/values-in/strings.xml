@@ -83,4 +83,12 @@
     <string name="contact">Hubungi</string>
     <string name="cant_pick_audio">Tidak bisa mengambil audio</string>
     <string name="cant_pick_image">Tidak bisa mengambil gambar</string>
+    <string name="press_back_to_close">Tekan kembali untuk menutup</string>
+    <string name="invalid_score">Skor tidak valid</string>
+    <string name="score_cannot_be_more_than_100">Skor tidak dapat lebih dari 100</string>
+    <string name="invalid_input">Input tidak valid</string>
+    <string name="please_enter_valid_numbers">Mohon masukkan angka yang valid</string>
+    <string name="okay">Oke</string>
+    <string name="user_do_not_have_phone_number">Pengguna tidak memiliki nomor telepon</string>
+    <string name="there_are_no_volumes_that_x_has_worked_on_yet">Belum ada jilid yang %1$s kerjakan</string>
 </resources>

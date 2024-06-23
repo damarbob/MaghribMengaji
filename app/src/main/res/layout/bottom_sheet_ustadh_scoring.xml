@@ -24,8 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
-                android:textAlignment="center"
-                android:text="Student score" />
+                android:text="@string/score" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -89,6 +88,14 @@
                 android:text="@string/submit"
                 app:icon="@drawable/rounded_checkbook_24"
                 app:iconGravity="textStart"/>
+
+            <TextView
+                style="@style/Widget.App.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
+                android:text="@string/press_back_to_close" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

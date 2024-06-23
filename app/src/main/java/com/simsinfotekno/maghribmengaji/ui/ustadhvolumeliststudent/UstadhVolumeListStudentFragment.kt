@@ -1,5 +1,7 @@
 package com.simsinfotekno.maghribmengaji.ui.ustadhvolumeliststudent
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhQuranVolumeStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhStudentRepository
@@ -57,6 +60,8 @@ class UstadhVolumeListStudentFragment : Fragment() {
         }
 
         /* Views */
+        binding.ustadhVolumeListStudentChat.setEnabled(false) // Disable chat button
+        binding.ustadhVolumeListStudentTextNoVolume.visibility = View.GONE // Hide no volume info
 
         // Toolbar
         binding.ustadhVolumeListAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
@@ -114,6 +119,29 @@ class UstadhVolumeListStudentFragment : Fragment() {
             )
 
         }
+        viewModel.getStudentProfileResult.observe(viewLifecycleOwner) { user ->
+            if (user == null) {
+                viewModel.getStudentProfile(studentId!!)
+            }
+            else  {
+                // Use the user variable here
+                binding.ustadhVolumeListStudentChat.setEnabled(true) // Enable chat button
+                binding.ustadhVolumeListCollapsingToolbarLayout.title = user.fullName // Change toolbar title to the user's full name
+
+                binding.ustadhVolumeListStudentChat.setOnClickListener{
+                    if (user.phone != null) { // If phone number exists
+                        openWhatsApp(user.phone!!)
+                    }
+                    else {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(getString(R.string.error))
+                            .setMessage(getString(R.string.user_do_not_have_phone_number))
+                            .setPositiveButton(getString(R.string.okay), null)
+                            .show()
+                    }
+                }
+            }
+        }
         viewModel.getStudentPageResult.observe(viewLifecycleOwner) { result ->
             result?.onSuccess {
 
@@ -123,9 +151,16 @@ class UstadhVolumeListStudentFragment : Fragment() {
                 volumeAdapter.dataSet = ustadhQuranVolumeStudentRepository.getRecords()
                 volumeAdapter.notifyDataSetChanged()
 
-                if (studentId == null) return@observe
+                // Handle views
+                binding.ustadhVolumeListStudentProgressIndicator.visibility = View.GONE // Hide progress indicator
 
-                binding.ustadhVolumeListCollapsingToolbarLayout.title = ustadhStudentRepository.getStudentById(studentId)?.fullName
+                // Show info if user has not done any volume yet
+                if (ustadhQuranVolumeStudentRepository.getRecordsCount() == 0) {
+                    binding.ustadhVolumeListStudentTextNoVolume.visibility = View.VISIBLE // Show no volume info
+
+                    val userName = ustadhStudentRepository.getStudentById(studentId!!)?.fullName // Get user full name once
+                    binding.ustadhVolumeListStudentTextNoVolume.text = String.format(getString(R.string.there_are_no_volumes_that_x_has_worked_on_yet), userName)
+                }
 
             }?.onFailure { exception ->
                 // Show error message
@@ -139,5 +174,17 @@ class UstadhVolumeListStudentFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    fun openWhatsApp(phoneNumber: String) {
+        val formattedNumber = phoneNumber.replace("+", "").replace(" ", "")
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("https://wa.me/$formattedNumber")
+
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), getString(R.string.error), Toast.LENGTH_SHORT).show()
+        }
     }
 }

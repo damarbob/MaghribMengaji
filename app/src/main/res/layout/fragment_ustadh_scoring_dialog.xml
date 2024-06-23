@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.ustadhscoring.UstadhScoringDialogFragment">
+
+    <TextView
+        android:id="@+id/checkResultTextView"
+        style="@style/Widget.App.H1.Bold.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:text="@string/score" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="@string/tidiness"
+        app:endIconMode="clear_text"
+        app:startIconContentDescription="@string/auth_fullname"
+        app:startIconDrawable="@drawable/outline_grade_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ustadhScoringInputTidiness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="@string/accuracy"
+        app:endIconMode="clear_text"
+        app:startIconContentDescription="@string/auth_fullname"
+        app:startIconDrawable="@drawable/outline_grade_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ustadhScoringInputAccuracy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="@string/consistency"
+        app:endIconMode="clear_text"
+        app:startIconContentDescription="@string/auth_fullname"
+        app:startIconDrawable="@drawable/outline_grade_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ustadhScoringInputConsistency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/ustadhScoringButton"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/submit"
+        app:icon="@drawable/rounded_checkbook_24"
+        app:iconGravity="textStart" />
+
+    <TextView
+        style="@style/Widget.App.Small"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp"
+        android:text="@string/press_back_to_close" />
+
+</LinearLayout>

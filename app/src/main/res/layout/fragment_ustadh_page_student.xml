@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ustadhscoring.UstadhScoringFragment">
+    tools:context=".ui.ustadhscoring.UstadhPageStudentFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/ustadhScoringAppBarLayout"
@@ -308,25 +308,8 @@
                 android:layout_marginTop="16dp"
                 android:contentDescription="@string/quran_page_image_description" />
 
-<!--            <Button-->
-<!--                android:id="@+id/ustadhScoringButton"-->
-<!--                style="@style/Widget.Material3.Button"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_below="@+id/ustadhScoringStudentImage"-->
-<!--                android:layout_marginTop="16dp"-->
-<!--                android:text="@string/score"-->
-<!--                app:icon="@drawable/outline_grade_24"-->
-<!--                app:iconGravity="textStart" />-->
-
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <include
-        android:id="@+id/ustadhScoringBottomSheet"
-        layout="@layout/bottom_sheet_ustadh_scoring"
-        android:visibility="visible" />
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

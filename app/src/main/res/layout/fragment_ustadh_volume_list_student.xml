@@ -36,7 +36,7 @@
             app:titleCollapseMode="scale"
             app:expandedTitleMarginBottom="48dp"
             app:expandedTitleGravity="bottom"
-            app:title="Muhammad Fikri Hizbullah">
+            app:title="...">
 
             <!--We are adding the image that we have added earlier
                   in the drawable folder.The attribute app:layout_collapseMode="parallax"
@@ -62,8 +62,17 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/ustadhVolumeListStudentProgressIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/ustadhVolumeListAppBarLayout"
+        app:layout_anchorGravity="bottom|end"
+        android:indeterminate="true"
+        />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ustadhVolumeListChat"
+        android:id="@+id/ustadhVolumeListStudentChat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
@@ -84,6 +93,13 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
             android:paddingVertical="32dp">
+
+            <TextView
+                android:id="@+id/ustadhVolumeListStudentTextNoVolume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/there_are_no_volumes_that_x_has_worked_on_yet"
+                />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/ustadhVolumeListStudentRecyclerView"

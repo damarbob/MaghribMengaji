@@ -4,15 +4,17 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhQuranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhQuranVolumeStudentRepository
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
+import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 
 class UstadhVolumeListStudentViewModel : ViewModel() {
 
@@ -22,6 +24,18 @@ class UstadhVolumeListStudentViewModel : ViewModel() {
 
     private val _getStudentPageResult = MutableLiveData<Result<List<QuranPageStudent>>?>()
     val getStudentPageResult: LiveData<Result<List<QuranPageStudent>>?> get() = _getStudentPageResult
+
+    private val _getStudentProfileResult = MutableLiveData<MaghribMengajiUser>(null)
+    val getStudentProfileResult: LiveData<MaghribMengajiUser> get() = _getStudentProfileResult
+
+    /* Use cases */
+    private val retrieveUserProfile = RetrieveUserProfile()
+
+    fun getStudentProfile(studentId: String) {
+        retrieveUserProfile(studentId) {
+            _getStudentProfileResult.value = it
+        }
+    }
 
     fun getStudentPageData(studentUserId: String) {
         Log.d(TAG, "Requesting page data for student $studentUserId")
@@ -60,13 +74,13 @@ class UstadhVolumeListStudentViewModel : ViewModel() {
                     Log.d(TAG, "No matching documents found.")
                 }
 
-                _getStudentPageResult.value = Result.success(pages)
-
                 // From here on, page students are available and accessible
                 ustadhQuranPageStudentRepository.setRecords(pages, false)
 
                 // Use the retrieved page students to get the volumes
                 ustadhQuranVolumeStudentRepository.setRecords(getStudentVolumes(), false)
+
+                _getStudentPageResult.value = Result.success(pages) // Must be the last
 
             }
             .addOnFailureListener { exception ->
