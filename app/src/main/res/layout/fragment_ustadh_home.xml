@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,56 +8,130 @@
     android:transitionGroup="true"
     tools:context=".ui.ustadhhome.UstadhHomeFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main_header"
-        android:background="@drawable/gradient_background_rounded_start_bottom"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/ustadhHomeAppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="32dp"
-        android:paddingHorizontal="24dp">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_maghrib_mengaji_horizontal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="?attr/colorOnPrimary" />
-
-        <Button
-            android:id="@+id/ustadhHomeButtonMenu"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal|center_vertical"
-            app:icon="@drawable/more_vert_24px"
-            app:iconTint="?attr/colorOnPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingVertical="24dp">
-
-        <TextView
-            style="@style/Widget.App.P.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="@string/student_list" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/ustadhHomeRecyclerViewStudent"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/ustadhHomeCollapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
-            android:clipToPadding="false" />
+            app:collapsedTitleTextAppearance="@style/Widget.App.P.Bold"
+            app:expandedTitleGravity="top"
+            app:expandedTitleMarginTop="0dp"
+            app:extraMultilineHeightEnabled="false"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+            app:maxLines="1"
+            app:title="@string/volume_x"
+            app:titleCollapseMode="fade"
+            app:titleEnabled="false">
 
-    </LinearLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/gradient_background_horizontal"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax" />
 
-</LinearLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="120dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="-0dp"
+                app:layout_collapseMode="parallax">
+
+                <ImageView
+                    android:layout_width="192dp"
+                    android:layout_height="192dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/img_quran"
+                    android:translationY="-16dp" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="16dp"
+                app:layout_collapseMode="parallax">
+
+                <TextView
+                    android:id="@+id/ustadhHomeTextName"
+                    style="@style/Widget.App.H1.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Muhammad Fikri Hizbullah" />
+
+                <TextView
+                    android:id="@+id/ustadhHomeTextStudentCount"
+                    style="@style/Widget.App.H5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/x_students" />
+
+            </LinearLayout>
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/ustadhHomeToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/more_vert_24px" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/ustadhHomeTextNoStudent"
+                style="@style/Widget.App.P.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:text="@string/no_student_yet" />
+
+            <LinearLayout
+                android:id="@+id/ustadhHomeLayoutStudentList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="24dp">
+
+                <TextView
+                    style="@style/Widget.App.P.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/student_list" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ustadhHomeRecyclerViewStudent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingBottom="16dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

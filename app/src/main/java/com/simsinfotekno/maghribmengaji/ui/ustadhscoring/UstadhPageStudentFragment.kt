@@ -113,6 +113,9 @@ class UstadhPageStudentFragment : Fragment() {
         }
 
         /* Listeners */
+        binding.ustadhScoringToolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
         binding.ustadhScoringButton.setOnClickListener {
 
             val ustadhScoringDialogFragment = UstadhScoringDialogFragment()

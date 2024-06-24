@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
@@ -149,16 +150,41 @@ class HomeFragment : Fragment() {
         }
 
         /* Listeners */
-        binding.homeButtonMenu.setOnClickListener {
+        binding.homeToolbar.setNavigationOnClickListener {
             showPopupMenu(requireContext(), it, R.menu.menu_main) {
                 when (it.itemId) {
                     R.id.menu_profile -> findNavController().navigate(R.id.action_navigation_home_to_navigation_profile)
                     R.id.menu_sign_out -> {
-                        mainViewModel.logout()
-                        navigateToLoginActivity()
+
+                        // Show confirmation dialog
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(getString(R.string.are_you_sure))
+                            .setMessage(getString(R.string.you_will_be_logged_out_from_this_account))
+                            .setNeutralButton(resources.getString(R.string.close)) { dialog, which ->
+                                dialog.dismiss()
+                            }
+                            .setPositiveButton(getString(R.string.yes)){ dialog, which ->
+                                // Logout and navigate to login
+                                mainViewModel.logout()
+                                navigateToLoginActivity()
+                            }
+                            .show()
+
                     }
                 }
                 return@showPopupMenu false
+            }
+        }
+        binding.homeAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val limitOffset = appBarLayout.totalScrollRange * 0.25
+
+            if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
+                // Half expanded
+                binding.homeCollapsingToolbarLayout.isTitleEnabled = false
+            }
+            else if (Math.abs(verticalOffset) >= limitOffset) {
+                // Half collapsed
+                binding.homeCollapsingToolbarLayout.isTitleEnabled = true
             }
         }
 

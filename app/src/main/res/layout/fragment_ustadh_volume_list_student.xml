@@ -56,7 +56,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:menu="@menu/menu_student"
-                app:navigationIcon="@drawable/arrow_back_24px" />
+                app:navigationIcon="@drawable/arrow_back_24px"/>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -91,13 +91,13 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp"
             android:paddingVertical="32dp">
 
             <TextView
                 android:id="@+id/ustadhVolumeListStudentTextNoVolume"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:text="@string/there_are_no_volumes_that_x_has_worked_on_yet"
                 />
 
@@ -105,9 +105,7 @@
                 android:id="@+id/ustadhVolumeListStudentRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="-16dp"
                 android:clipToPadding="false"
-                android:paddingEnd="16dp"
                 android:paddingBottom="16dp" />
 
         </LinearLayout>

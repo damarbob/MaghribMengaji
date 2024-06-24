@@ -12,10 +12,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.LoginActivity
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhHomeBinding
@@ -66,7 +68,19 @@ class UstadhHomeFragment : Fragment() {
 
         Log.d(TAG, "Entering ustadh home fragment")
 
+        /* Variables */
+        val ustadh = studentRepository.getStudent()
+
         /* Views */
+
+        binding.ustadhHomeTextNoStudent.visibility = View.GONE // Hide no student text
+        binding.ustadhHomeLayoutStudentList.visibility = View.GONE // Hide the student list layout
+
+        // Ustadh name
+        binding.ustadhHomeCollapsingToolbarLayout.title = String.format(getString(R.string.ust_x), ustadh.fullName)
+        binding.ustadhHomeTextName.text = String.format(getString(R.string.ust_x), ustadh.fullName)
+
+        // Student list
         studentAdapter = StudentAdapter(listOf())
 
         val recyclerView = binding.ustadhHomeRecyclerViewStudent
@@ -91,6 +105,18 @@ class UstadhHomeFragment : Fragment() {
                 studentAdapter.dataSet = it
                 studentAdapter.notifyDataSetChanged()
 
+                // Update student stat
+                val studentCount = it.size
+
+                if (studentCount == 0) {
+                    binding.ustadhHomeTextStudentCount.visibility = View.GONE // Hide the student count stat
+                    binding.ustadhHomeTextNoStudent.visibility = View.VISIBLE // Show no student text
+                }
+                else {
+                    binding.ustadhHomeTextStudentCount.text = String.format(getString(R.string.x_students), it.size) // Set number to the student count stat
+                    binding.ustadhHomeLayoutStudentList.visibility = View.VISIBLE // Show the student list layout
+                }
+
             }?.onFailure { exception ->
                 // Show error message
                 Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
@@ -98,16 +124,41 @@ class UstadhHomeFragment : Fragment() {
         })
 
         /* Listeners */
-        binding.ustadhHomeButtonMenu.setOnClickListener {
+        binding.ustadhHomeToolbar.setNavigationOnClickListener {
             showPopupMenu(requireContext(), it, R.menu.menu_main) {
                 when (it.itemId) {
                     R.id.menu_profile -> findNavController().navigate(R.id.action_ustadhHomeFragment_to_profileFragment)
                     R.id.menu_sign_out -> {
-                        mainViewModel.logout()
-                        navigateToLoginActivity()
+
+                        // Show confirmation dialog
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(getString(R.string.are_you_sure))
+                            .setMessage(getString(R.string.you_will_be_logged_out_from_this_account))
+                            .setNeutralButton(resources.getString(R.string.close)) { dialog, which ->
+                                dialog.dismiss()
+                            }
+                            .setPositiveButton(getString(R.string.yes)){ dialog, which ->
+                                // Logout and navigate to login
+                                mainViewModel.logout()
+                                navigateToLoginActivity()
+                            }
+                            .show()
+
                     }
                 }
                 return@showPopupMenu false
+            }
+        }
+        binding.ustadhHomeAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val limitOffset = appBarLayout.totalScrollRange * 0.25
+
+            if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
+                // Half expanded
+                binding.ustadhHomeCollapsingToolbarLayout.isTitleEnabled = false
+            }
+            else if (Math.abs(verticalOffset) >= limitOffset) {
+                // Half collapsed
+                binding.ustadhHomeCollapsingToolbarLayout.isTitleEnabled = true
             }
         }
 

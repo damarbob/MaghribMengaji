@@ -91,4 +91,8 @@
     <string name="okay">Oke</string>
     <string name="user_do_not_have_phone_number">Pengguna tidak memiliki nomor telepon</string>
     <string name="there_are_no_volumes_that_x_has_worked_on_yet">Belum ada jilid yang %1$s kerjakan</string>
+    <string name="x_students">%1$d murid</string>
+    <string name="ust_x">Ust. %1$s</string>
+    <string name="no_student_yet">Belum ada murid</string>
+    <string name="you_will_be_logged_out_from_this_account">Anda akan keluar dari akun ini</string>
 </resources>
