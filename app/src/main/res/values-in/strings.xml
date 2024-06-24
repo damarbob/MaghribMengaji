@@ -97,7 +97,12 @@
     <string name="ust_x">Ust. %1$s</string>
     <string name="no_student_yet">Belum ada murid</string>
     <string name="you_will_be_logged_out_from_this_account">Anda akan keluar dari akun ini</string>
+    <string name="chat_with_ustadh">Japri/hubungi Ustadz?</string>
+    <string name="you_will_chat_with_ustadh">Anda akan menjapri Ustadz %1$s via WhatsApp</string>
+    <string name="your_ustadh_hasnt_entered_his_whatsapp">Subhanallah, Ustadz $1%s belum memasukkan nomor WhatsApp</string>
+    <string name="you_dont_have_ustadh">Subhanallah, Anda belum memiliki Ustadz</string>
     <string name="x_pages_completed">%1$d halaman diselesaikan</string>
+    <string name="no_in_progress_data">Subhanallah, tidak ada data yang sedang berjalan</string>
     <string name="verification">Verifikasi</string>
     <string name="refresh">Segarkan</string>
     <string name="send">Kirim</string>

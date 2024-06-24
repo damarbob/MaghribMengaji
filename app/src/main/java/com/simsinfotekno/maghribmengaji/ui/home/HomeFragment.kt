@@ -2,16 +2,20 @@ package com.simsinfotekno.maghribmengaji.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
@@ -27,8 +31,10 @@ import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
+import com.simsinfotekno.maghribmengaji.ui.adapter.BannerAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
+import com.simsinfotekno.maghribmengaji.usecase.OpenWhatsApp
 import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 import com.simsinfotekno.maghribmengaji.usecase.ShowPopupMenu
 import org.greenrobot.eventbus.EventBus
@@ -58,6 +64,16 @@ class HomeFragment : Fragment() {
     private val showPopupMenu: ShowPopupMenu = ShowPopupMenu()
     private val getQuranVolumeByStatus = GetQuranVolumeByStatus()
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
+    private val openWhatsApp = OpenWhatsApp()
+
+    // Handlers
+    private lateinit var autoScrollHandler: Handler
+    private lateinit var autoScrollRunnable: Runnable
+
+    // Variables
+    private var ustadhPhoneNumber: String? = null
+    private var ustadhName: String? = null
+    private var materialAlertDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +85,8 @@ class HomeFragment : Fragment() {
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
+
+        materialAlertDialog = MaterialAlertDialogBuilder(requireContext()).create()
     }
 
     override fun onCreateView(
@@ -109,6 +127,9 @@ class HomeFragment : Fragment() {
 //        binding.homeProgressIndicatorPagePercentage.progress = if (progressPercentage < 5) 5 else progressPercentage
         binding.homeProgressIndicatorPagePercentage.progress = progressPercentage
 
+        // Banner
+        setupBanner()
+
         /* Observers */
         volumeAdapter.selectedVolume.observe(viewLifecycleOwner) {
             if (it == null) return@observe
@@ -124,16 +145,24 @@ class HomeFragment : Fragment() {
             if (lastPageId == null) {
                 binding.homeTextLastWritten.text = getString(R.string.no_data)
                 binding.homeTextLastWrittenVolume.text = getString(R.string.no_data)
-            }
-            else {
-                binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.page_x), lastPageId.toString())
-                binding.homeTextLastWrittenVolume.text = String.format(requireContext().getString(R.string.volume_x), quranVolumeRepository.getRecordByPageId(lastPageId)?.name)
+            } else {
+                binding.homeTextLastWritten.text = String.format(
+                    requireContext().getString(R.string.page_x),
+                    lastPageId.toString()
+                )
+                binding.homeTextLastWrittenVolume.text = String.format(
+                    requireContext().getString(R.string.volume_x),
+                    quranVolumeRepository.getRecordByPageId(lastPageId)?.name
+                )
             }
         }
         viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->
-
-            if (data == null)
+            // TODO: volume in progress visibility
+            if (data == null) {
+                binding.homeLayoutNoProgress.visibility = View.VISIBLE
+                binding.homeLayoutInProgress.visibility = View.GONE
                 return@observe
+            }
 
             volumeAdapter.dataSet = data
             volumeAdapter.notifyDataSetChanged()
@@ -143,11 +172,17 @@ class HomeFragment : Fragment() {
             }
             TransitionManager.beginDelayedTransition(binding.root, materialFade)
             binding.homeRecyclerViewVolume.visibility = View.VISIBLE
+            binding.homeLayoutInProgress.visibility = View.VISIBLE
+            binding.homeLayoutNoProgress.visibility = View.GONE
         }
         studentRepository.ustadhLiveData.observe(viewLifecycleOwner) {
             Log.d(TAG, "Ustadh: $it")
             binding.homeTextUstadhName.text =
                 if (it != null) it.fullName else getString(R.string.no_data)
+            if (it != null) {
+                ustadhPhoneNumber = if (it.phone != null) it.phone else null
+                ustadhName = it.fullName
+            }
         }
 
         /* Listeners */
@@ -164,7 +199,7 @@ class HomeFragment : Fragment() {
                             .setNeutralButton(resources.getString(R.string.close)) { dialog, which ->
                                 dialog.dismiss()
                             }
-                            .setPositiveButton(getString(R.string.yes)){ dialog, which ->
+                            .setPositiveButton(getString(R.string.yes)) { dialog, which ->
                                 // Logout and navigate to login
                                 mainViewModel.logout()
                                 navigateToLoginActivity()
@@ -182,14 +217,116 @@ class HomeFragment : Fragment() {
             if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
                 // Half expanded
                 binding.homeCollapsingToolbarLayout.isTitleEnabled = false
-            }
-            else if (Math.abs(verticalOffset) >= limitOffset) {
+            } else if (Math.abs(verticalOffset) >= limitOffset) {
                 // Half collapsed
                 binding.homeCollapsingToolbarLayout.isTitleEnabled = true
             }
         }
+        binding.homeTextUstadhName.setOnClickListener {
+            if (ustadhName != null) { // Check if user has Ustadh
+                if (ustadhPhoneNumber != null) { // Check if Ustadh has phone number
+                    materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.chat_with_ustadh))
+                        .setMessage(getString(R.string.you_will_chat_with_ustadh, ustadhName))
+                        .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                            openWhatsApp(requireContext(), ustadhPhoneNumber!!)
+                        }
+                        .show()
+                } else { // Ustadh has'nt phone number
+                    materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.chat_with_ustadh))
+                        .setMessage(
+                            getString(
+                                R.string.your_ustadh_hasnt_entered_his_whatsapp,
+                                ustadhName
+                            )
+                        )
+                        .setPositiveButton(getString(R.string.cancel)) { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
+            } else {
+                materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.chat_with_ustadh))
+                    .setMessage(getString(R.string.you_dont_have_ustadh))
+                    .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+        binding.homeButtonStartJourney.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_volumeListFragment)
+        }
 
         return root
+    }
+
+    private fun setupBanner() {
+        val bannerList = ArrayList<Int>()
+        bannerList.apply {
+            add(R.drawable.banner_1)
+            add(R.drawable.banner_2)
+            add(R.drawable.banner_3)
+        }
+
+        binding.homeViewPagerBanner.apply {
+            adapter = BannerAdapter(bannerList)
+            currentItem =
+                1 // setting the current item of the infinite ViewPager to the actual first element
+        }
+
+        // function for registering a callback to update the ViewPager
+        // and provide a smooth flow for infinite scroll
+        onInfinitePageChangeCallback(bannerList.size + 2)
+        setupAutoScroll()
+    }
+
+    private fun onInfinitePageChangeCallback(itemSize: Int) {
+        binding.homeViewPagerBanner.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+
+                if (state == ViewPager2.SCROLL_STATE_IDLE) {
+                    when (binding.homeViewPagerBanner.currentItem) {
+                        itemSize - 1 -> binding.homeViewPagerBanner.setCurrentItem(1, false)
+                        0 -> binding.homeViewPagerBanner.setCurrentItem(itemSize - 2, false)
+                    }
+                }
+            }
+        })
+    }
+
+    private fun setupAutoScroll() {
+        autoScrollHandler = Handler(Looper.getMainLooper())
+        autoScrollRunnable = object : Runnable {
+            override fun run() {
+                binding.homeViewPagerBanner.currentItem += 1
+                autoScrollHandler.postDelayed(this, 3000) // Adjust the delay time as needed
+            }
+        }
+//        autoScrollHandler.postDelayed(
+//            autoScrollRunnable,
+//            3000
+//        ) // Initial delay before starting auto-scroll
+    }
+
+    override fun onPause() {
+        super.onPause()
+        autoScrollHandler.removeCallbacks(autoScrollRunnable) // Stop auto-scroll when the fragment/activity is not visible
+    }
+
+    override fun onResume() {
+        super.onResume()
+        autoScrollHandler.postDelayed(
+            autoScrollRunnable,
+            3000
+        ) // Restart auto-scroll when the fragment/activity becomes visible again
     }
 
     override fun onDestroyView() {

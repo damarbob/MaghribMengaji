@@ -20,6 +20,7 @@ import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhVolumeListStud
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageStudentAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
+import com.simsinfotekno.maghribmengaji.usecase.OpenWhatsApp
 
 class UstadhVolumeListStudentFragment : Fragment() {
 
@@ -34,6 +35,9 @@ class UstadhVolumeListStudentFragment : Fragment() {
     /* Views */
     private lateinit var volumeAdapter: VolumeAdapter
     private lateinit var pageStudentAdapter: PageStudentAdapter
+
+    /* Use Cases */
+    private val openWhatsApp = OpenWhatsApp()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,7 +126,7 @@ class UstadhVolumeListStudentFragment : Fragment() {
 
                 binding.ustadhVolumeListStudentChat.setOnClickListener{
                     if (user.phone != null) { // If phone number exists
-                        openWhatsApp(user.phone!!)
+                        openWhatsApp(requireContext(), user.phone!!)
                     }
                     else {
                         MaterialAlertDialogBuilder(requireContext())
@@ -168,15 +172,15 @@ class UstadhVolumeListStudentFragment : Fragment() {
         return binding.root
     }
 
-    fun openWhatsApp(phoneNumber: String) {
-        val formattedNumber = phoneNumber.replace("+", "").replace(" ", "")
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("https://wa.me/$formattedNumber")
-
-        try {
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), getString(R.string.error), Toast.LENGTH_SHORT).show()
-        }
-    }
+//    fun openWhatsApp(phoneNumber: String) {
+//        val formattedNumber = phoneNumber.replace("+", "").replace(" ", "")
+//        val intent = Intent(Intent.ACTION_VIEW)
+//        intent.data = Uri.parse("https://wa.me/$formattedNumber")
+//
+//        try {
+//            startActivity(intent)
+//        } catch (e: Exception) {
+//            Toast.makeText(requireContext(), getString(R.string.error), Toast.LENGTH_SHORT).show()
+//        }
+//    }
 }

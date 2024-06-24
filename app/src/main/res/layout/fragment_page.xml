@@ -64,6 +64,15 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/pageProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        app:layout_anchor="@id/pageAppBarLayout"
+        app:layout_anchorGravity="bottom|end"/>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -153,13 +162,6 @@
                 android:layout_height="wrap_content"
                 android:background="@color/md_theme_surfaceContainerHigh">
 
-                <com.google.android.material.progressindicator.CircularProgressIndicator
-                    android:id="@+id/pageProgressBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:indeterminate="true" />
-
                 <ImageView
                     android:id="@+id/pageImageViewPage"
                     android:layout_width="match_parent"
@@ -201,7 +203,8 @@
 
         <Button
             android:id="@+id/pageButtonPrevious"
-            style="@style/Widget.Material3.Button.IconButton"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            android:backgroundTint="@color/md_theme_tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@drawable/round_arrow_back_ios_24"
@@ -240,7 +243,8 @@
 
         <Button
             android:id="@+id/pageButtonForward"
-            style="@style/Widget.Material3.Button.IconButton"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            android:backgroundTint="@color/md_theme_tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
