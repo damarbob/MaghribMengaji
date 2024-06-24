@@ -83,6 +83,8 @@
     <string name="contact">Hubungi</string>
     <string name="cant_pick_audio">Tidak bisa mengambil audio</string>
     <string name="cant_pick_image">Tidak bisa mengambil gambar</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galeri</string>
     <string name="press_back_to_close">Tekan kembali untuk menutup</string>
     <string name="invalid_score">Skor tidak valid</string>
     <string name="score_cannot_be_more_than_100">Skor tidak dapat lebih dari 100</string>

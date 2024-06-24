@@ -88,7 +88,8 @@ class HomeFragment : Fragment() {
         // Set volume dataset with status on progress
         volumeAdapter = VolumeAdapter(
             getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS),
-            VolumeAdapter.VIEW_ITEM_LIST
+            findNavController(),
+            this
         )
 
         // Volume list
@@ -113,10 +114,10 @@ class HomeFragment : Fragment() {
             if (it == null) return@observe
 
             // Navigate to page list fragment and passing volume id
-            val bundle = Bundle()
-            bundle.putInt("volumeId", it.id)
-            bundle.putIntArray("pageIds", it.pageIds.toIntArray())
-            findNavController().navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
+//            val bundle = Bundle()
+//            bundle.putInt("volumeId", it.id)
+//            bundle.putIntArray("pageIds", it.pageIds.toIntArray())
+//            findNavController().navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
 
         }
         viewModel.lastPageId.observe(viewLifecycleOwner) { lastPageId ->

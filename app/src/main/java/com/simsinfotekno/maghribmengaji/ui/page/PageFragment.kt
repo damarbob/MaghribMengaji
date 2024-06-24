@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,10 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColor
+import androidx.core.view.marginTop
+import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -149,21 +154,22 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 }
             }
 
-        requestGalleryPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                launchGalleryUseCase(
-                    requireContext(),
-                    galleryLauncher,
-                    requestGalleryPermissionLauncher
-                )
-            } else {
-                Toast.makeText(
-                    context,
-                    "Camera permission is required to take a photo",
-                    Toast.LENGTH_SHORT
-                ).show()
+        requestGalleryPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    launchGalleryUseCase(
+                        requireContext(),
+                        galleryLauncher,
+                        requestGalleryPermissionLauncher
+                    )
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Camera permission is required to take a photo",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
 
         // Set the transition for this fragment
         enterTransition = if (arguments?.getBoolean("previous") == true) {
@@ -313,6 +319,10 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             { imageUrl ->
                 // Load image to ImageView
                 if (isAdded) {
+                    pageImage.visibility = View.VISIBLE
+                    pageImage.setBackgroundColor(resources.getColor(R.color.md_theme_background))
+                    pageImage.setPadding(0,16,0,0)
+                    Log.d(TAG, imageUrl)
                     loadImageIntoImageView(imageUrl, pageImage, isBottomSheet = false)
                 }
             },
@@ -323,6 +333,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                         "${getString(R.string.failed_to_load_image)} ${exception.message}",
                         Toast.LENGTH_SHORT
                     ).show()
+                    pageImage.visibility = View.VISIBLE
+                    pageImage.scaleType = ImageView.ScaleType.CENTER
                     binding.pageProgressBar.visibility = View.GONE // Hide progress bar
                 }
             })
@@ -353,28 +365,29 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             if (isAdded) {
                 if (Build.VERSION.SDK_INT >= 30) {
                     launchScannerUseCase(this, scannerLauncher)
-                }
-                val bottomSheet = ImagePickerBottomSheetDialog().apply {
-                    onCameraClick = {
-                        launchCameraUseCase(
-                            requireContext(),
-                            cameraLauncher,
-                            requestCameraPermissionLauncher
+                } else {
+                    val bottomSheet = ImagePickerBottomSheetDialog().apply {
+                        onCameraClick = {
+                            launchCameraUseCase(
+                                requireContext(),
+                                cameraLauncher,
+                                requestCameraPermissionLauncher
+                            )
+                        }
+                        onGalleryClick = {
+                            launchGalleryUseCase(
+                                requireContext(),
+                                galleryLauncher,
+                                requestGalleryPermissionLauncher
+                            )
+                        }
+                    }
+                    activity?.let { it1 ->
+                        bottomSheet.show(
+                            it1.supportFragmentManager,
+                            ImagePickerBottomSheetDialog.TAG
                         )
                     }
-                    onGalleryClick = {
-                        launchGalleryUseCase(
-                            requireContext(),
-                            galleryLauncher,
-                            requestGalleryPermissionLauncher
-                        )
-                    }
-                }
-                activity?.let { it1 ->
-                    bottomSheet.show(
-                        it1.supportFragmentManager,
-                        ImagePickerBottomSheetDialog.TAG
-                    )
                 }
             }
         }
@@ -446,6 +459,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     if (isAdded) {
 //                        binding.pageProgressBar.visibility = View.GONE
                         progress.visibility = View.GONE
+                        imageView.visibility = View.VISIBLE
                         Toast.makeText(
                             requireContext(),
                             getString(R.string.failed_to_load_image),
@@ -457,6 +471,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     return false
                 }
             })
+            .error(R.drawable.img_quran)
+            .fallback(R.drawable.img_quran)
             .into(imageView)
     }
 

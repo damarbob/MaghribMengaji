@@ -225,7 +225,7 @@
             <ImageView
                 android:id="@+id/checkResultImageViewStudentPageImage"
                 android:layout_width="match_parent"
-                android:layout_height="480dp"
+                android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginVertical="24dp"
                 android:adjustViewBounds="true"

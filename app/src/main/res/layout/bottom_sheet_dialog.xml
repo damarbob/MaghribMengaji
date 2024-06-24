@@ -13,16 +13,22 @@
 
         <Button
             android:id="@+id/btnCamera"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Camera" />
+            android:text="@string/camera"
+            app:icon="@drawable/photo_camera_24px"
+            app:iconGravity="textStart" />
 
         <Button
             android:id="@+id/btnGallery"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Gallery"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:text="@string/gallery"
+            app:icon="@drawable/image_24px"
+            app:iconGravity="textStart"/>
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
