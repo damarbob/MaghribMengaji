@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -88,6 +87,22 @@ class VolumeListFragment : Fragment() {
         // Initialize RecyclerView with default view type
         setupRecyclerView()
 
+        /* Listeners */
+        binding.volumeListToolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.volumeListAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val limitOffset = appBarLayout.totalScrollRange * 0.25
+
+            if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
+                // Half expanded
+                binding.volumeListCollapsingToolbarLayout.isTitleEnabled = false
+            }
+            else if (Math.abs(verticalOffset) >= limitOffset) {
+                // Half collapsed
+                binding.volumeListCollapsingToolbarLayout.isTitleEnabled = true
+            }
+        }
         binding.volumeListButtonViewTypeGrid.setOnClickListener {
             setupViewType(VolumeAdapter.VIEW_ITEM_GRID)
             it.visibility = View.GONE

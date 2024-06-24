@@ -27,11 +27,13 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepos
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageListBinding
+import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageAdapter
 import com.simsinfotekno.maghribmengaji.ui.page.PageViewModel
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranPageRangeString
+import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
 
 class PageListFragment : Fragment() {
 
@@ -48,7 +50,8 @@ class PageListFragment : Fragment() {
 
     private lateinit var pageAdapter: PageAdapter
 
-    // Use case
+    /* Use case */
+    private val quranPageStatusCheck = QuranPageStatusCheck()
     private val getQuranPageRangeString = GetQuranPageRangeString()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,15 +74,19 @@ class PageListFragment : Fragment() {
 
         _binding = FragmentPageListBinding.inflate(inflater, container, false)
 
-        // Arguments
+        /* Arguments */
         val volumeId = arguments?.getInt("volumeId")
         val pageIds = arguments?.getIntArray("pageIds")!!
+
+        /* Variables */
+        val pages = quranPageRepository.getRecordByIds(pageIds)
+        val pagesFinished = pages.filter { quranPageStatusCheck(it) == QuranItemStatus.FINISHED }.toMutableList().size
 
         /* Views */
 
         // Initialize data set
         pageAdapter = PageAdapter(
-            quranPageRepository.getRecordByIds(pageIds),
+            pages,
             findNavController(),
             this
         )
@@ -96,11 +103,27 @@ class PageListFragment : Fragment() {
             volumeId
         )
         binding.pageListTextPageRange.text = volumeId?.let { getQuranPageRangeString(it, getString(R.string.page)) }
+        binding.pageListTextPageCompleted.text = String.format(getString(R.string.x_pages_completed), pagesFinished)
 //        binding.pageListTextViewPageCompletion.text =
 //            "0" //TODO: add page completion logic or function
 //        binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function
 
-        // Listener
+        // Listeners
+        binding.pageListToolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.pageListAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val limitOffset = appBarLayout.totalScrollRange * 0.25
+
+            if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
+                // Half expanded
+                binding.pageListCollapsingToolbarLayout.isTitleEnabled = false
+            }
+            else if (Math.abs(verticalOffset) >= limitOffset) {
+                // Half collapsed
+                binding.pageListCollapsingToolbarLayout.isTitleEnabled = true
+            }
+        }
 //        binding.pageListButtonMenu.setOnClickListener {
 //            showMenu(it, R.menu.menu_main)
 //        }

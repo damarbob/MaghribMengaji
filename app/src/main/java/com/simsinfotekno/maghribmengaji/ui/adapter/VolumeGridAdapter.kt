@@ -55,6 +55,7 @@ class VolumeGridAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         /* Old */
         val textView: TextView
+        val textViewVolume: TextView
         val cardView: CardView
         val imageStatus: ImageView
         val imageCover: ImageView
@@ -63,6 +64,7 @@ class VolumeGridAdapter(
         init {
             // Define click listener for the ViewHolder's View
             textView = view.findViewById(R.id.itemVolumeTwoColumnsTextTitle)
+            textViewVolume = view.findViewById(R.id.itemVolumeTextVolume)
             cardView = view.findViewById(R.id.itemVolumeTwoColumnsCardView)
             imageStatus = view.findViewById(R.id.itemVolumeTwoColumnsStatus)
             imageCover = view.findViewById(R.id.itemVolumeTwoColumnsImageViewCover)
@@ -95,6 +97,7 @@ class VolumeGridAdapter(
             viewHolder.textView.context.getString(R.string.volume_x),
             name
         )
+        viewHolder.textViewVolume.text = name
 
         // Set the icon based on the completion status
         val status = quranVolumeStatusCheck(dataSet[position])
@@ -129,7 +132,7 @@ class VolumeGridAdapter(
 
         // Load image cover
         Glide.with(viewHolder.imageCover.context)
-            .load(R.mipmap.vector_maghrib_mengaji) // TODO: change to volume cover
+            .load(R.drawable.ic_maghrib_mengaji_notext) // TODO: change to volume cover
             .listener(object : RequestListener<Drawable> {
 
                 override fun onResourceReady(

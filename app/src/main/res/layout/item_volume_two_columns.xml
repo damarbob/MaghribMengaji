@@ -31,10 +31,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:scaleType="fitCenter"
                 android:alpha="0.2"
-                android:scaleX="2"
-                android:scaleY="2"
+                android:scaleX="0.5"
+                android:scaleY="0.5"
+                android:src="@drawable/ic_maghrib_mengaji_notext"
                 app:tint="@color/md_theme_primary" />
 
         </FrameLayout>

@@ -97,4 +97,5 @@
     <string name="ust_x">Ust. %1$s</string>
     <string name="no_student_yet">Belum ada murid</string>
     <string name="you_will_be_logged_out_from_this_account">Anda akan keluar dari akun ini</string>
+    <string name="x_pages_completed">%1$d halaman diselesaikan</string>
 </resources>

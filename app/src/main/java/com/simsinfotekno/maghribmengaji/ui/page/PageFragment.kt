@@ -21,10 +21,6 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.graphics.drawable.toDrawable
-import androidx.core.graphics.toColor
-import androidx.core.view.marginTop
-import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -214,9 +210,10 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         val pageStudent =
             quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
 
-        // View
+        /* Views */
+        binding.pageCollapsingToolbarLayout.title =
+            getString(R.string.page_x, pageId.toString())
         binding.pageTextViewVolume.text = getString(R.string.volume_x, volume?.id.toString())
-        binding.pageTextViewPage.text = getString(R.string.page_x, pageId.toString())
 
         bottomSheetBehaviorCheckResult =
             BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)
@@ -339,6 +336,25 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 }
             })
 
+        /* Listeners */
+        binding.pageToolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.pageAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            if (Math.abs(verticalOffset) == appBarLayout.totalScrollRange) {
+                // Collapsed
+//                binding.ustadhScoringToolbar.menu.findItem(R.id.menu_score).setVisible(
+//                    true
+//                )
+            } else if (verticalOffset == 0) {
+                // Expanded
+            } else {
+                // Somewhere in between
+//                binding.ustadhScoringToolbar.menu.findItem(R.id.menu_score).setVisible(
+//                    false
+//                )
+            }
+        }
         binding.pageButtonForward.setOnClickListener {
             val newPageId = pageId!! + 1
             val bundle = Bundle()

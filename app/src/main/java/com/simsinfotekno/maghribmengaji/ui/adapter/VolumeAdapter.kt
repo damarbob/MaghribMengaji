@@ -1,6 +1,5 @@
 package com.simsinfotekno.maghribmengaji.ui.adapter
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,13 +13,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.google.android.material.animation.AnimationUtils
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
@@ -58,12 +50,14 @@ class VolumeAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         /* Old */
         val textView: TextView
+        val textViewVolume: TextView
         val cardView: CardView
         val imageStatus: ImageView
 
         init {
             // Define click listener for the ViewHolder's View
             textView = view.findViewById(R.id.itemVolumeTextTitle)
+            textViewVolume = view.findViewById(R.id.itemVolumeTextVolume)
             cardView = view.findViewById(R.id.itemVolumeCardView)
             imageStatus = view.findViewById(R.id.itemVolumeStatus)
         }
@@ -92,6 +86,7 @@ class VolumeAdapter(
             viewHolder.textView.context.getString(R.string.volume_x),
             name
         )
+        viewHolder.textViewVolume.text = name
 
         // Set the icon based on the completion status
         val status = quranVolumeStatusCheck(dataSet[position])
