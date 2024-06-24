@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhListBinding
 import com.simsinfotekno.maghribmengaji.ui.adapter.UstadhAdapter
@@ -53,10 +54,24 @@ class UstadhListFragment : Fragment() {
             if (ustadh == null)
                 return@observe
 
-            binding.ustadhListRecyclerViewPage.visibility = View.GONE
-            binding.ustadhListCircularProgress.visibility = View.VISIBLE
+            // Show confirmation dialog
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.choose_ustadh))
+                .setMessage("${getString(R.string.choose_ustadh)} ${ustadh.fullName}. ${getString(R.string.are_you_sure)}")
+                .setPositiveButton(getString(R.string.send)) { dialog, which ->
 
-            ustadh.id?.let { viewModel.updateUserUstadhId(it) }
+                    // Adjust view
+                    binding.ustadhListRecyclerViewPage.visibility = View.GONE
+                    binding.ustadhListCircularProgress.visibility = View.VISIBLE
+
+                    // Set ustadh
+                    ustadh.id?.let { viewModel.updateUserUstadhId(it) }
+
+                }
+                .setNeutralButton(getString(R.string.close)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .show()
 
         }
         viewModel.updateUstadhIdResult.observe(viewLifecycleOwner) { result ->
@@ -69,8 +84,10 @@ class UstadhListFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
 
+                activity?.recreate()  // Recreate the activity
+
                 // Navigate to home
-                findNavController().navigate(findNavController().graph.startDestinationId)
+                findNavController().navigate(R.id.action_ustadhListFragment_to_homeFragment)
 
             }?.onFailure { exception ->
                 // Show error message

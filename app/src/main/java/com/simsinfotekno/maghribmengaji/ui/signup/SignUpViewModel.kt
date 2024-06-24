@@ -12,11 +12,12 @@ import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 
+
 class SignUpViewModel : ViewModel() {
     private val _authResult = MutableLiveData<Result<FirebaseUser>?>()
     val authResult: LiveData<Result<FirebaseUser>?> get() = _authResult
 
-    fun signUpWithEmailPassword(displayName: String, email: String, password: String) {
+    fun signUpWithEmailPassword(displayName: String, email: String, phone: String, password: String) {
 
         val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
         val auth = FirebaseAuth.getInstance()
@@ -43,6 +44,7 @@ class SignUpViewModel : ViewModel() {
                                         id = user.uid,
                                         fullName = displayName,
                                         email = user.email,
+                                        phone = phone,
                                         lastPageId = null,
                                         ustadhId = null,
                                         createdAt = Timestamp.now(),

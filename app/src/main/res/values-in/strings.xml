@@ -98,4 +98,12 @@
     <string name="no_student_yet">Belum ada murid</string>
     <string name="you_will_be_logged_out_from_this_account">Anda akan keluar dari akun ini</string>
     <string name="x_pages_completed">%1$d halaman diselesaikan</string>
+    <string name="verification">Verifikasi</string>
+    <string name="refresh">Segarkan</string>
+    <string name="send">Kirim</string>
+    <string name="you_have_to_verify_email">Anda harus memverifikasi email sebelum menggunakan Maghrib Mengaji. Ketuk Kirim dan tekan tautan verifikasi yang dikirim pada email Anda.</string>
+    <string name="verification_email_sent">Email verifikasi terkirim</string>
+    <string name="failed_to_send_verification_email">Gagal mengirim email verifikasi</string>
+    <string name="continue_please_ensure_the_data_you_entered_is_correct">Lanjutkan? Mohon pastikan data yang Anda masukkan adalah benar</string>
+    <string name="choose_ustadh">Pilih Ustadz</string>
 </resources>

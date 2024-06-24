@@ -9,7 +9,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.google.android.gms.tasks.Task
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
@@ -112,40 +116,96 @@ class MainActivity : AppCompatActivity() {
         val auth = Firebase.auth // Initialize Firebase Auth
         val currentUser = auth.currentUser ?: return // Get current user
 
-        /* Get user data */
+        /* Login checks */
+        checkUserEmailVerification(
+            { verified ->
+                if (!verified) {
+                    // If UNVERIFIED
 
-        // Get profile data
-        retrieveUserProfile(currentUser.uid) { student ->
+                    // Show confirmation dialog
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.verification))
+                        .setMessage(getString(R.string.you_have_to_verify_email))
+                        .setNegativeButton(getString(R.string.refresh)) { dialog, which ->
+                            recreate() // Reload activity
+                        }
+                        .setPositiveButton(getString(R.string.send)){ dialog, which ->
 
-            // Actions to perform when the user profile is retrieved
-            studentRepository.setStudent(student)
+                            resendVerificationEmail() // Send verification email
 
-            // Post a user data loaded event
-            EventBus.getDefault().post(
-                OnUserDataLoaded(
-                    student,
-                    UserDataEvent.PROFILE
-                )
-            )
+                            // Show confirmation dialog
+                            MaterialAlertDialogBuilder(this)
+                                .setTitle(getString(R.string.verification))
+                                .setMessage(getString(R.string.you_have_to_verify_email))
+                                .setPositiveButton(getString(R.string.refresh)) { dialog, which ->
+                                    recreate() // Reload activity
+                                }
+                                .setNeutralButton(getString(R.string.close)){ dialog, which ->
+                                    finish() // Exit app
+                                }
+                                .setCancelable(false) // Prevent dismissing by back button
+                                .create()
+                                .apply {
+                                    setCanceledOnTouchOutside(false) // Prevent dismissing by clicking outside
+                                }
+                                .show()
 
-            Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT)
-                .show()
+                        }
+                        .setNeutralButton(getString(R.string.close)){ dialog, which ->
+                            finish() // Exit app
+                        }
+                        .setCancelable(false) // Prevent dismissing by back button
+                        .create()
+                        .apply {
+                            setCanceledOnTouchOutside(false) // Prevent dismissing by clicking outside
+                        }
+                        .show()
 
-            // Start retrieving user data
-            student.ustadhId?.let { retrieveUstadhProfile(it) }
-            retrieveQuranPageStudent(student.id!!)
-
-            student.role?.let { // If role is not null
-                // Adjust nav graph based on the user's role
-                adjustNavGraph(it)
-                Log.d(TAG, "User's role: $it")
-
-                // Navigate to ustadh selection if ustadhId is null
-                if (it == MaghribMengajiUser.ROLE_STUDENT && student.ustadhId == null) {
-                    navController.navigate(R.id.action_global_ustadhListFragment)
                 }
+                else {
+                    // If VERIFIED
+
+                    /* Get user data */
+
+                    // Get profile data
+                    retrieveUserProfile(currentUser.uid) { student ->
+
+                        // Actions to perform when the user profile is retrieved
+                        studentRepository.setStudent(student)
+
+                        // Post a user data loaded event
+                        EventBus.getDefault().post(
+                            OnUserDataLoaded(
+                                student,
+                                UserDataEvent.PROFILE
+                            )
+                        )
+
+                        Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT)
+                            .show()
+
+                        // Start retrieving user data
+                        student.ustadhId?.let { retrieveUstadhProfile(it) }
+                        retrieveQuranPageStudent(student.id!!)
+
+                        student.role?.let { // If role is not null
+                            // Adjust nav graph based on the user's role
+                            adjustNavGraph(it)
+                            Log.d(TAG, "User's role: $it")
+
+                            // Navigate to ustadh selection if ustadhId is null
+                            if (it == MaghribMengajiUser.ROLE_STUDENT && student.ustadhId == null) {
+                                navController.navigate(R.id.action_global_ustadhListFragment)
+                            }
+                        }
+                    }
+                }
+            },
+            { exception ->
+                Toast.makeText(this, exception, Toast.LENGTH_SHORT)
+                    .show()
             }
-        }
+        )
 
         /* End of auth */
     }
@@ -174,6 +234,39 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "Page students imported")
         }
 
+    }
+
+    private fun resendVerificationEmail() {
+        val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+        user?.sendEmailVerification()?.addOnCompleteListener { task: Task<Void?> ->
+            if (task.isSuccessful) {
+                Toast.makeText(this, getString(R.string.verification_email_sent), Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                Toast.makeText(
+                    this,
+                    "${getString(R.string.failed_to_send_verification_email)}: ${task.exception?.localizedMessage}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+            ?: Toast.makeText(this, "No user is signed in.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun checkUserEmailVerification(
+        onEmailVerified: (Boolean) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+        user?.reload()?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val isVerified = user.isEmailVerified
+                onEmailVerified(isVerified)
+            } else {
+                val errorMessage = task.exception?.localizedMessage ?: "Failed to reload user."
+                onFailure(errorMessage)
+            }
+        }
     }
 
     private fun testFirestore() {

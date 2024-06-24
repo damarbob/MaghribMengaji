@@ -14,6 +14,7 @@ import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentSignUpBinding
 
+
 class SignUpFragment : Fragment() {
 
     private lateinit var binding: FragmentSignUpBinding
@@ -40,7 +41,11 @@ class SignUpFragment : Fragment() {
         viewModel.authResult.observe(viewLifecycleOwner) { result ->
             result?.onSuccess {
                 // Navigate to the next screen or update UI
-                Toast.makeText(requireContext(), getString(R.string.sign_up_successful), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.sign_up_successful),
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 val intent = Intent(activity, MainActivity::class.java)
                 startActivity(intent)
@@ -56,6 +61,7 @@ class SignUpFragment : Fragment() {
         binding.signUpButton.setOnClickListener {
             val displayName = binding.signUpInputFullName.text.toString()
             val email = binding.signUpInputEmailAddress.text.toString()
+            val phone = binding.signUpInputPhoneNumber.text.toString()
             val password = binding.signUpInputPassword.text.toString()
 
             // Validate the inputs
@@ -81,12 +87,23 @@ class SignUpFragment : Fragment() {
                 }
 
                 else -> {
-                    // All validations passed, proceed to sign up
-                    viewModel.signUpWithEmailPassword(displayName, email, password)
+                    // All validations passed, proceed to sign up confirmation
+
+                    // Show confirmation dialog
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.auth_signup))
+                        .setMessage(getString(R.string.continue_please_ensure_the_data_you_entered_is_correct))
+                        .setPositiveButton(getString(R.string.send)){ dialog, which ->
+                            viewModel.signUpWithEmailPassword(displayName, email, phone, password)
+                        }
+                        .setNeutralButton(getString(R.string.close)){ dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .show()
                 }
             }
         }
-        binding.signUpLoginText.setOnClickListener{
+        binding.signUpLoginText.setOnClickListener {
             findNavController().navigate(R.id.action_signUpFragment_to_loginFragment)
         }
 

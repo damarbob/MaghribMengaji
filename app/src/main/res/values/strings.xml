@@ -102,6 +102,14 @@
     <string name="no_student_yet">No student yet</string>
     <string name="you_will_be_logged_out_from_this_account">You will be logged out from this account</string>
     <string name="x_pages_completed">%1$d pages completed</string>
+    <string name="verification">Verification</string>
+    <string name="refresh">Refresh</string>
+    <string name="send">Send</string>
+    <string name="you_have_to_verify_email">You have to verify your email before using Maghrib Mengaji. Press Send button and click on the verification link sent to your email.</string>
+    <string name="verification_email_sent">Verification email sent</string>
+    <string name="failed_to_send_verification_email">Failed to send verification email</string>
+    <string name="continue_please_ensure_the_data_you_entered_is_correct">Continue? Please ensure the data you entered is correct</string>
+    <string name="choose_ustadh">Choose Ustadh</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>
