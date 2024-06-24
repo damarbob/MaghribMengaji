@@ -93,7 +93,8 @@ class UstadhVolumeListStudentFragment : Fragment() {
         // Volume dataset are taken from App local variable
         volumeAdapter = VolumeAdapter(
             listOf(),
-            VolumeAdapter.VIEW_ITEM_LIST
+            findNavController(),
+            this
         ) // Set dataset
 
         pageStudentAdapter = PageStudentAdapter(
@@ -109,15 +110,6 @@ class UstadhVolumeListStudentFragment : Fragment() {
         volumeAdapter.selectedVolume.observe(viewLifecycleOwner) {
             if (it == null)
                 return@observe
-
-            // Navigate to student page list and pass volume id
-            val bundle = Bundle()
-            bundle.putInt("volumeId", it.id)
-            findNavController().navigate(
-                R.id.action_studentVolumeListFragment_to_studentPageListFragment,
-                bundle
-            )
-
         }
         viewModel.getStudentProfileResult.observe(viewLifecycleOwner) { user ->
             if (user == null) {

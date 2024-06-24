@@ -19,24 +19,21 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.google.android.material.animation.AnimationUtils
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.home.HomeFragment
-import com.simsinfotekno.maghribmengaji.ui.ustadhvolumeliststudent.UstadhVolumeListStudentFragment
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
 import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 
 
-class VolumeAdapter(
+class VolumeGridAdapter(
     var dataSet: List<QuranVolume>,
     private val navController: NavController,
     private val invoker: Any,
-//    private var viewType: Int
 ) :
-    RecyclerView.Adapter<VolumeAdapter.ViewHolder>() {
+    RecyclerView.Adapter<VolumeGridAdapter.ViewHolder>() {
 
     companion object {
         private val TAG = this::class.java.simpleName
@@ -60,20 +57,26 @@ class VolumeAdapter(
         val textView: TextView
         val cardView: CardView
         val imageStatus: ImageView
+        val imageCover: ImageView
+        val imageProgress: CircularProgressIndicator
 
         init {
             // Define click listener for the ViewHolder's View
-            textView = view.findViewById(R.id.itemVolumeTextTitle)
-            cardView = view.findViewById(R.id.itemVolumeCardView)
-            imageStatus = view.findViewById(R.id.itemVolumeStatus)
+            textView = view.findViewById(R.id.itemVolumeTwoColumnsTextTitle)
+            cardView = view.findViewById(R.id.itemVolumeTwoColumnsCardView)
+            imageStatus = view.findViewById(R.id.itemVolumeTwoColumnsStatus)
+            imageCover = view.findViewById(R.id.itemVolumeTwoColumnsImageViewCover)
+            imageProgress =
+                view.findViewById(R.id.itemVolumeTwoColumnsImageProgress)
         }
     }
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         Log.d(TAG, viewType.toString())
+        // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.item_volume, viewGroup, false)
+            .inflate(R.layout.item_volume_two_columns, viewGroup, false)
 
         return ViewHolder(view)
     }
@@ -124,23 +127,45 @@ class VolumeAdapter(
             }
         }
 
+        // Load image cover
+        Glide.with(viewHolder.imageCover.context)
+            .load(R.mipmap.vector_maghrib_mengaji) // TODO: change to volume cover
+            .listener(object : RequestListener<Drawable> {
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    model: Any,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    viewHolder.imageProgress.visibility = View.GONE
+                    return false
+                }
+
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    viewHolder.imageProgress.visibility = View.GONE
+//                        Toast.makeText(requireContext(), "Failed to load image", Toast.LENGTH_SHORT)
+//                            .show()
+                    return false
+                }
+            })
+            .into(viewHolder.imageCover)
+
         // Listener
         viewHolder.cardView.setOnClickListener {
             val bundle = Bundle()
             bundle.putInt("volumeId", id)
             bundle.putIntArray("pageIds", pageIds.toIntArray())
-            when (invoker) {
-                is VolumeListFragment -> {
-                    navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
-                }
-
-                is HomeFragment -> {
-                    navController.navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
-                }
-
-                is UstadhVolumeListStudentFragment -> {
-                    navController.navigate(R.id.action_studentVolumeListFragment_to_studentPageListFragment, bundle)
-                }
+            if (invoker is VolumeListFragment) {
+                navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
+            } else if (invoker is HomeFragment) {
+                navController.navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
             }
 
             // Set selected volume
@@ -151,4 +176,7 @@ class VolumeAdapter(
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size
 
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
+    }
 }

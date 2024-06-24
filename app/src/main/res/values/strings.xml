@@ -85,6 +85,8 @@
     <string name="contact">Contact</string>
     <string name="cant_pick_audio">Can\'t pick audio</string>
     <string name="cant_pick_image">Can\'t pick image</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
     <string name="press_back_to_close">Press back to close</string>
     <string name="invalid_score">Invalid score</string>
     <string name="score_cannot_be_more_than_100">Score cannot be more than 100</string>

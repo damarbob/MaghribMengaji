@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -23,6 +24,7 @@ import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentVolumeListBinding
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
+import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeGridAdapter
 import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 
 class VolumeListFragment : Fragment() {
@@ -39,6 +41,7 @@ class VolumeListFragment : Fragment() {
 
     /* Views */
     private lateinit var volumeAdapter: VolumeAdapter
+    private lateinit var volumeGridAdapter: VolumeGridAdapter
 
     /* Use cases */
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
@@ -71,8 +74,7 @@ class VolumeListFragment : Fragment() {
         if (lastPageId == null) {
             binding.volumeListTextLastWritten.text = getString(R.string.no_data)
             binding.volumeListTextLastWrittenVolume.text = getString(R.string.no_data)
-        }
-        else {
+        } else {
             binding.volumeListTextLastWritten.text = String.format(
                 requireContext().getString(R.string.page_x),
                 lastPageId.toString()
@@ -84,16 +86,16 @@ class VolumeListFragment : Fragment() {
         }
 
         // Initialize RecyclerView with default view type
-        setupRecyclerView(VolumeAdapter.VIEW_ITEM_GRID)
+        setupRecyclerView()
 
         binding.volumeListButtonViewTypeGrid.setOnClickListener {
-            setupRecyclerView(VolumeAdapter.VIEW_ITEM_GRID)
+            setupViewType(VolumeAdapter.VIEW_ITEM_GRID)
             it.visibility = View.GONE
             binding.volumeListButtonViewTypeList.visibility = View.VISIBLE
         }
 
         binding.volumeListButtonViewTypeList.setOnClickListener {
-            setupRecyclerView(VolumeAdapter.VIEW_ITEM_LIST)
+            setupViewType(VolumeAdapter.VIEW_ITEM_LIST)
             it.visibility = View.GONE
             binding.volumeListButtonViewTypeGrid.visibility = View.VISIBLE
         }
@@ -102,37 +104,61 @@ class VolumeListFragment : Fragment() {
     }
 
     // RecyclerView adapter based on view type
-    private fun setupRecyclerView(viewType: Int) {
-        val materialFadeThrough = MaterialFadeThrough()
-        TransitionManager.beginDelayedTransition(binding.root, materialFadeThrough)
-        volumeAdapter = VolumeAdapter(
-            quranVolumes,
-            viewType
-        ) // Set dataset
+    private fun setupRecyclerView() {
 
         /* Observers */
         // Observe the selected volume LiveData
+        volumeAdapter = VolumeAdapter(
+            quranVolumes,
+            findNavController(),
+            this
+        ) // Set dataset
         volumeAdapter.selectedVolume.observe(viewLifecycleOwner) {
             if (it == null) return@observe
-
-            val bundle = Bundle()
-            bundle.putInt("volumeId", it.id)
-            bundle.putIntArray("pageIds", it.pageIds.toIntArray())
-            findNavController().navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
         }
 
         // Set the RecyclerView layout manager and adapter based on view type
         binding.volumeListRecyclerViewVolumeList.apply {
-            layoutManager = if (viewType == VolumeAdapter.VIEW_ITEM_LIST) {
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            } else {
-                GridLayoutManager(context, 2, RecyclerView.VERTICAL, false)
-            }
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = volumeAdapter
         }
 
         // Notify adapter of data set change
         volumeAdapter.notifyDataSetChanged()
+
+        /* Observers */
+        // Observe the selected volume LiveData of grid view type
+        volumeGridAdapter = VolumeGridAdapter(
+            quranVolumes,
+            findNavController(),
+            this
+        )
+        volumeGridAdapter.selectedVolume.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+        }
+
+        // Set the RecyclerView layout manager and adapter based on view type
+        binding.volumeListRecyclerViewVolumeListGrid.apply {
+            layoutManager = GridLayoutManager(context, 2, RecyclerView.VERTICAL, false)
+            adapter = volumeGridAdapter
+
+        }
+
+        // Notify adapter of data set change
+        volumeGridAdapter.notifyDataSetChanged()
+
+    }
+
+    private fun setupViewType(viewType: Int) {
+        val materialFadeThrough = MaterialFadeThrough()
+        TransitionManager.beginDelayedTransition(binding.root, materialFadeThrough)
+        if (viewType == VolumeAdapter.VIEW_ITEM_LIST) {
+            binding.volumeListRecyclerViewVolumeListGrid.visibility = View.GONE
+            binding.volumeListRecyclerViewVolumeList.visibility = View.VISIBLE
+        } else {
+            binding.volumeListRecyclerViewVolumeList.visibility = View.GONE
+            binding.volumeListRecyclerViewVolumeListGrid.visibility = View.VISIBLE
+        }
     }
 
     // Read quran volume from database

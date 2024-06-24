@@ -110,41 +110,42 @@
 
 <!--    </LinearLayout>-->
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:padding="@dimen/activity_vertical_margin">
+
+        android:layout_below="@id/main_headerx"
+        android:layout_above="@id/pageRelativeLayoutBottom"
+        android:background="@color/md_theme_surfaceContainerHigh">
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/pageProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:indeterminate="true" />
 
         <ImageView
             android:id="@+id/pageImageViewPage"
             android:layout_width="match_parent"
-            android:layout_height="480dp"
-            android:layout_centerInParent="true"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:adjustViewBounds="true"
+            android:src="@mipmap/vector_maghrib_mengaji"
+            android:visibility="gone"
             android:contentDescription="@string/quran_page_image_description"
-            android:maxHeight="720dp"
             android:scaleType="fitCenter" />
 
         <ImageView
             android:id="@+id/pageImageViewScannedResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:adjustViewBounds="true"
             android:contentDescription="@string/quran_page_image_description"
             android:maxHeight="720dp"
             android:visibility="gone" />
 
-    </RelativeLayout>
+    </FrameLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pageRelativeLayoutBottom"
