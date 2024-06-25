@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.jakewharton.processphoenix.ProcessPhoenix
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPages
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
@@ -23,13 +24,14 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentReposit
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 import org.greenrobot.eventbus.EventBus
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ActivityRestartable {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -112,9 +114,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun runAuthentication() {
+
         /* Auth */
         val auth = Firebase.auth // Initialize Firebase Auth
         val currentUser = auth.currentUser ?: return // Get current user
+
+        val previousUserName = MaghribMengajiPref.readString(this, MaghribMengajiPref.USER_NAME_KEY)
+
+        Log.d(TAG, "Current user: ${currentUser.displayName} | Previous user: $previousUserName")
+
+        /* Check the current user name in case it's different from the previous user */
+        if (currentUser.displayName != previousUserName) {
+            MaghribMengajiPref.saveString(this, MaghribMengajiPref.USER_NAME_KEY, currentUser.displayName)
+            ProcessPhoenix.triggerRebirth(this)
+        }
 
         /* Login checks */
         checkUserEmailVerification(
@@ -127,7 +140,9 @@ class MainActivity : AppCompatActivity() {
                         .setTitle(getString(R.string.verification))
                         .setMessage(getString(R.string.you_have_to_verify_email))
                         .setNegativeButton(getString(R.string.refresh)) { dialog, which ->
-                            recreate() // Reload activity
+
+                            restartActivity() // Restart activity
+
                         }
                         .setPositiveButton(getString(R.string.send)){ dialog, which ->
 
@@ -138,7 +153,9 @@ class MainActivity : AppCompatActivity() {
                                 .setTitle(getString(R.string.verification))
                                 .setMessage(getString(R.string.you_have_to_verify_email))
                                 .setPositiveButton(getString(R.string.refresh)) { dialog, which ->
-                                    recreate() // Reload activity
+
+                                    restartActivity() // Restart activity
+
                                 }
                                 .setNeutralButton(getString(R.string.close)){ dialog, which ->
                                     finish() // Exit app

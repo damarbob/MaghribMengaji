@@ -11,9 +11,11 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.simsinfotekno.maghribmengaji.ActivityRestartable
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhListBinding
 import com.simsinfotekno.maghribmengaji.ui.adapter.UstadhAdapter
+
 
 class UstadhListFragment : Fragment() {
 
@@ -84,7 +86,7 @@ class UstadhListFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
 
-                activity?.recreate()  // Recreate the activity
+                (activity as? ActivityRestartable)?.restartActivity() // Restart activity
 
                 // Navigate to home
                 findNavController().navigate(R.id.action_ustadhListFragment_to_homeFragment)

@@ -61,43 +61,38 @@ class LoginFragment : Fragment() {
         binding.loginTextForgotPassword.setOnClickListener {
 
             val email = binding.loginInputEmailAddress.text.toString()
+            val password = binding.loginInputPassword.text.toString()
 
-            when {
-                email.isEmpty() -> {
-                    showErrorDialog(resources.getString(R.string.email_is_required))
-                }
-
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                    showErrorDialog(resources.getString(R.string.invalid_email_format))
-                }
-
-                else -> {
-                    // All validations passed, proceed to sign up confirmation
-
-                    // Show confirmation dialog
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(getString(R.string.auth_forgot_password))
-                        .setMessage(getString(R.string.continue_please_ensure_the_data_you_entered_is_correct))
-                        .setPositiveButton(getString(R.string.send)){ dialog, which ->
-                            viewModel.sendPasswordResetEmail(email) { success, errorMessage ->
-                                if (success) {
-                                    Toast.makeText(requireContext(), getString(R.string.an_email_containing_a_passowrd_reset_link_has_been_sent), Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                                }
+            validateAndProceed(email, password) { validatedEmail ->
+                // Show confirmation dialog
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.auth_forgot_password))
+                    .setMessage(getString(R.string.continue_please_ensure_the_data_you_entered_is_correct))
+                    .setPositiveButton(getString(R.string.send)) { dialog, which ->
+                        viewModel.sendPasswordResetEmail(validatedEmail) { success, errorMessage ->
+                            if (success) {
+                                Toast.makeText(requireContext(), getString(R.string.an_email_containing_a_passowrd_reset_link_has_been_sent), Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                             }
                         }
-                        .setNeutralButton(getString(R.string.close)){ dialog, which ->
-                            dialog.dismiss()
-                        }
-                        .show()
-                }
+                    }
+                    .setNeutralButton(getString(R.string.close)) { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .show()
             }
+
         }
         binding.loginButton.setOnClickListener {
+
             val email = binding.loginInputEmailAddress.text.toString()
             val password = binding.loginInputPassword.text.toString()
-            viewModel.loginWithEmailPassword(email, password)
+
+            validateAndProceed(email, password) { _ ->
+                viewModel.loginWithEmailPassword(email, password)
+            }
+
         }
         binding.loginSignUpText.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
@@ -105,6 +100,31 @@ class LoginFragment : Fragment() {
 
         return binding.root
     }
+
+    fun validateAndProceed(
+        email: String,
+        password: String,
+        onSuccess: (String) -> Unit
+    ) {
+        when {
+            email.isEmpty() -> {
+                showErrorDialog(getString(R.string.email_is_required))
+            }
+
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                showErrorDialog(getString(R.string.invalid_email_format))
+            }
+
+            password.isEmpty() -> {
+                showErrorDialog(getString(R.string.password_is_required))
+            }
+
+            else -> {
+                onSuccess(email)
+            }
+        }
+    }
+
 
     private fun showErrorDialog(message: String) {
         MaterialAlertDialogBuilder(requireContext())

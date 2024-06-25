@@ -82,4 +82,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.eventbus) // Event bus
+
+    implementation("com.jakewharton:process-phoenix:2.1.2")
+
 }
