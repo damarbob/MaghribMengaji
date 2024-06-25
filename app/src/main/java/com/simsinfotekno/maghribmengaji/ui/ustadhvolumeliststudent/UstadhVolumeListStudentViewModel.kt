@@ -14,6 +14,7 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhQuranVol
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
+import com.simsinfotekno.maghribmengaji.usecase.RemoveUstadhUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 
 class UstadhVolumeListStudentViewModel : ViewModel() {

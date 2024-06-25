@@ -19,6 +19,6 @@
         android:id="@+id/menu_student_remove"
         android:icon="@drawable/outline_remove_circle_outline_24"
         android:title="@string/remove_student"
-        android:visible="false"/>
+        android:visible="true"/>
 
 </menu>

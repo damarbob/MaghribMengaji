@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentLoginBinding
@@ -40,7 +41,11 @@ class LoginFragment : Fragment() {
         viewModel.loginResult.observe(viewLifecycleOwner, Observer { result ->
             result?.onSuccess {
                 // Navigate to the next screen or update UI
-                Toast.makeText(requireContext(), "${getString(R.string.salam)}\n${getString(R.string.welcome_back)}, ${it.displayName}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "${getString(R.string.salam)}\n${getString(R.string.welcome_back)}, ${it.displayName}",
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 val intent = Intent(activity, MainActivity::class.java)
                 startActivity(intent)
@@ -48,20 +53,66 @@ class LoginFragment : Fragment() {
 
             }?.onFailure { exception ->
                 // Show error message
-                Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), exception.localizedMessage, Toast.LENGTH_SHORT).show()
             }
         })
 
         /* Listeners */
+        binding.loginTextForgotPassword.setOnClickListener {
+
+            val email = binding.loginInputEmailAddress.text.toString()
+
+            when {
+                email.isEmpty() -> {
+                    showErrorDialog(resources.getString(R.string.email_is_required))
+                }
+
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                    showErrorDialog(resources.getString(R.string.invalid_email_format))
+                }
+
+                else -> {
+                    // All validations passed, proceed to sign up confirmation
+
+                    // Show confirmation dialog
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.auth_forgot_password))
+                        .setMessage(getString(R.string.continue_please_ensure_the_data_you_entered_is_correct))
+                        .setPositiveButton(getString(R.string.send)){ dialog, which ->
+                            viewModel.sendPasswordResetEmail(email) { success, errorMessage ->
+                                if (success) {
+                                    Toast.makeText(requireContext(), getString(R.string.an_email_containing_a_passowrd_reset_link_has_been_sent), Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                        .setNeutralButton(getString(R.string.close)){ dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
+            }
+        }
         binding.loginButton.setOnClickListener {
             val email = binding.loginInputEmailAddress.text.toString()
             val password = binding.loginInputPassword.text.toString()
             viewModel.loginWithEmailPassword(email, password)
         }
-        binding.loginSignUpText.setOnClickListener{
+        binding.loginSignUpText.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
 
         return binding.root
+    }
+
+    private fun showErrorDialog(message: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.error))
+            .setMessage(message)
+            .setNeutralButton(resources.getString(R.string.close)) { dialog, which ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

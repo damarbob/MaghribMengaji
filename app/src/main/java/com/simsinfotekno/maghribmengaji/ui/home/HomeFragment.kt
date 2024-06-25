@@ -99,7 +99,7 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         /* Views */
-        binding.homeTextTitle.text = Firebase.auth.currentUser?.displayName
+        binding.homeTextTitle.text = "${Firebase.auth.currentUser?.displayName}" // ${getString(R.string.salam)},
             ?: getString(R.string.app_name)
 
         // Volume adapter
@@ -159,6 +159,9 @@ class HomeFragment : Fragment() {
         viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->
             // TODO: volume in progress visibility
             if (data == null) {
+                return@observe
+            }
+            else if (data.isEmpty()) {
                 binding.homeLayoutNoProgress.visibility = View.VISIBLE
                 binding.homeLayoutInProgress.visibility = View.GONE
                 return@observe
@@ -166,7 +169,7 @@ class HomeFragment : Fragment() {
 
             volumeAdapter.dataSet = data
             volumeAdapter.notifyDataSetChanged()
-            Log.d(TAG, "Added dataset to volume adapter")
+            Log.d(TAG, "Added ${data.size} records to volume adapter")
             val materialFade = MaterialFade().apply {
                 duration = 150L
             }

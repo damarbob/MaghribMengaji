@@ -18,12 +18,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:collapsedTitleTextAppearance="@style/Widget.App.P.Bold"
-            app:expandedTitleGravity="top"
-            app:expandedTitleMarginTop="0dp"
+            app:expandedTitleGravity="bottom"
+            app:expandedTitleMarginBottom="48dp"
+            app:expandedTitleTextAppearance="@style/Widget.App.H1.Bold.Primary"
             app:extraMultilineHeightEnabled="false"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
             app:maxLines="1"
-            app:title="@string/volume"
+            app:title="@string/volume_list"
             app:titleCollapseMode="fade"
             app:titleEnabled="false">
 
@@ -53,6 +54,7 @@
             </FrameLayout>
 
             <LinearLayout
+                android:id="@+id/volumeListLayoutLastWritten"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"

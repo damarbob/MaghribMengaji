@@ -37,7 +37,10 @@ class LoginViewModel : ViewModel() {
                         db.whereEqualTo("id", user.uid).get()
                             .addOnSuccessListener { documents ->
                                 for (document in documents) {
-                                    Log.d(TAG, "Document found with ID: ${document.id} => ${document.data}")
+                                    Log.d(
+                                        TAG,
+                                        "Document found with ID: ${document.id} => ${document.data}"
+                                    )
 
                                     _loginResult.value = Result.success(user)
                                 }
@@ -65,4 +68,24 @@ class LoginViewModel : ViewModel() {
                 }
             }
     }
+
+    fun sendPasswordResetEmail(
+        email: String,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        val auth = FirebaseAuth.getInstance()
+
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Success: call lambda with true and null message
+                    onResult(true, null)
+                } else {
+                    // Failure: call lambda with false and error message
+                    val errorMessage = task.exception?.localizedMessage ?: "Failed to send reset password email."
+                    onResult(false, errorMessage)
+                }
+            }
+    }
+
 }

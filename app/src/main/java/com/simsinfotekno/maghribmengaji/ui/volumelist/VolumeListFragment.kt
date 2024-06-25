@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.firestore.ktx.firestore
@@ -71,9 +72,20 @@ class VolumeListFragment : Fragment() {
 
         /* Views */
         if (lastPageId == null) {
+
+            // Set collapse mode to scale
+            binding.volumeListCollapsingToolbarLayout.titleCollapseMode = CollapsingToolbarLayout.TITLE_COLLAPSE_MODE_SCALE
+
+            // Hide last written layout
+            binding.volumeListLayoutLastWritten.visibility = View.GONE
             binding.volumeListTextLastWritten.text = getString(R.string.no_data)
             binding.volumeListTextLastWrittenVolume.text = getString(R.string.no_data)
+
         } else {
+
+            // Set collapse mode to fade
+            binding.volumeListCollapsingToolbarLayout.titleCollapseMode = CollapsingToolbarLayout.TITLE_COLLAPSE_MODE_FADE
+
             binding.volumeListTextLastWritten.text = String.format(
                 requireContext().getString(R.string.page_x),
                 lastPageId.toString()
@@ -82,6 +94,7 @@ class VolumeListFragment : Fragment() {
                 requireContext().getString(R.string.volume_x),
                 MainApplication.quranVolumeRepository.getRecordByPageId(lastPageId)?.name
             )
+
         }
 
         // Initialize RecyclerView with default view type
@@ -92,11 +105,11 @@ class VolumeListFragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.volumeListAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
-            val limitOffset = appBarLayout.totalScrollRange * 0.25
+            val limitOffset = appBarLayout.totalScrollRange * 0.9
 
             if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
                 // Half expanded
-                binding.volumeListCollapsingToolbarLayout.isTitleEnabled = false
+                binding.volumeListCollapsingToolbarLayout.isTitleEnabled = lastPageId == null
             }
             else if (Math.abs(verticalOffset) >= limitOffset) {
                 // Half collapsed

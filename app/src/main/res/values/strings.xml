@@ -106,7 +106,7 @@
     <string name="your_ustadh_hasnt_entered_his_whatsapp">Subhanallah, Ustadh %1$s has\'nt entered his WhatsApp number...</string>
     <string name="you_dont_have_ustadh">Subhanallah, You don\'t have an Ustadh yet</string>
     <string name="x_pages_completed">%1$d pages completed</string>
-    <string name="no_in_progress_data">Subhanallah, no in progress data</string>
+    <string name="explore_volumes">Explore volumes</string>
     <string name="verification">Verification</string>
     <string name="refresh">Refresh</string>
     <string name="send">Send</string>
@@ -115,6 +115,10 @@
     <string name="failed_to_send_verification_email">Failed to send verification email</string>
     <string name="continue_please_ensure_the_data_you_entered_is_correct">Continue? Please ensure the data you entered is correct</string>
     <string name="choose_ustadh">Choose Ustadh</string>
+    <string name="an_email_containing_a_passowrd_reset_link_has_been_sent">An email containing a password reset link has been sent to your email address</string>
+    <string name="volume_list">Volume List</string>
+    <string name="student_successfully_removed">Student successfully removed</string>
+    <string name="it_will_take_a_while_until_the_change_takes_an_effect">It will take a while until the change takes an effect</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

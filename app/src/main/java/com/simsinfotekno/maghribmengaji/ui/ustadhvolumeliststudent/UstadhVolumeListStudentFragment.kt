@@ -1,7 +1,5 @@
 package com.simsinfotekno.maghribmengaji.ui.ustadhvolumeliststudent
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +19,7 @@ import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageStudentAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 import com.simsinfotekno.maghribmengaji.usecase.OpenWhatsApp
+import com.simsinfotekno.maghribmengaji.usecase.RemoveUstadhUseCase
 
 class UstadhVolumeListStudentFragment : Fragment() {
 
@@ -38,6 +37,7 @@ class UstadhVolumeListStudentFragment : Fragment() {
 
     /* Use Cases */
     private val openWhatsApp = OpenWhatsApp()
+    private val removeUstadhUseCase = RemoveUstadhUseCase()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +83,47 @@ class UstadhVolumeListStudentFragment : Fragment() {
         }
         binding.ustadhVolumeListToolbar.setOnMenuItemClickListener {
             when(it.itemId) {
-                R.id.menu_sign_out -> findNavController().popBackStack()
+                R.id.menu_student_contact -> findNavController().popBackStack()
+                R.id.menu_student_remove -> {
+
+                    if (studentId != null) {
+
+                        // Show confirmation dialog
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(getString(R.string.remove_student))
+                            .setMessage(getString(R.string.are_you_sure))
+                            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+
+                                // Remove student
+                                removeUstadhUseCase(studentId) { success, errorMessage ->
+                                    if (success) {
+
+                                        // Show confirmation dialog
+                                        MaterialAlertDialogBuilder(requireContext())
+                                            .setTitle(getString(R.string.remove_student))
+                                            .setMessage("${getString(R.string.student_successfully_removed)}. ${getString(R.string.it_will_take_a_while_until_the_change_takes_an_effect)}")
+                                            .setPositiveButton(getString(R.string.okay), null)
+                                            .setOnDismissListener {
+
+                                                findNavController().popBackStack() // Back to home
+
+                                            }
+                                            .show()
+
+                                    } else {
+                                        Toast.makeText(context, "${getString(R.string.error)}: $errorMessage", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                            }
+                            .setNeutralButton(getString(R.string.cancel), null)
+                            .show()
+
+                    }
+
+                    return@setOnMenuItemClickListener true
+
+                }
                 else -> {return@setOnMenuItemClickListener false}
             }
         }

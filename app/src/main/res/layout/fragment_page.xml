@@ -87,7 +87,7 @@
                 android:id="@+id/main_headerx"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/maghrib_mengaji_primary">
+                android:background="?attr/colorPrimary">
 
                 <FrameLayout
                     android:layout_width="wrap_content"
@@ -293,6 +293,6 @@
     <include
         android:id="@+id/pageBottomSheetCheckResult"
         layout="@layout/bottom_sheet_check_result"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

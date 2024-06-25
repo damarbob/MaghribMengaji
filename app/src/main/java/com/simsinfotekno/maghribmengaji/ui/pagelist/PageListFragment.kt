@@ -84,6 +84,10 @@ class PageListFragment : Fragment() {
 
         /* Views */
 
+        // Hide page completed stat
+        if (pagesFinished == 0)
+            binding.pageListTextPageCompleted.visibility = View.GONE
+
         // Initialize data set
         pageAdapter = PageAdapter(
             pages,
