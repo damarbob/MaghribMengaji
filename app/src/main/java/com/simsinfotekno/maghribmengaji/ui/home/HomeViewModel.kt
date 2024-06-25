@@ -23,6 +23,9 @@ class HomeViewModel() : ViewModel() {
     private val _lastPageId = MutableLiveData<Int>().apply { value = null }
     val lastPageId = _lastPageId
 
+    private val _progressVisibility = MutableLiveData<Boolean>(true)
+    val progressVisibility: LiveData<Boolean> get() = _progressVisibility
+
     /* Use case */
     private val getQuranVolumeByStatus = GetQuranVolumeByStatus()
 
@@ -33,6 +36,7 @@ class HomeViewModel() : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         EventBus.getDefault().unregister(this)
+        _progressVisibility.value = false
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
@@ -41,6 +45,7 @@ class HomeViewModel() : ViewModel() {
             _volumeInProgressDataSet.value = getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS)
 
             _lastPageId.value = studentRepository.getStudent().lastPageId
+            _progressVisibility.value = false
         }
     }
 

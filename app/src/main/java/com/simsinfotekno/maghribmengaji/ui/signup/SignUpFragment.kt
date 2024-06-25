@@ -86,6 +86,10 @@ class SignUpFragment : Fragment() {
                     showErrorDialog(resources.getString(R.string.password_must_be_at_least_6_characters_long))
                 }
 
+                !android.util.Patterns.PHONE.matcher(phone).matches() -> {
+                    showErrorDialog(resources.getString(R.string.invalid_phone))
+                }
+
                 else -> {
                     // All validations passed, proceed to sign up confirmation
 

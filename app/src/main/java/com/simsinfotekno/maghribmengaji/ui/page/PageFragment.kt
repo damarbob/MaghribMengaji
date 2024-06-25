@@ -40,12 +40,13 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRep
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.RecordingActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
+import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
 import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.UploadImageUseCase
-import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtils
+import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
 
 class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
@@ -75,6 +76,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
     private val PICK_IMAGE_REQUEST = 1
     private var pageId: Int? = null
+    private var pageStudent: QuranPageStudent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +91,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {
                     val imageBitmap = it.data?.extras?.get("data") as Bitmap
-                    val imageUri = BitmapToUriUtils.saveBitmapToFile(requireContext(), imageBitmap)
+                    val imageUri = BitmapToUriUtil.saveBitmapToFile(requireContext(), imageBitmap)
 
                     // Submit image to similarity fragment
                     submitImage(imageUri)
@@ -207,7 +209,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
         val page = quranPageRepository.getRecordById(pageId) // Get QuranPage instance
         val volume = quranVolumeRepository.getRecordByPageId(page!!.id) // Get QuranVolume instance
-        val pageStudent =
+        pageStudent =
             quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
 
         /* Views */
@@ -241,6 +243,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     container?.let {
                         TransitionManager.endTransitions(it)
                     }
+                    binding.pageLinearLayout.isNestedScrollingEnabled = true
+                    binding.pageCollapsingToolbarLayout.isNestedScrollingEnabled = true
                 }
             }
 
@@ -260,6 +264,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 override fun handleOnBackPressed() {
                     if (bottomSheetBehaviorCheckResult.state != BottomSheetBehavior.STATE_HIDDEN) {
                         bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_HIDDEN
+                        binding.pageLinearLayout.isNestedScrollingEnabled = true
+                        binding.pageCollapsingToolbarLayout.isNestedScrollingEnabled = true
                     } else {
                         isEnabled = false
                         requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -308,6 +314,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 this.checkResultLinearProgress.visibility = View.GONE
             }
         }
+
+        setCheckResult()
 
         // Get the document from Firestore and load the image to ImageView
         val pageImage = binding.pageImageViewPage
@@ -420,20 +428,71 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         binding.pageButtonCheckResult.setOnClickListener {
             if (isAdded) {
                 val materialFade = MaterialFade().apply {
-                    duration = 84L
+                    duration = 150L
                 }
-                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+//                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+                TransitionManager.beginDelayedTransition(binding.root, materialFade)
                 binding.pageButtonCheckResult.visibility = View.GONE
-                Handler(Looper.getMainLooper()).postDelayed({
-                    if (isAdded) {
-                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
-                    }
-                }, 100)
+                binding.pageButtonCheckPage.visibility = View.VISIBLE
+                binding.pageImageViewPage.visibility = View.GONE
+                binding.pageCheckResultHolder.visibility = View.VISIBLE
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    if (isAdded) {
+////                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
+//                    }
+//                }, 100)
+                binding.pageLinearLayout.isNestedScrollingEnabled = false
+                binding.pageCollapsingToolbarLayout.isNestedScrollingEnabled = false
+                TransitionManager.endTransitions(container)
+            }
+        }
+        binding.pageButtonCheckPage.setOnClickListener {
+            if (isAdded) {
+                val materialFade = MaterialFade().apply {
+                    duration = 150L
+                }
+//                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+                TransitionManager.beginDelayedTransition(binding.root, materialFade)
+                binding.pageButtonCheckResult.visibility = View.VISIBLE
+                binding.pageButtonCheckPage.visibility = View.GONE
+                binding.pageImageViewPage.visibility = View.VISIBLE
+                binding.pageCheckResultHolder.visibility = View.GONE
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    if (isAdded) {
+////                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
+//                    }
+//                }, 100)
                 TransitionManager.endTransitions(container)
             }
         }
 
         return binding.root
+    }
+
+    private fun setCheckResult() {
+        val ocrScore = pageStudent?.oCRScore ?: 0
+        val tidinessScore = pageStudent?.tidinessScore ?: 0
+        val accuracyScore = pageStudent?.accuracyScore ?: 0
+        val consistencyScore = pageStudent?.consistencyScore ?: 0
+
+        val overallScore = (ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4
+
+        binding.pageCheckResultTextViewOverallScore.text = overallScore.toString()
+        binding.pageCheckResultTextViewPreliminaryResult.text = ocrScore.toString()
+        binding.pageCheckResultTextViewTidinessResult.text = tidinessScore.toString()
+        binding.pageCheckResultTextViewAccuracyResult.text = accuracyScore.toString()
+        binding.pageCheckResultTextViewConsistencyResult.text = consistencyScore.toString()
+
+        binding.pageCheckResultCircularProgressScore.progress = overallScore
+        binding.pageCheckResultProgressIndicatorPreliminary.progress = ocrScore
+        binding.pageCheckResultProgressIndicatorTidiness.progress = tidinessScore
+        binding.pageCheckResultProgressIndicatorAccuracy.progress = accuracyScore
+        binding.pageCheckResultProgressIndicatorConsistency.progress = consistencyScore
+
+        pageStudent?.pictureUriString?.let {
+            loadImageIntoImageView(it, binding.pageCheckResultImageViewStudentPageImage, true)
+            binding.pageCheckResultLinearProgress.visibility = View.GONE
+        }
     }
 
     // Load image to imageview

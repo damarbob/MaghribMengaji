@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -15,6 +16,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.databinding.ActivityLoginBinding
+import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class LoginActivity : AppCompatActivity() {
 
@@ -27,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
 
     /* Variables */
     private lateinit var auth: FirebaseAuth
+    private lateinit var connectivityObserver: ConnectivityObserver
 
     private lateinit var navController: NavController
 
@@ -37,6 +42,11 @@ class LoginActivity : AppCompatActivity() {
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        connectivityObserver = NetworkConnectivityObserver(applicationContext)
+        connectivityObserver.observe().onEach {
+            Log.d(TAG, "status is $it")
+        }.launchIn(lifecycleScope)
 
         /* Views */
         navController =

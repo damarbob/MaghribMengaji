@@ -74,11 +74,13 @@
         app:layout_anchorGravity="bottom|end"/>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/pageNestedScrollViewPage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:id="@+id/pageLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -184,6 +186,234 @@
 
             </FrameLayout>
 
+            <!-- Check result -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/pageCheckResultHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/pageCheckResultLinearProgress"
+                    android:indeterminate="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/overall_score"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewOverallScore"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="00"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/pageCheckResultCircularProgressScore"
+                    app:layout_constraintEnd_toEndOf="@id/pageCheckResultCircularProgressScore"
+                    app:layout_constraintStart_toStartOf="@id/pageCheckResultCircularProgressScore"
+                    app:layout_constraintTop_toTopOf="@+id/pageCheckResultCircularProgressScore" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/pageCheckResultCircularProgressScore"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:indeterminate="false"
+                    android:progress="100"
+                    app:indicatorSize="128dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextView"
+                    app:showAnimationBehavior="outward"
+                    app:trackCornerRadius="8dp"
+                    app:trackThickness="16dp" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewPreliminaryText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/similarity"
+                    app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorPreliminary"
+                    app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorPreliminary"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewPreliminaryResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/pageCheckResultProgressIndicatorPreliminary"
+                    app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorPreliminary"
+                    app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorPreliminary"
+                    app:layout_constraintTop_toTopOf="@+id/pageCheckResultProgressIndicatorPreliminary" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/pageCheckResultProgressIndicatorPreliminary"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:progress="100"
+                    app:indicatorColor="@color/maghrib_mengaji_primary_variant"
+                    app:indicatorSize="72dp"
+                    app:layout_constraintEnd_toStartOf="@id/pageCheckResultProgressIndicatorTidiness"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewPreliminaryText"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewTidinessText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/tidiness"
+                    app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorTidiness"
+                    app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorTidiness"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewTidinessResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/pageCheckResultProgressIndicatorTidiness"
+                    app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorTidiness"
+                    app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorTidiness"
+                    app:layout_constraintTop_toTopOf="@+id/pageCheckResultProgressIndicatorTidiness" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/pageCheckResultProgressIndicatorTidiness"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:progress="100"
+                    app:indicatorSize="72dp"
+                    app:layout_constraintEnd_toStartOf="@id/pageCheckResultProgressIndicatorAccuracy"
+                    app:layout_constraintStart_toEndOf="@id/pageCheckResultProgressIndicatorPreliminary"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewTidinessText"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewAccuracyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/accuracy"
+                    app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorAccuracy"
+                    app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorAccuracy"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewAccuracyResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/pageCheckResultProgressIndicatorAccuracy"
+                    app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorAccuracy"
+                    app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorAccuracy"
+                    app:layout_constraintTop_toTopOf="@+id/pageCheckResultProgressIndicatorAccuracy" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/pageCheckResultProgressIndicatorAccuracy"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:progress="100"
+                    app:indicatorColor="@color/md_theme_inversePrimary"
+                    app:indicatorSize="72dp"
+                    app:layout_constraintEnd_toStartOf="@id/pageCheckResultProgressIndicatorConsistency"
+                    app:layout_constraintStart_toEndOf="@id/pageCheckResultProgressIndicatorTidiness"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewAccuracyText"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewConsistencyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/consistency"
+                    app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorConsistency"
+                    app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorConsistency"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewConsistencyResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/pageCheckResultProgressIndicatorConsistency"
+                    app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorConsistency"
+                    app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorConsistency"
+                    app:layout_constraintTop_toTopOf="@+id/pageCheckResultProgressIndicatorConsistency" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/pageCheckResultProgressIndicatorConsistency"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:progress="100"
+                    app:indicatorColor="@color/maghrib_mengaji_primary"
+                    app:indicatorSize="72dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/pageCheckResultProgressIndicatorAccuracy"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewConsistencyText"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp" />
+
+                <ImageView
+                    android:id="@+id/pageCheckResultImageViewStudentPageImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginVertical="24dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/quran_page_image_description"
+                    android:maxHeight="720dp"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultProgressIndicatorPreliminary" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -278,6 +508,18 @@
         app:layout_anchorGravity="bottom|end" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/pageButtonCheckPage"
+        style="@style/Widget.Material3.ExtendedFloatingActionButton.Icon.Tertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:text="@string/check_page"
+        app:icon="@drawable/task_24px"
+        app:layout_anchor="@id/pageAppBarLayout"
+        app:layout_anchorGravity="bottom|end"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/pageButtonRecite"
         style="@style/Widget.Material3.ExtendedFloatingActionButton.Icon.Primary"
         android:layout_width="wrap_content"
@@ -293,6 +535,6 @@
     <include
         android:id="@+id/pageBottomSheetCheckResult"
         layout="@layout/bottom_sheet_check_result"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

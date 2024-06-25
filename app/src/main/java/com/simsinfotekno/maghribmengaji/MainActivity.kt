@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.gms.tasks.Task
@@ -22,12 +24,15 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPages
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
+import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.greenrobot.eventbus.EventBus
 
 
@@ -38,7 +43,13 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     /* View models */
     private lateinit var viewModel: MainViewModel
 
+    /* Views */
     private lateinit var navController: NavController
+
+    /* Variables */
+    private lateinit var connectivityObserver: ConnectivityObserver
+    private var connectionStatus: ConnectivityObserver.Status = ConnectivityObserver.Status.Unavailable
+    private lateinit var alertBuilder: AlertDialog
 
     /* Use cases */
     private val retrieveUserProfile = RetrieveUserProfile()
@@ -50,6 +61,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        alertBuilder = MaterialAlertDialogBuilder(this)
+            .create()
+
+        // Check connection status
+        checkConnection()
 
         // Set the status bar color
         window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary)
@@ -70,24 +87,85 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
 
-        /* Views */
-        val fabVolumeList = binding.mainFabVolumeList
+//        /* Views */
+//        val fabVolumeList = binding.mainFabVolumeList
+//
+//        /* Listeners */
+//        fabVolumeList.setOnClickListener {
+//            val fragmentId = navController.currentDestination?.id
+//            when (fragmentId) {
+//                R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
+//                R.id.pageListFragment -> navController.navigate(R.id.action_pageListFragment_to_volumeListFragment)
+//            }
+//        }
+//        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+//            when (destination.id) {
+//                R.id.homeFragment -> fabVolumeList.show()
+//                else -> fabVolumeList.hide()
+//            }
+//        }
 
-        /* Listeners */
-        fabVolumeList.setOnClickListener {
-            val fragmentId = navController.currentDestination?.id
-            when (fragmentId) {
-                R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
-                R.id.pageListFragment -> navController.navigate(R.id.action_pageListFragment_to_volumeListFragment)
+    }
+
+    // Check connection
+    private fun checkConnection() {
+        connectivityObserver = NetworkConnectivityObserver(applicationContext)
+        connectivityObserver.observe().onEach {
+            connectionStatus = it
+            Log.d(TAG, "Status is $it")
+            handleConnectionStatus(it)
+        }.launchIn(lifecycleScope)
+    }
+
+    // Show alert when no connection
+    private fun noConnectionAlert() {
+        if (connectionStatus == ConnectivityObserver.Status.Unavailable || connectionStatus == ConnectivityObserver.Status.Lost) {
+
+            // Show confirmation dialog
+            alertBuilder = MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.no_internet))
+                .setMessage(getString(R.string.you_have_to_connect_internet))
+//                .setPositiveButton(getString(R.string.refresh)) { dialog, which ->
+////                    recreate() // Reload activity
+////                    checkConnection()
+//                    checkConnectionAndShowAlertIfNeeded()
+//                }
+//                .setNeutralButton(getString(R.string.close)) { dialog, which ->
+//                    finish() // Exit app
+//                }
+                .setCancelable(false) // Prevent dismissing by back button
+                .create()
+                .apply {
+                    setCanceledOnTouchOutside(false) // Prevent dismissing by clicking outside
+                }
+            alertBuilder.show()
+        }
+    }
+
+//    private fun checkConnectionAndShowAlertIfNeeded() {
+//        connectivityObserver = NetworkConnectivityObserver(applicationContext)
+//        connectivityObserver.observe().onEach {
+//            connectionStatus = it
+//            Log.d(TAG, "Status is $it")
+//            Toast.makeText(applicationContext, "Internet status $it", Toast.LENGTH_SHORT).show()
+//            handleConnectionStatus(it)
+//        }.launchIn(lifecycleScope)
+//    }
+
+    // Handle connection base on network status
+    private fun handleConnectionStatus(status: ConnectivityObserver.Status) {
+        when (status) {
+            ConnectivityObserver.Status.Available -> {
+                runAuthentication()
+                alertBuilder.dismiss()
+                Toast.makeText(this, getString(R.string.network_status_x, status), Toast.LENGTH_LONG).show()
+            }
+
+            else -> {
+                Toast.makeText(this, getString(R.string.network_status_x, status), Toast.LENGTH_LONG).show()
+                noConnectionAlert()
             }
         }
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            when (destination.id) {
-                R.id.homeFragment -> fabVolumeList.show()
-                else -> fabVolumeList.hide()
-            }
-        }
-
     }
 
     private fun setStatusBarTextColor(isLightTheme: Boolean) {
@@ -125,7 +203,11 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
         /* Check the current user name in case it's different from the previous user */
         if (currentUser.displayName != previousUserName) {
-            MaghribMengajiPref.saveString(this, MaghribMengajiPref.USER_NAME_KEY, currentUser.displayName)
+            MaghribMengajiPref.saveString(
+                this,
+                MaghribMengajiPref.USER_NAME_KEY,
+                currentUser.displayName
+            )
             ProcessPhoenix.triggerRebirth(this)
         }
 
@@ -144,7 +226,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                             restartActivity() // Restart activity
 
                         }
-                        .setPositiveButton(getString(R.string.send)){ dialog, which ->
+                        .setPositiveButton(getString(R.string.send)) { dialog, which ->
 
                             resendVerificationEmail() // Send verification email
 
@@ -157,7 +239,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                                     restartActivity() // Restart activity
 
                                 }
-                                .setNeutralButton(getString(R.string.close)){ dialog, which ->
+                                .setNeutralButton(getString(R.string.close)) { dialog, which ->
                                     finish() // Exit app
                                 }
                                 .setCancelable(false) // Prevent dismissing by back button
@@ -168,7 +250,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                                 .show()
 
                         }
-                        .setNeutralButton(getString(R.string.close)){ dialog, which ->
+                        .setNeutralButton(getString(R.string.close)) { dialog, which ->
                             finish() // Exit app
                         }
                         .setCancelable(false) // Prevent dismissing by back button
@@ -178,8 +260,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                         }
                         .show()
 
-                }
-                else {
+                } else {
                     // If VERIFIED
 
                     /* Get user data */
@@ -198,7 +279,11 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                             )
                         )
 
-                        Toast.makeText(this, getString(R.string.login_successful), Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            this,
+                            getString(R.string.login_successful),
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
 
                         // Start retrieving user data
@@ -257,7 +342,11 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         user?.sendEmailVerification()?.addOnCompleteListener { task: Task<Void?> ->
             if (task.isSuccessful) {
-                Toast.makeText(this, getString(R.string.verification_email_sent), Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    this,
+                    getString(R.string.verification_email_sent),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
             } else {
                 Toast.makeText(

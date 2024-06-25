@@ -31,6 +31,7 @@ import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
+import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.BannerAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
@@ -73,6 +74,7 @@ class HomeFragment : Fragment() {
     // Variables
     private var ustadhPhoneNumber: String? = null
     private var ustadhName: String? = null
+    private var volumeInProgress: List<QuranVolume>? = null
     private var materialAlertDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,6 +99,10 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        binding.homeLayoutInProgress.visibility = View.GONE
+        binding.homeLayoutNoProgress.visibility = View.GONE
+        binding.homeFabVolumeList.visibility = View.GONE
 
         /* Views */
         binding.homeTextTitle.text = "${Firebase.auth.currentUser?.displayName}" // ${getString(R.string.salam)},
@@ -133,13 +139,6 @@ class HomeFragment : Fragment() {
         /* Observers */
         volumeAdapter.selectedVolume.observe(viewLifecycleOwner) {
             if (it == null) return@observe
-
-            // Navigate to page list fragment and passing volume id
-//            val bundle = Bundle()
-//            bundle.putInt("volumeId", it.id)
-//            bundle.putIntArray("pageIds", it.pageIds.toIntArray())
-//            findNavController().navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
-
         }
         viewModel.lastPageId.observe(viewLifecycleOwner) { lastPageId ->
             if (lastPageId == null) {
@@ -162,8 +161,7 @@ class HomeFragment : Fragment() {
                 return@observe
             }
             else if (data.isEmpty()) {
-                binding.homeLayoutNoProgress.visibility = View.VISIBLE
-                binding.homeLayoutInProgress.visibility = View.GONE
+                volumeInProgress = data
                 return@observe
             }
 
@@ -175,8 +173,7 @@ class HomeFragment : Fragment() {
             }
             TransitionManager.beginDelayedTransition(binding.root, materialFade)
             binding.homeRecyclerViewVolume.visibility = View.VISIBLE
-            binding.homeLayoutInProgress.visibility = View.VISIBLE
-            binding.homeLayoutNoProgress.visibility = View.GONE
+            volumeInProgress = data
         }
         studentRepository.ustadhLiveData.observe(viewLifecycleOwner) {
             Log.d(TAG, "Ustadh: $it")
@@ -185,6 +182,15 @@ class HomeFragment : Fragment() {
             if (it != null) {
                 ustadhPhoneNumber = if (it.phone != null) it.phone else null
                 ustadhName = it.fullName
+            }
+        }
+        viewModel.progressVisibility.observe(viewLifecycleOwner) {
+            binding.homeProgressIndicatorLoading.visibility = if (it) View.VISIBLE else View.GONE
+            binding.homeFabVolumeList.visibility = if (it) View.GONE else View.VISIBLE
+            if (volumeInProgress != null) {
+                if (volumeInProgress!!.isNotEmpty()) {
+                    binding.homeLayoutInProgress.visibility = if (it) View.GONE else View.VISIBLE
+                } else binding.homeLayoutNoProgress.visibility = if (it) View.VISIBLE else View.GONE
             }
         }
 
@@ -265,6 +271,9 @@ class HomeFragment : Fragment() {
         binding.homeButtonStartJourney.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_volumeListFragment)
         }
+        binding.homeFabVolumeList.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_volumeListFragment)
+        }
 
         return root
     }
@@ -300,7 +309,12 @@ class HomeFragment : Fragment() {
                         itemSize - 1 -> binding.homeViewPagerBanner.setCurrentItem(1, false)
                         0 -> binding.homeViewPagerBanner.setCurrentItem(itemSize - 2, false)
                     }
-                }
+
+                    autoScrollHandler.postDelayed(
+                        autoScrollRunnable,
+                        3000
+                    ) // Restart auto-scroll when the state is idle
+                } else autoScrollHandler.removeCallbacks(autoScrollRunnable) // Pause auto-scroll when not idle
             }
         })
     }
