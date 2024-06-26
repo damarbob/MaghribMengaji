@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -33,6 +34,7 @@ import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
 
@@ -65,8 +67,11 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         alertBuilder = MaterialAlertDialogBuilder(this)
             .create()
 
+
+        // TODO: send connection status to view model
         // Check connection status
         checkConnection()
+        handleConnectionStatus(connectionStatus)
 
         // Set the status bar color
         window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary)
@@ -75,7 +80,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         // Register EventBus
 //        EventBus.getDefault().register(this)
 
-        runAuthentication()
+//        runAuthentication()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -119,17 +124,17 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
     // Show alert when no connection
     private fun noConnectionAlert() {
-        if (connectionStatus == ConnectivityObserver.Status.Unavailable || connectionStatus == ConnectivityObserver.Status.Lost) {
+        if (connectionStatus != ConnectivityObserver.Status.Available) {
 
             // Show confirmation dialog
             alertBuilder = MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.no_internet))
                 .setMessage(getString(R.string.you_have_to_connect_internet))
-//                .setPositiveButton(getString(R.string.refresh)) { dialog, which ->
+                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
 ////                    recreate() // Reload activity
-////                    checkConnection()
+//                    checkConnection()
 //                    checkConnectionAndShowAlertIfNeeded()
-//                }
+                }
 //                .setNeutralButton(getString(R.string.close)) { dialog, which ->
 //                    finish() // Exit app
 //                }
@@ -158,11 +163,11 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             ConnectivityObserver.Status.Available -> {
                 runAuthentication()
                 alertBuilder.dismiss()
-                Toast.makeText(this, getString(R.string.network_status_x, status), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.network_status_x, status), Toast.LENGTH_SHORT).show()
             }
 
             else -> {
-                Toast.makeText(this, getString(R.string.network_status_x, status), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.network_status_x, status), Toast.LENGTH_SHORT).show()
                 noConnectionAlert()
             }
         }

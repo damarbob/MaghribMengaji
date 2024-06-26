@@ -32,6 +32,8 @@ class LoginActivity : AppCompatActivity() {
     /* Variables */
     private lateinit var auth: FirebaseAuth
     private lateinit var connectivityObserver: ConnectivityObserver
+    private var connectionStatus: ConnectivityObserver.Status =
+        ConnectivityObserver.Status.Unavailable
 
     private lateinit var navController: NavController
 
@@ -45,7 +47,8 @@ class LoginActivity : AppCompatActivity() {
 
         connectivityObserver = NetworkConnectivityObserver(applicationContext)
         connectivityObserver.observe().onEach {
-            Log.d(TAG, "status is $it")
+            connectionStatus = it
+            Log.d(TAG, "status is $connectionStatus")
         }.launchIn(lifecycleScope)
 
         /* Views */
@@ -53,7 +56,8 @@ class LoginActivity : AppCompatActivity() {
             (supportFragmentManager.findFragmentById(binding.loginContent.navHostFragmentContentLogin.id) as NavHostFragment).navController
 
         // Set the status bar color
-        window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary_variant)
+        window.statusBarColor =
+            ContextCompat.getColor(this, R.color.maghrib_mengaji_primary_variant)
         setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
         // Bottom sheet attributes

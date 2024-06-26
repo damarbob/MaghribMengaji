@@ -28,6 +28,7 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentReposit
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
+import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
@@ -35,6 +36,7 @@ import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.BannerAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
+import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.OpenWhatsApp
 import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 import com.simsinfotekno.maghribmengaji.usecase.ShowPopupMenu
@@ -66,6 +68,7 @@ class HomeFragment : Fragment() {
     private val getQuranVolumeByStatus = GetQuranVolumeByStatus()
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
     private val openWhatsApp = OpenWhatsApp()
+    private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
 
     // Handlers
     private lateinit var autoScrollHandler: Handler
@@ -76,6 +79,8 @@ class HomeFragment : Fragment() {
     private var ustadhName: String? = null
     private var volumeInProgress: List<QuranVolume>? = null
     private var materialAlertDialog: AlertDialog? = null
+    private var connectionStatus: ConnectivityObserver.Status =
+        ConnectivityObserver.Status.Unavailable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,10 +108,16 @@ class HomeFragment : Fragment() {
         binding.homeLayoutInProgress.visibility = View.GONE
         binding.homeLayoutNoProgress.visibility = View.GONE
         binding.homeFabVolumeList.visibility = View.GONE
+        binding.homeLayoutNoNetwork.visibility = View.GONE
+
+        // Check connection
+        networkConnectivityUseCase = context?.let { NetworkConnectivityUseCase(it) }!!
+        checkConnection()
 
         /* Views */
-        binding.homeTextTitle.text = "${Firebase.auth.currentUser?.displayName}" // ${getString(R.string.salam)},
-            ?: getString(R.string.app_name)
+        binding.homeTextTitle.text =
+            "${Firebase.auth.currentUser?.displayName}" // ${getString(R.string.salam)},
+                ?: getString(R.string.app_name)
 
         // Volume adapter
         // Set volume dataset with status on progress
@@ -156,23 +167,19 @@ class HomeFragment : Fragment() {
             }
         }
         viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->
-            // TODO: volume in progress visibility
+            volumeInProgress = data
             if (data == null) {
+                setHomeUI(false)
                 return@observe
-            }
-            else if (data.isEmpty()) {
-                volumeInProgress = data
+            } else if (data.isEmpty()) {
                 return@observe
             }
 
+            setHomeUI(true)
             volumeAdapter.dataSet = data
             volumeAdapter.notifyDataSetChanged()
             Log.d(TAG, "Added ${data.size} records to volume adapter")
-            val materialFade = MaterialFade().apply {
-                duration = 150L
-            }
-            TransitionManager.beginDelayedTransition(binding.root, materialFade)
-            binding.homeRecyclerViewVolume.visibility = View.VISIBLE
+//            binding.homeRecyclerViewVolume.visibility = View.VISIBLE
             volumeInProgress = data
         }
         studentRepository.ustadhLiveData.observe(viewLifecycleOwner) {
@@ -184,19 +191,19 @@ class HomeFragment : Fragment() {
                 ustadhName = it.fullName
             }
         }
-        viewModel.progressVisibility.observe(viewLifecycleOwner) {
-            binding.homeProgressIndicatorLoading.visibility = if (it) View.VISIBLE else View.GONE
-            binding.homeFabVolumeList.visibility = if (it) View.GONE else View.VISIBLE
-            if (volumeInProgress != null) {
-                if (volumeInProgress!!.isNotEmpty()) {
-                    binding.homeLayoutInProgress.visibility = if (it) View.GONE else View.VISIBLE
-                } else binding.homeLayoutNoProgress.visibility = if (it) View.VISIBLE else View.GONE
-            }
-        }
+//        viewModel.progressVisibility.observe(viewLifecycleOwner) {
+//            binding.homeProgressIndicatorLoading.visibility = if (it) View.VISIBLE else View.GONE
+//            binding.homeFabVolumeList.visibility = if (it) View.GONE else View.VISIBLE
+//            if (volumeInProgress != null) {
+//                if (volumeInProgress!!.isNotEmpty()) {
+//                    binding.homeLayoutInProgress.visibility = if (it) View.GONE else View.VISIBLE
+//                } else binding.homeLayoutNoProgress.visibility = if (it) View.VISIBLE else View.GONE
+//            }
+//        }
 
         /* Listeners */
-        binding.homeToolbar.setNavigationOnClickListener {
-            showPopupMenu(requireContext(), it, R.menu.menu_main) {
+        binding.homeToolbar.setNavigationOnClickListener { view ->
+            showPopupMenu(requireContext(), view, R.menu.menu_main) {
                 when (it.itemId) {
                     R.id.menu_profile -> findNavController().navigate(R.id.action_navigation_home_to_navigation_profile)
                     R.id.menu_sign_out -> {
@@ -278,6 +285,52 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    private fun checkConnection() {
+        networkConnectivityUseCase(viewLifecycleOwner, onAvailableNetwork = {
+//            setHomeUI(true)
+            connectionStatus = ConnectivityObserver.Status.Available
+        }, onUnavailableNetwork = {
+            connectionStatus = ConnectivityObserver.Status.Unavailable
+//            setHomeUI(false)
+        })
+    }
+
+    private fun setHomeUI(isConnected: Boolean) {
+        val materialFade = MaterialFade().apply {
+            duration = 150L
+        }
+        TransitionManager.beginDelayedTransition(binding.root, materialFade)
+        Log.d(TAG, "$volumeInProgress")
+        binding.homeProgressIndicatorLoading.visibility = View.VISIBLE
+//        binding.homeLayoutNoNetwork.visibility = View.VISIBLE
+        if (volumeInProgress != null) {
+            binding.homeProgressIndicatorLoading.visibility = View.GONE
+            binding.homeLayoutNoNetwork.visibility = View.GONE
+            binding.homeFabVolumeList.visibility = View.VISIBLE
+            Log.d(TAG, "volume in progress is not null")
+            if (volumeInProgress!!.isNotEmpty()) {
+                Log.d(TAG, "volume in progress is not empty")
+                binding.homeLayoutInProgress.visibility = View.VISIBLE
+                binding.homeLayoutNoProgress.visibility = View.GONE
+            } else {
+                Log.d(TAG, "volume in progress is empty")
+                binding.homeLayoutInProgress.visibility = View.GONE
+                binding.homeLayoutNoProgress.visibility = View.VISIBLE
+            }
+        } else {
+            Log.d(TAG, "volume in progress is null")
+//            binding.homeProgressIndicatorLoading.visibility = View.GONE
+//            binding.homeFabVolumeList.visibility = View.GONE
+//            binding.homeLayoutInProgress.visibility = View.VISIBLE
+//            binding.homeLayoutNoNetwork.visibility = View.VISIBLE
+        }
+
+        if (connectionStatus != ConnectivityObserver.Status.Available) {
+            binding.homeProgressIndicatorLoading.visibility = View.GONE
+            binding.homeLayoutNoNetwork.visibility = View.VISIBLE
+        }
+    }
+
     private fun setupBanner() {
         val bannerList = ArrayList<Int>()
         bannerList.apply {
@@ -344,6 +397,7 @@ class HomeFragment : Fragment() {
             autoScrollRunnable,
             3000
         ) // Restart auto-scroll when the fragment/activity becomes visible again
+        checkConnection()
     }
 
     override fun onDestroyView() {

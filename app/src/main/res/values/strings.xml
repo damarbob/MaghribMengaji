@@ -119,11 +119,12 @@
     <string name="volume_list">Volume List</string>
     <string name="student_successfully_removed">Student successfully removed</string>
     <string name="it_will_take_a_while_until_the_change_takes_an_effect">It will take a while until the change takes an effect</string>
-    <string name="check_page">Check Page</string>
+    <string name="check_page">Show Page</string>
     <string name="invalid_phone">Invalid phone format!</string>
     <string name="no_internet">No internet</string>
     <string name="you_have_to_connect_internet">You have to connect internet in order to use Maghrib Mengaji app</string>
     <string name="network_status_x">Network status: %1$s</string>
+    <string name="no_connection_please_connect">Subhanallah, no internet connection. Please connect to internet</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

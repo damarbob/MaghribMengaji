@@ -279,6 +279,36 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- No network volume list -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/homeLayoutNoNetwork"
+                style="@style/Widget.Material3.CardView.Elevated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:visibility="visible">
+
+                    <TextView
+                        style="@style/Widget.App.H5.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="@string/no_connection_please_connect" />
+
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- In progress volume list -->
             <LinearLayout
                 android:id="@+id/homeLayoutInProgress"
@@ -306,6 +336,7 @@
 
             <!-- No progress volume list -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/homeLayoutNoProgress"
                 style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -313,7 +344,6 @@
                 android:layout_marginTop="16dp">
 
                 <LinearLayout
-                    android:id="@+id/homeLayoutNoProgress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"

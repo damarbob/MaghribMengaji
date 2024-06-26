@@ -23,6 +23,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
@@ -40,11 +41,13 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRep
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.RecordingActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
+import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
 import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
+import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.UploadImageUseCase
 import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
 
@@ -73,6 +76,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
     private val launchScannerUseCase = LaunchScannerUseCase()
     private val launchCameraUseCase = LaunchCameraUseCase()
     private val launchGalleryUseCase = LaunchGalleryUseCase()
+    private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
 
     private val PICK_IMAGE_REQUEST = 1
     private var pageId: Int? = null
@@ -180,29 +184,15 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
     }
 
-    private fun submitImage(imageUri: Uri?) {
-        // Bundle to pass the data
-        val bundle = Bundle().apply {
-            putString(
-                "imageUriString",
-                imageUri
-                    .toString()
-            )
-            putInt("pageId", pageId!!)
-        }
-
-        // Navigate to the ResultFragment with the Bundle
-        findNavController().navigate(
-            R.id.action_pageFragment_to_similarityScoreFragment,
-            bundle
-        )
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
+
+        // Check connection
+        networkConnectivityUseCase = NetworkConnectivityUseCase(requireContext())
+        checkConnection()
 
         pageId = arguments?.getInt("pageId")
         viewModel.pageId = pageId
@@ -326,7 +316,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 if (isAdded) {
                     pageImage.visibility = View.VISIBLE
                     pageImage.setBackgroundColor(resources.getColor(R.color.md_theme_background))
-                    pageImage.setPadding(0,16,0,0)
+                    pageImage.setPadding(0, 16, 0, 0)
                     Log.d(TAG, imageUrl)
                     loadImageIntoImageView(imageUrl, pageImage, isBottomSheet = false)
                 }
@@ -469,6 +459,14 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         return binding.root
     }
 
+    private fun checkConnection() {
+        networkConnectivityUseCase(viewLifecycleOwner, onAvailableNetwork = {
+            binding.pageButtonSubmit.isEnabled = true
+        }, onUnavailableNetwork = {
+            binding.pageButtonSubmit.isEnabled = false
+        })
+    }
+
     private fun setCheckResult() {
         val ocrScore = pageStudent?.oCRScore ?: 0
         val tidinessScore = pageStudent?.tidinessScore ?: 0
@@ -549,6 +547,25 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             .error(R.drawable.img_quran)
             .fallback(R.drawable.img_quran)
             .into(imageView)
+    }
+
+
+    private fun submitImage(imageUri: Uri?) {
+        // Bundle to pass the data
+        val bundle = Bundle().apply {
+            putString(
+                "imageUriString",
+                imageUri
+                    .toString()
+            )
+            putInt("pageId", pageId!!)
+        }
+
+        // Navigate to the ResultFragment with the Bundle
+        findNavController().navigate(
+            R.id.action_pageFragment_to_similarityScoreFragment,
+            bundle
+        )
     }
 
     // Get image file
