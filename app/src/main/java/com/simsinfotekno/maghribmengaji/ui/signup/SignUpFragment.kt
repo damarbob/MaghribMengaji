@@ -75,7 +75,7 @@ class SignUpFragment : Fragment() {
             }
 
             if (phone.isNotEmpty()) {
-                val fullPhoneNumber = "${selectedCountryCode.code}$phone"
+                phone = "${selectedCountryCode.code}$phone"
 //                Toast.makeText(requireContext(), "Phone Number: $fullPhoneNumber", Toast.LENGTH_LONG).show()
             } else {
                 binding.signUpTextInputLayoutPhone.error = resources.getString(R.string.please_enter_valid_phone)
