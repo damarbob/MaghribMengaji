@@ -9,7 +9,6 @@ import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
-import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -29,7 +28,6 @@ class HomeViewModel() : ViewModel() {
 
     /* Use case */
     private val getQuranVolumeByStatus = GetQuranVolumeByStatus()
-    private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
 
     init {
         EventBus.getDefault().register(this)

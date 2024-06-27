@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -28,8 +29,10 @@ import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
+import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentSimilarityScoreBinding
+import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromOCRApiJSON
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
@@ -43,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+// TODO: set timeout, fix when no connection on upload page (maybe page document created but image not uploaded? however it fixed on relaunch app)
 class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     OCRAsyncTask.IOCRCallBack, ActivityResultCallback<ActivityResult> {
 
@@ -51,7 +55,9 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         fun newInstance() = SimilarityScoreFragment()
     }
 
+    /* ViewModels */
     private val viewModel: SimilarityScoreViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     private var _binding: FragmentSimilarityScoreBinding? = null
     private val binding get() = _binding!!
@@ -167,12 +173,24 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                 similarityIndex = it
             }
         }
-
         viewModel.progressVisibility.observe(viewLifecycleOwner) { isVisible ->
             binding.similarityScoreCircularProgress.visibility =
                 if (isVisible) View.VISIBLE else View.GONE
             binding.similarityScoreCircularProgressScore.visibility =
                 if (isVisible) View.GONE else View.VISIBLE
+        }
+        mainViewModel.connectionStatus.observe(viewLifecycleOwner) {
+            if (it != ConnectivityObserver.Status.Available) {
+                binding.similarityScoreButtonUpload.isEnabled = false
+                binding.similarityScoreButtonUploadLow.isEnabled = false
+                binding.similarityScoreButtonRetry.isEnabled = false
+                binding.similarityScoreButtonRetryLow.isEnabled = false
+            } else {
+                binding.similarityScoreButtonUpload.isEnabled = true
+                binding.similarityScoreButtonUploadLow.isEnabled = true
+                binding.similarityScoreButtonRetry.isEnabled = true
+                binding.similarityScoreButtonRetryLow.isEnabled = true
+            }
         }
 
 

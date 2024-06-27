@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,6 +14,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentSignUpBinding
+import com.simsinfotekno.maghribmengaji.model.CountryCode
 
 
 class SignUpFragment : Fragment() {
@@ -57,12 +59,27 @@ class SignUpFragment : Fragment() {
             }
         }
 
+        setUpCountryCodeSpinner()
+
         /* Listeners */
         binding.signUpButton.setOnClickListener {
             val displayName = binding.signUpInputFullName.text.toString()
             val email = binding.signUpInputEmailAddress.text.toString()
-            val phone = binding.signUpInputPhoneNumber.text.toString()
+            val selectedCountryCode = binding.signUpSpinnerCountryCode.selectedItem as CountryCode
+            var phone = binding.signUpInputPhoneNumber.text.toString()
             val password = binding.signUpInputPassword.text.toString()
+
+            // Strip leading zeros
+            while (phone.startsWith("0")) {
+                phone = phone.substring(1)
+            }
+
+            if (phone.isNotEmpty()) {
+                val fullPhoneNumber = "${selectedCountryCode.code}$phone"
+//                Toast.makeText(requireContext(), "Phone Number: $fullPhoneNumber", Toast.LENGTH_LONG).show()
+            } else {
+                binding.signUpTextInputLayoutPhone.error = resources.getString(R.string.please_enter_valid_phone)
+            }
 
             // Validate the inputs
             when {
@@ -112,6 +129,20 @@ class SignUpFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun setUpCountryCodeSpinner() {
+        val countryCodes = listOf(
+            CountryCode("+62","ID"),
+            CountryCode("+1", "USA"),
+            CountryCode("+44", "UK"),
+            CountryCode("+91", "India"),
+            // Add more country codes as needed
+        )
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, countryCodes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.signUpSpinnerCountryCode.adapter = adapter
     }
 
     private fun showErrorDialog(message: String) {

@@ -121,4 +121,5 @@
     <string name="you_have_to_connect_internet">Anda harus terhubung internet agar dapat menjalankan aplikasi ini</string>
     <string name="network_status_x">Status jaringan: %1$s</string>
     <string name="no_connection_please_connect">Subhanallah, tidak ada jaringan internet. Mohon periksa kembali jaringan internet</string>
+    <string name="please_enter_valid_phone">Mohon masukkan nomor telepon dengan benar</string>
 </resources>

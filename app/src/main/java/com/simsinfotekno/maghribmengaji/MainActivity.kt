@@ -30,6 +30,7 @@ import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 import kotlinx.coroutines.flow.launchIn
@@ -50,12 +51,14 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
     /* Variables */
     private lateinit var connectivityObserver: ConnectivityObserver
-    private var connectionStatus: ConnectivityObserver.Status = ConnectivityObserver.Status.Unavailable
+    private var connectionStatus: ConnectivityObserver.Status =
+        ConnectivityObserver.Status.Unavailable
     private lateinit var alertBuilder: AlertDialog
 
     /* Use cases */
     private val retrieveUserProfile = RetrieveUserProfile()
     private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
+    private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
 
     companion object {
         val TAG: String = MainActivity::class.java.simpleName
@@ -66,12 +69,6 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
         alertBuilder = MaterialAlertDialogBuilder(this)
             .create()
-
-
-        // TODO: send connection status to view model
-        // Check connection status
-        checkConnection()
-        handleConnectionStatus(connectionStatus)
 
         // Set the status bar color
         window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary)
@@ -87,6 +84,14 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
         /* View models */
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        // Check connection status
+        networkConnectivityUseCase = NetworkConnectivityUseCase(applicationContext)
+        checkConnection()
+        viewModel.connectionStatus.observe(this) {
+            handleConnectionStatus(it)
+            Log.d("lalilu", it.toString())
+        }
 
         navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
@@ -114,17 +119,29 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
     // Check connection
     private fun checkConnection() {
-        connectivityObserver = NetworkConnectivityObserver(applicationContext)
-        connectivityObserver.observe().onEach {
-            connectionStatus = it
-            Log.d(TAG, "Status is $it")
-            handleConnectionStatus(it)
-        }.launchIn(lifecycleScope)
+//        connectivityObserver = NetworkConnectivityObserver(applicationContext)
+//        connectivityObserver.observe().onEach {
+//            connectionStatus = it
+//            Log.d(TAG, "Status is $it")
+//            when (it) {
+//                ConnectivityObserver.Status.Available -> viewModel.networkAvailable()
+//                else -> viewModel.networkUnavailable()
+//            }
+////            handleConnectionStatus(it)
+//        }.launchIn(lifecycleScope)
+
+        networkConnectivityUseCase(this, onAvailableNetwork = {
+            viewModel.networkAvailable()
+            Log.d("lalala", viewModel.connectionStatus.value.toString())
+        }, onUnavailableNetwork = {
+            viewModel.networkUnavailable()
+            Log.d("lalala", viewModel.connectionStatus.value.toString())
+        })
     }
 
     // Show alert when no connection
     private fun noConnectionAlert() {
-        if (connectionStatus != ConnectivityObserver.Status.Available) {
+//        if (connectionStatus != ConnectivityObserver.Status.Available) {
 
             // Show confirmation dialog
             alertBuilder = MaterialAlertDialogBuilder(this)
@@ -144,7 +161,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                     setCanceledOnTouchOutside(false) // Prevent dismissing by clicking outside
                 }
             alertBuilder.show()
-        }
+//        }
     }
 
 //    private fun checkConnectionAndShowAlertIfNeeded() {
@@ -163,11 +180,19 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             ConnectivityObserver.Status.Available -> {
                 runAuthentication()
                 alertBuilder.dismiss()
-                Toast.makeText(this, getString(R.string.network_status_x, status), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.network_status_x, status),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             else -> {
-                Toast.makeText(this, getString(R.string.network_status_x, status), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.network_status_x, status),
+                    Toast.LENGTH_SHORT
+                ).show()
                 noConnectionAlert()
             }
         }

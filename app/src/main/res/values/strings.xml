@@ -125,6 +125,7 @@
     <string name="you_have_to_connect_internet">You have to connect internet in order to use Maghrib Mengaji app</string>
     <string name="network_status_x">Network status: %1$s</string>
     <string name="no_connection_please_connect">Subhanallah, no internet connection. Please connect to internet</string>
+    <string name="please_enter_valid_phone">Please enter a valid phone number</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

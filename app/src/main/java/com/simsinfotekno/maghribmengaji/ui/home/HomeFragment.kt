@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -54,7 +55,7 @@ class HomeFragment : Fragment() {
 
     /* View model */
     private val viewModel: HomeViewModel by viewModels()
-    private val mainViewModel: MainViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -111,8 +112,8 @@ class HomeFragment : Fragment() {
         binding.homeLayoutNoNetwork.visibility = View.GONE
 
         // Check connection
-        networkConnectivityUseCase = context?.let { NetworkConnectivityUseCase(it) }!!
-        checkConnection()
+//        networkConnectivityUseCase = context?.let { NetworkConnectivityUseCase(it) }!!
+//        checkConnection()
 
         /* Views */
         binding.homeTextTitle.text =
@@ -169,13 +170,13 @@ class HomeFragment : Fragment() {
         viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->
             volumeInProgress = data
             if (data == null) {
-                setHomeUI(false)
+                setHomeUI()
                 return@observe
             } else if (data.isEmpty()) {
                 return@observe
             }
 
-            setHomeUI(true)
+            setHomeUI()
             volumeAdapter.dataSet = data
             volumeAdapter.notifyDataSetChanged()
             Log.d(TAG, "Added ${data.size} records to volume adapter")
@@ -190,6 +191,21 @@ class HomeFragment : Fragment() {
                 ustadhPhoneNumber = if (it.phone != null) it.phone else null
                 ustadhName = it.fullName
             }
+        }
+        mainViewModel.connectionStatus.observe(viewLifecycleOwner) {
+            Log.d("HomeFragment connection", connectionStatus.toString())
+            Log.d(TAG, it.toString())
+            connectionStatus = when (it) {
+                ConnectivityObserver.Status.Available -> ConnectivityObserver.Status.Available
+                else -> {
+                    ConnectivityObserver.Status.Unavailable
+                }
+            }
+            if (it != ConnectivityObserver.Status.Available) {
+                binding.homeProgressIndicatorLoading.visibility = View.GONE
+                binding.homeLayoutNoNetwork.visibility = View.VISIBLE
+            }
+            setHomeUI()
         }
 //        viewModel.progressVisibility.observe(viewLifecycleOwner) {
 //            binding.homeProgressIndicatorLoading.visibility = if (it) View.VISIBLE else View.GONE
@@ -285,17 +301,17 @@ class HomeFragment : Fragment() {
         return root
     }
 
-    private fun checkConnection() {
-        networkConnectivityUseCase(viewLifecycleOwner, onAvailableNetwork = {
-//            setHomeUI(true)
-            connectionStatus = ConnectivityObserver.Status.Available
-        }, onUnavailableNetwork = {
-            connectionStatus = ConnectivityObserver.Status.Unavailable
-//            setHomeUI(false)
-        })
-    }
+//    private fun checkConnection() {
+//        networkConnectivityUseCase(viewLifecycleOwner, onAvailableNetwork = {
+////            setHomeUI(true)
+//            connectionStatus = ConnectivityObserver.Status.Available
+//        }, onUnavailableNetwork = {
+//            connectionStatus = ConnectivityObserver.Status.Unavailable
+////            setHomeUI(false)
+//        })
+//    }
 
-    private fun setHomeUI(isConnected: Boolean) {
+    private fun setHomeUI() {
         val materialFade = MaterialFade().apply {
             duration = 150L
         }
@@ -319,16 +335,12 @@ class HomeFragment : Fragment() {
             }
         } else {
             Log.d(TAG, "volume in progress is null")
-//            binding.homeProgressIndicatorLoading.visibility = View.GONE
-//            binding.homeFabVolumeList.visibility = View.GONE
-//            binding.homeLayoutInProgress.visibility = View.VISIBLE
-//            binding.homeLayoutNoNetwork.visibility = View.VISIBLE
         }
 
-        if (connectionStatus != ConnectivityObserver.Status.Available) {
-            binding.homeProgressIndicatorLoading.visibility = View.GONE
-            binding.homeLayoutNoNetwork.visibility = View.VISIBLE
-        }
+//        if (connectionStatus != ConnectivityObserver.Status.Available) {
+//            binding.homeProgressIndicatorLoading.visibility = View.GONE
+//            binding.homeLayoutNoNetwork.visibility = View.VISIBLE
+//        }
     }
 
     private fun setupBanner() {
@@ -397,7 +409,7 @@ class HomeFragment : Fragment() {
             autoScrollRunnable,
             3000
         ) // Restart auto-scroll when the fragment/activity becomes visible again
-        checkConnection()
+//        checkConnection()
     }
 
     override fun onDestroyView() {

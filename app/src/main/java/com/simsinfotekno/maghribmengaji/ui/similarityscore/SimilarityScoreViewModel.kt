@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -16,6 +17,9 @@ import com.simsinfotekno.maghribmengaji.event.OnRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.UpdateLastPageId
 import com.simsinfotekno.maghribmengaji.usecase.UploadFileToFirebaseStorageUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -24,6 +28,7 @@ class SimilarityScoreViewModel : ViewModel() {
 
     companion object {
         private val TAG = SimilarityScoreViewModel::class.java.simpleName
+        private const val TIMEOUT_DURATION = 30000L // 30 seconds
     }
 
     var pageId: Int? = null
@@ -52,111 +57,234 @@ class SimilarityScoreViewModel : ViewModel() {
         EventBus.getDefault().unregister(this)
     }
 
-    fun uploadPageStudent() {
-        _progressVisibility.value = true
+//    fun uploadPageStudent() {
+//        _progressVisibility.value = true
+//
+//        // Only add record if page student with specified id is not found, if not, update the picture uri instead
+//        val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId)
+//
+//        if (pageStudent != null) {
+//            pageStudent.pictureUriString = imageUriString
+//            _progressVisibility.value = false
+//        } else {
+//
+//            quranPageStudentRepository.addRecord(
+//                QuranPageStudent(
+//                    pageId!!,
+//                    studentRepository.getStudent().id!!,
+//                    studentRepository.getStudent().ustadhId,
+//                    pictureUriString = imageUriString,
+//                    createdAt = Timestamp.now(),
+//                )
+//            )
+//
+//            // Update last page id in the db
+//            updateLastPageId(pageId!!, { Log.d(TAG, "Successfully updated last page id") }) {
+//                Log.e(TAG, "Failed to update last page id: $it")
+//            }
+//        }
+//    }
+fun uploadPageStudent() {
+    viewModelScope.launch(Dispatchers.IO) {
+        try {
+            withTimeout(TIMEOUT_DURATION) {
+                _progressVisibility.postValue(true)
 
-        // Only add record if page student with specified id is not found, if not, update the picture uri instead
-        val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId)
+                // Only add record if page student with specified id is not found, if not, update the picture uri instead
+                val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId)
 
-        if (pageStudent != null) {
-            pageStudent.pictureUriString = imageUriString
-            _progressVisibility.value = false
-        } else {
+                if (pageStudent != null) {
+                    pageStudent.pictureUriString = imageUriString
+                    _progressVisibility.postValue(false)
+                } else {
+                    quranPageStudentRepository.addRecord(
+                        QuranPageStudent(
+                            pageId!!,
+                            studentRepository.getStudent().id!!,
+                            studentRepository.getStudent().ustadhId,
+                            pictureUriString = imageUriString,
+                            createdAt = Timestamp.now(),
+                        )
+                    )
 
-            quranPageStudentRepository.addRecord(
-                QuranPageStudent(
-                    pageId!!,
-                    studentRepository.getStudent().id!!,
-                    studentRepository.getStudent().ustadhId,
-                    pictureUriString = imageUriString,
-                    createdAt = Timestamp.now(),
-                )
-            )
-
-            // Update last page id in the db
-            updateLastPageId(pageId!!, { Log.d(TAG, "Successfully updated last page id") }) {
-                Log.e(TAG, "Failed to update last page id: $it")
+                    // Update last page id in the db
+                    updateLastPageId(pageId!!, { Log.d(TAG, "Successfully updated last page id") }) {
+                        Log.e(TAG, "Failed to update last page id: $it")
+                    }
+                }
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Timeout or error during uploadPageStudent: $e")
+            _progressVisibility.postValue(false)
+            _remoteDbResult.postValue(Result.failure(e))
         }
-
     }
+}
 
     // Event listeners
     // Subscribe to OnPageStudentRepositoryUpdate event
+//    @Subscribe(threadMode = ThreadMode.POSTING)
+//    fun _083305312024(event: OnPageStudentRepositoryUpdate) {
+//        if (event.status == OnRepositoryUpdate.Event.ACTION_ADD) {
+//
+//            val remoteDb = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
+//
+//            val record = event.pageStudent ?: return
+//            record.oCRScore = oCRScore?.toInt()
+//
+//            remoteDb
+//                .whereEqualTo("studentId", record.studentId)
+//                .whereEqualTo("pageId", record.pageId)
+//                .get()
+//                .addOnCompleteListener { task ->
+//
+//                    if (task.isSuccessful) {
+//
+//                        if (task.result.isEmpty) {
+//
+//                            // No documents found
+//                            Log.d(TAG, "No matching documents found. Proceeding...")
+//
+//                            /* Upload use case */
+//                            uploadFileToFirebaseStorageUseCase.invoke(
+//                                Uri.parse(record.pictureUriString),
+//                                record.pageId.toString(),
+//                                "${QuranPageStudent.COLLECTION}/${record.studentId}",
+//                                { url ->
+//
+//                                    // If upload succeeded, update the pictureUriString inside record to the remote url
+//                                    record.pictureUriString = url
+//
+//                                    // Add the record to remote database
+//                                    remoteDb.add(record).addOnCompleteListener {
+//                                        _progressVisibility.value = false
+//                                        if (it.isSuccessful) {
+//                                            _remoteDbResult.value =
+//                                                Result.success(record) // Return user
+//                                        } else {
+//                                            _remoteDbResult.value = Result.failure(
+//                                                it.exception
+//                                                    ?: Exception("Failed to upload QuranPageStudent data to remote database")
+//                                            )
+//                                        }
+//                                    }
+//                                },
+//                                {
+//                                    _progressVisibility.value = false
+//                                    _remoteDbResult.value = Result.failure(it)
+//                                }
+//                            )
+//
+//                        } else {
+//                            _progressVisibility.value = false
+//
+//                            for (document in task.result) {
+//                                // Process the document data here
+//                                val data = document.data
+//                                // For example, you can log the document ID and data
+//                                Log.d(TAG, "Document with the same pageId already exists!")
+//                                _remoteDbResult.value =
+//                                    Result.failure(Exception("Document with the same pageId already exists!"))
+//                            }
+//
+//                        }
+//
+//                    } else {
+//                        Log.w(TAG, "Error getting documents.", task.exception)
+//                        _remoteDbResult.value =
+//                            Result.failure(Exception("Error getting documents. ${task.exception}"))
+//                        _progressVisibility.value = false
+//                    }
+//                }
+//
+//        }
+//    }
+
     @Subscribe(threadMode = ThreadMode.POSTING)
     fun _083305312024(event: OnPageStudentRepositoryUpdate) {
-        if (event.status == OnRepositoryUpdate.Event.ACTION_ADD) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                withTimeout(TIMEOUT_DURATION) {
+                    if (event.status == OnRepositoryUpdate.Event.ACTION_ADD) {
+                        val remoteDb = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
 
-            val remoteDb = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
+                        val record = event.pageStudent ?: return@withTimeout
+                        record.oCRScore = oCRScore?.toInt()
 
-            val record = event.pageStudent ?: return
-            record.oCRScore = oCRScore?.toInt()
+                        remoteDb
+                            .whereEqualTo("studentId", record.studentId)
+                            .whereEqualTo("pageId", record.pageId)
+                            .get()
+                            .addOnCompleteListener { task ->
 
-            remoteDb
-                .whereEqualTo("studentId", record.studentId)
-                .whereEqualTo("pageId", record.pageId)
-                .get()
-                .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
 
-                    if (task.isSuccessful) {
+                                    if (task.result.isEmpty) {
 
-                        if (task.result.isEmpty) {
+                                        // No documents found
+                                        Log.d(TAG, "No matching documents found. Proceeding...")
 
-                            // No documents found
-                            Log.d(TAG, "No matching documents found. Proceeding...")
+                                        /* Upload use case */
+                                        uploadFileToFirebaseStorageUseCase.invoke(
+                                            Uri.parse(record.pictureUriString),
+                                            record.pageId.toString(),
+                                            "${QuranPageStudent.COLLECTION}/${record.studentId}",
+                                            { url ->
 
-                            /* Upload use case */
-                            uploadFileToFirebaseStorageUseCase.invoke(
-                                Uri.parse(record.pictureUriString),
-                                record.pageId.toString(),
-                                "${QuranPageStudent.COLLECTION}/${record.studentId}",
-                                { url ->
+                                                // If upload succeeded, update the pictureUriString inside record to the remote url
+                                                record.pictureUriString = url
 
-                                    // If upload succeeded, update the pictureUriString inside record to the remote url
-                                    record.pictureUriString = url
+                                                // Add the record to remote database
+                                                remoteDb.add(record).addOnCompleteListener {
+                                                    _progressVisibility.postValue(false)
+                                                    if (it.isSuccessful) {
+                                                        _remoteDbResult.postValue(
+                                                            Result.success(record) // Return user
+                                                        )
+                                                    } else {
+                                                        _remoteDbResult.postValue(Result.failure(
+                                                            it.exception
+                                                                ?: Exception("Failed to upload QuranPageStudent data to remote database")
+                                                        ))
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                _progressVisibility.postValue(false)
+                                                _remoteDbResult.postValue(Result.failure(it))
+                                            }
+                                        )
 
-                                    // Add the record to remote database
-                                    remoteDb.add(record).addOnCompleteListener {
-                                        _progressVisibility.value = false
-                                        if (it.isSuccessful) {
-                                            _remoteDbResult.value =
-                                                Result.success(record) // Return user
-                                        } else {
-                                            _remoteDbResult.value = Result.failure(
-                                                it.exception
-                                                    ?: Exception("Failed to upload QuranPageStudent data to remote database")
+                                    } else {
+                                        _progressVisibility.postValue(false)
+
+                                        for (document in task.result) {
+                                            // Process the document data here
+                                            val data = document.data
+                                            // For example, you can log the document ID and data
+                                            Log.d(TAG, "Document with the same pageId already exists!")
+                                            _remoteDbResult.postValue(
+                                                Result.failure(Exception("Document with the same pageId already exists!"))
                                             )
                                         }
+
                                     }
-                                },
-                                {
-                                    _progressVisibility.value = false
-                                    _remoteDbResult.value = Result.failure(it)
+
+                                } else {
+                                    Log.w(TAG, "Error getting documents.", task.exception)
+                                    _remoteDbResult.postValue(
+                                        Result.failure(Exception("Error getting documents. ${task.exception}"))
+                                    )
+                                    _progressVisibility.postValue(false)
                                 }
-                            )
-
-                        } else {
-                            _progressVisibility.value = false
-
-                            for (document in task.result) {
-                                // Process the document data here
-                                val data = document.data
-                                // For example, you can log the document ID and data
-                                Log.d(TAG, "Document with the same pageId already exists!")
-                                _remoteDbResult.value =
-                                    Result.failure(Exception("Document with the same pageId already exists!"))
                             }
-
-                        }
-
-                    } else {
-                        Log.w(TAG, "Error getting documents.", task.exception)
-                        _remoteDbResult.value =
-                            Result.failure(Exception("Error getting documents. ${task.exception}"))
-                        _progressVisibility.value = false
                     }
                 }
-
+            } catch (e: Exception) {
+                Log.e(TAG, "Timeout or error during event handling: $e")
+                _progressVisibility.postValue(false)
+                _remoteDbResult.postValue(Result.failure(e))
+            }
         }
     }
 

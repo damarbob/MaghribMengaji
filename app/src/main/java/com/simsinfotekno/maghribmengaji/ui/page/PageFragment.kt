@@ -22,6 +22,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -38,6 +39,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
+import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.RecordingActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
@@ -59,6 +61,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
     }
 
     private val viewModel: PageViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     private var _binding: FragmentPageBinding? = null
     private val binding get() = _binding!!
@@ -76,7 +79,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
     private val launchScannerUseCase = LaunchScannerUseCase()
     private val launchCameraUseCase = LaunchCameraUseCase()
     private val launchGalleryUseCase = LaunchGalleryUseCase()
-    private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
+//    private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
 
     private val PICK_IMAGE_REQUEST = 1
     private var pageId: Int? = null
@@ -191,8 +194,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         _binding = FragmentPageBinding.inflate(inflater, container, false)
 
         // Check connection
-        networkConnectivityUseCase = NetworkConnectivityUseCase(requireContext())
-        checkConnection()
+//        networkConnectivityUseCase = NetworkConnectivityUseCase(requireContext())
+//        checkConnection()
 
         pageId = arguments?.getInt("pageId")
         viewModel.pageId = pageId
@@ -334,6 +337,11 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 }
             })
 
+        /* Observers */
+        mainViewModel.connectionStatus.observe(viewLifecycleOwner) {
+            binding.pageButtonSubmit.isEnabled = it == ConnectivityObserver.Status.Available
+        }
+
         /* Listeners */
         binding.pageToolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
@@ -459,13 +467,13 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         return binding.root
     }
 
-    private fun checkConnection() {
-        networkConnectivityUseCase(viewLifecycleOwner, onAvailableNetwork = {
-            binding.pageButtonSubmit.isEnabled = true
-        }, onUnavailableNetwork = {
-            binding.pageButtonSubmit.isEnabled = false
-        })
-    }
+//    private fun checkConnection() {
+//        networkConnectivityUseCase(viewLifecycleOwner, onAvailableNetwork = {
+//            binding.pageButtonSubmit.isEnabled = true
+//        }, onUnavailableNetwork = {
+//            binding.pageButtonSubmit.isEnabled = false
+//        })
+//    }
 
     private fun setCheckResult() {
         val ocrScore = pageStudent?.oCRScore ?: 0

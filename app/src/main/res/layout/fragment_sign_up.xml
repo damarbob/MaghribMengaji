@@ -53,27 +53,41 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/signUpInputEmailAddress"
                 android:layout_width="match_parent"
-                android:inputType="textEmailAddress"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/auth_phone_number"
-            android:enabled="true"
-            app:endIconMode="clear_text"
-            app:startIconContentDescription="@string/auth_phone_number"
-            app:startIconDrawable="@drawable/call_24px">
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/signUpInputPhoneNumber"
+            <androidx.appcompat.widget.AppCompatSpinner
+                style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                android:id="@+id/signUpSpinnerCountryCode"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="4dp"
+                android:layout_marginEnd="4dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/signUpTextInputLayoutPhone"
                 android:layout_width="match_parent"
-                android:inputType="phone"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:enabled="true"
+                android:hint="@string/auth_phone_number"
+                app:endIconMode="clear_text"
+                app:startIconContentDescription="@string/auth_phone_number"
+                app:startIconDrawable="@drawable/call_24px">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/signUpInputPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -106,8 +120,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/auth_login_google"
             android:enabled="false"
+            android:text="@string/auth_login_google"
             app:icon="@drawable/icon_google" />
 
         <LinearLayout
