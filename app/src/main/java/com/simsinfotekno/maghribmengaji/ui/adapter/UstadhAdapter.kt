@@ -58,7 +58,7 @@ class UstadhAdapter(
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.textName.text = name
+        viewHolder.textName.text = String.format(viewHolder.cardView.context.getString(R.string.ust_x), name)
 
         // Listener
         viewHolder.cardView.setOnClickListener {

@@ -1,13 +1,15 @@
 package com.simsinfotekno.maghribmengaji.ui.home
 
-import android.content.Intent
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -22,7 +24,6 @@ import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
@@ -32,6 +33,7 @@ import com.simsinfotekno.maghribmengaji.databinding.FragmentHomeBinding
 import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
+import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.BannerAdapter
@@ -51,15 +53,15 @@ class HomeFragment : Fragment() {
         private val TAG = HomeFragment::class.java.simpleName
     }
 
-    private var _binding: FragmentHomeBinding? = null
-
-    /* View model */
-    private val viewModel: HomeViewModel by viewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
+//    private var _binding: FragmentHomeBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentHomeBinding
+
+    /* View models */
+    private val viewModel: HomeViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     // Views
     private lateinit var volumeAdapter: VolumeAdapter
@@ -103,8 +105,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         binding.homeLayoutInProgress.visibility = View.GONE
         binding.homeLayoutNoProgress.visibility = View.GONE
@@ -157,22 +158,48 @@ class HomeFragment : Fragment() {
                 binding.homeTextLastWritten.text = getString(R.string.no_data)
                 binding.homeTextLastWrittenVolume.text = getString(R.string.no_data)
             } else {
+                val lastVolume = quranVolumeRepository.getRecordByPageId(lastPageId) // Get last volume based on lastPageId
+
                 binding.homeTextLastWritten.text = String.format(
                     requireContext().getString(R.string.page_x),
                     lastPageId.toString()
                 )
                 binding.homeTextLastWrittenVolume.text = String.format(
                     requireContext().getString(R.string.volume_x),
-                    quranVolumeRepository.getRecordByPageId(lastPageId)?.name
+                    lastVolume?.name
                 )
+                binding.homeTextLastWritten.setOnClickListener {
+
+                    // Bundle for the page fragment
+                    val bundle = Bundle().apply {
+                        putInt("pageId", lastPageId)
+                    }
+
+                    // Navigate to PageFragment
+                    findNavController().navigate(R.id.action_global_pageFragment, bundle)
+                }
+                binding.homeTextLastWrittenVolume.setOnClickListener {
+
+
+                    // Bundle for page list fragment
+                    val bundle = Bundle().apply {
+                        lastVolume?.id?.let { volumeId ->
+                            putInt("volumeId", volumeId)
+                            putIntArray("pageIds", lastVolume.pageIds.toIntArray())
+                        }
+
+                    }
+
+                    // Navigate to PageFragment
+                    findNavController().navigate(R.id.action_global_pageListFragment, bundle)
+
+                }
             }
         }
         viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->
             volumeInProgress = data
             if (data == null) {
                 setHomeUI()
-                return@observe
-            } else if (data.isEmpty()) {
                 return@observe
             }
 
@@ -218,40 +245,36 @@ class HomeFragment : Fragment() {
 //        }
 
         /* Listeners */
-        binding.homeToolbar.setNavigationOnClickListener { view ->
-            showPopupMenu(requireContext(), view, R.menu.menu_main) {
-                when (it.itemId) {
-                    R.id.menu_profile -> findNavController().navigate(R.id.action_navigation_home_to_navigation_profile)
-                    R.id.menu_sign_out -> {
-
-                        // Show confirmation dialog
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(getString(R.string.are_you_sure))
-                            .setMessage(getString(R.string.you_will_be_logged_out_from_this_account))
-                            .setNeutralButton(resources.getString(R.string.close)) { dialog, which ->
-                                dialog.dismiss()
-                            }
-                            .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                                // Logout and navigate to login
-                                mainViewModel.logout()
-                                navigateToLoginActivity()
-                            }
-                            .show()
-
-                    }
-                }
-                return@showPopupMenu false
-            }
+        binding.homeToolbar.setNavigationOnClickListener {
+            EventBus.getDefault().post(
+                OnMainActivityFeatureRequest(OnMainActivityFeatureRequest.Event.OPEN_DRAWER)
+            )
         }
         binding.homeAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
             val limitOffset = appBarLayout.totalScrollRange * 0.25
 
             if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
+
                 // Half expanded
                 binding.homeCollapsingToolbarLayout.isTitleEnabled = false
+                binding.homeToolbar.setNavigationIconTint(
+                    getColorFromAttr(
+                        com.google.android.material.R.attr.colorOnPrimary,
+                        requireContext()
+                    )
+                )
+
             } else if (Math.abs(verticalOffset) >= limitOffset) {
+
                 // Half collapsed
                 binding.homeCollapsingToolbarLayout.isTitleEnabled = true
+                binding.homeToolbar.setNavigationIconTint(
+                    getColorFromAttr(
+                        com.google.android.material.R.attr.colorPrimary,
+                        requireContext()
+                    )
+                )
+
             }
         }
         binding.homeTextUstadhName.setOnClickListener {
@@ -298,7 +321,7 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_homeFragment_to_volumeListFragment)
         }
 
-        return root
+        return binding.root
     }
 
 //    private fun checkConnection() {
@@ -414,15 +437,8 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
 
         EventBus.getDefault().unregister(this)
-    }
-
-    private fun navigateToLoginActivity() {
-        val intent = Intent(activity, LoginActivity::class.java)
-        startActivity(intent)
-        activity?.finish() // Optional: Finish MainActivity to prevent the user from coming back to it
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
@@ -430,6 +446,14 @@ class HomeFragment : Fragment() {
         if (event.userDataEvent == UserDataEvent.PAGE) {
 
         }
+    }
+
+    // TODO: Move to use case
+    @ColorInt
+    private fun getColorFromAttr(attr: Int, context: Context): Int {
+        val tv = TypedValue()
+        context.theme.resolveAttribute(attr, tv, true)
+        return context.resources.getColor(tv.resourceId)
     }
 
 }

@@ -115,6 +115,17 @@
     <string name="volume_list">Daftar Jilid</string>
     <string name="student_successfully_removed">Murid berhasil dihapus</string>
     <string name="it_will_take_a_while_until_the_change_takes_an_effect">Akan membutuhkan beberapa saat sampai perubahan diterapkan</string>
+    <string name="about">Tentang</string>
+    <string name="terms_and_conditions">Syarat dan Ketentuan</string>
+    <string name="other">Lainnya</string>
+    <string name="send_email_to_the_developer">Kirim email kepada pengembang?</string>
+    <string name="app_about_dialog">
+        Maghrib Mengaji v0.1-beta-2024
+        \n\nMaghrib Mengaji dirancang untuk memfasilitasi dua aktivitas membaca dan menulis dalam satu platform, yang berfungsi sebagai portofolio untuk pengembangan keterampilan kognitif dan motorik.
+        \n\nData dienkripsi selama transmisi. Silakan jangan khawatir tentang keamanan data.
+        \n\nLaporan bug: solusi@simsinfotekno.com
+    </string>
+    <string name="you_will_open_an_external_link_using_browser">Anda akan membuka link eksternal menggunakan peramban</string>
     <string name="check_page">Lihat Halaman</string>
     <string name="invalid_phone">Format nomor telepon salah!</string>
     <string name="no_internet">Tidak terhubung internet</string>

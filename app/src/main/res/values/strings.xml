@@ -119,6 +119,19 @@
     <string name="volume_list">Volume List</string>
     <string name="student_successfully_removed">Student successfully removed</string>
     <string name="it_will_take_a_while_until_the_change_takes_an_effect">It will take a while until the change takes an effect</string>
+    <string name="about">About</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
+    <string name="other">Other</string>
+    <string name="terms_and_conditions_url" translatable="false">https://dsm.my.id/routemate/tc/</string>
+    <string name="app_email_address" translatable="false">solusi@simsinfotekno.com</string>
+    <string name="send_email_to_the_developer">Send email to the developer?</string>
+    <string name="app_about_dialog">
+        Maghrib Mengaji v0.1-beta-2024
+        \n\nMaghrib Mengaji is designed to facilitate the dual activities of reading and writing in one platform, serving as a portfolio for cognitive and motor skill development.
+        \n\nData is encrypted in transit. Please do not worry about the data safety.
+        \n\nBug report: solusi@simsinfotekno.com
+    </string>
+    <string name="you_will_open_an_external_link_using_browser">You will open an external link using browser</string>
     <string name="check_page">Show Page</string>
     <string name="invalid_phone">Invalid phone format!</string>
     <string name="no_internet">No internet</string>

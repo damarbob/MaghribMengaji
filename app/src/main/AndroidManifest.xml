@@ -47,10 +47,10 @@
             android:name=".RecordingActivity"
             android:exported="true"
             android:resizeableActivity="true"
-            android:theme="@style/Theme.MaghribMengaji"></activity>
+            android:theme="@style/Theme.MaghribMengaji"/>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true"/>
         <activity
             android:name=".LoginActivity"
             android:exported="true">

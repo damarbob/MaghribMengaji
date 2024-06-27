@@ -195,7 +195,7 @@
 
                             <TextView
                                 android:id="@+id/homeTextLastWritten"
-                                style="@style/Widget.App.P.Bold"
+                                style="@style/Widget.App.H5.Bold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/page_x" />
@@ -389,6 +389,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
-        app:srcCompat="@drawable/menu_book_24px"/>
+        app:srcCompat="@drawable/rounded_apps_24"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -12,11 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.tasks.Task
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.LoginActivity
@@ -25,6 +21,7 @@ import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhHomeBinding
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
+import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.ui.adapter.StudentAdapter
 import com.simsinfotekno.maghribmengaji.usecase.ShowPopupMenu
@@ -128,29 +125,9 @@ class UstadhHomeFragment : Fragment() {
 
         /* Listeners */
         binding.ustadhHomeToolbar.setNavigationOnClickListener {
-            showPopupMenu(requireContext(), it, R.menu.menu_main) {
-                when (it.itemId) {
-                    R.id.menu_profile -> findNavController().navigate(R.id.action_ustadhHomeFragment_to_profileFragment)
-                    R.id.menu_sign_out -> {
-
-                        // Show confirmation dialog
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(getString(R.string.are_you_sure))
-                            .setMessage(getString(R.string.you_will_be_logged_out_from_this_account))
-                            .setNeutralButton(resources.getString(R.string.close)) { dialog, which ->
-                                dialog.dismiss()
-                            }
-                            .setPositiveButton(getString(R.string.yes)){ dialog, which ->
-                                // Logout and navigate to login
-                                mainViewModel.logout()
-                                navigateToLoginActivity()
-                            }
-                            .show()
-
-                    }
-                }
-                return@showPopupMenu false
-            }
+            EventBus.getDefault().post(
+                OnMainActivityFeatureRequest(OnMainActivityFeatureRequest.Event.OPEN_DRAWER)
+            )
         }
         binding.ustadhHomeAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
             val limitOffset = appBarLayout.totalScrollRange * 0.25

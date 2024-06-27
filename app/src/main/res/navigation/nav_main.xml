@@ -164,5 +164,15 @@
         app:destination="@id/ustadhPageStudentFragment"
         app:popUpTo="@id/ustadhPageStudentFragment"
         app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_volumeListFragment"
+        app:destination="@id/volumeListFragment"
+        app:popUpTo="@id/volumeListFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_pageListFragment"
+        app:destination="@id/pageListFragment"
+        app:popUpTo="@id/pageListFragment"
+        app:popUpToInclusive="true" />
 
 </navigation>

@@ -1,15 +1,17 @@
 package com.simsinfotekno.maghribmengaji
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.gms.tasks.Task
@@ -27,16 +29,16 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentReposit
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
+import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 
 class MainActivity : AppCompatActivity(), ActivityRestartable {
@@ -67,15 +69,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        alertBuilder = MaterialAlertDialogBuilder(this)
-            .create()
-
         // Set the status bar color
         window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary)
-        setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
+//        setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
         // Register EventBus
-//        EventBus.getDefault().register(this)
+        EventBus.getDefault().register(this)
 
 //        runAuthentication()
 
@@ -90,13 +89,40 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         checkConnection()
         viewModel.connectionStatus.observe(this) {
             handleConnectionStatus(it)
-            Log.d("lalilu", it.toString())
+            Log.d(TAG, it.toString())
         }
 
         navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
 
+        /* Views */
+//        val fabVolumeList = binding.mainFabVolumeList
+        val mainNavigationHeader =
+            binding.mainNavigationView.inflateHeaderView(R.layout.header_drawer_main)
+
+        mainNavigationHeader.findViewById<TextView>(R.id.headerMainName).text =
+            Firebase.auth.currentUser?.displayName
+        mainNavigationHeader.findViewById<TextView>(R.id.headerMainEmail).text =
+            Firebase.auth.currentUser?.email
+
+        // Show confirmation dialog
+        alertBuilder = MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.no_internet))
+            .setMessage(getString(R.string.you_have_to_connect_internet))
+            .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+////                    recreate() // Reload activity
+//                    checkConnection()
+//                    checkConnectionAndShowAlertIfNeeded()
+            }
+//                .setNeutralButton(getString(R.string.close)) { dialog, which ->
+//                    finish() // Exit app
+//                }
+            .setCancelable(false) // Prevent dismissing by back button
+            .create()
+            .apply {
+                setCanceledOnTouchOutside(false) // Prevent dismissing by clicking outside
+            }
 //        /* Views */
 //        val fabVolumeList = binding.mainFabVolumeList
 //
@@ -115,6 +141,97 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 //            }
 //        }
 
+        /* Listeners */
+        binding.mainNavigationView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_volume_list -> {
+                    navController.navigate(R.id.action_global_volumeListFragment)
+                }
+                R.id.menu_tc -> {
+
+                    // Show tc confirmation
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.are_you_sure))
+                        .setMessage(getString(R.string.you_will_open_an_external_link_using_browser))
+                        .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+
+                            // Open terms and conditions in browser
+                            val browserIntent =
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse(getString(R.string.terms_and_conditions_url))
+                                )
+                            startActivity(browserIntent)
+
+                        }
+                        .show()
+
+                }
+
+                R.id.menu_contact -> {
+
+                    // Show email confirmation
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.are_you_sure))
+                        .setMessage(getString(R.string.send_email_to_the_developer))
+                        .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                            openEmailClient() // Open email client app
+                        }
+                        .show()
+
+                }
+
+                R.id.menu_about -> {
+
+                    // Show application info dialog
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.about))
+                        .setMessage(getString(R.string.app_about_dialog))
+                        .setNeutralButton(resources.getString(R.string.close)) { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
+
+                R.id.menu_sign_out -> {
+
+                    // Show sign out confirmation dialog
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.are_you_sure))
+                        .setMessage(getString(R.string.you_will_be_logged_out_from_this_account))
+                        .setNeutralButton(resources.getString(R.string.close)) { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+
+                            signOut()
+
+                        }
+                        .show()
+
+                }
+            }
+            binding.container.closeDrawer(GravityCompat.START)
+            return@setNavigationItemSelectedListener true
+        }
+
+    }
+
+    private fun signOut() {
+        // Sign out and navigate to login
+
+        Firebase.auth.signOut() // Sign out from firebase
+
+        // Navigate to LoginActivity
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish() // Finish MainActivity to prevent the user from coming back to it
     }
 
     // Check connection
@@ -132,10 +249,10 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
         networkConnectivityUseCase(this, onAvailableNetwork = {
             viewModel.networkAvailable()
-            Log.d("lalala", viewModel.connectionStatus.value.toString())
+            Log.d(TAG, viewModel.connectionStatus.value.toString())
         }, onUnavailableNetwork = {
             viewModel.networkUnavailable()
-            Log.d("lalala", viewModel.connectionStatus.value.toString())
+            Log.d(TAG, viewModel.connectionStatus.value.toString())
         })
     }
 
@@ -143,24 +260,22 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private fun noConnectionAlert() {
 //        if (connectionStatus != ConnectivityObserver.Status.Available) {
 
-            // Show confirmation dialog
-            alertBuilder = MaterialAlertDialogBuilder(this)
-                .setTitle(getString(R.string.no_internet))
-                .setMessage(getString(R.string.you_have_to_connect_internet))
-                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-////                    recreate() // Reload activity
-//                    checkConnection()
-//                    checkConnectionAndShowAlertIfNeeded()
-                }
-//                .setNeutralButton(getString(R.string.close)) { dialog, which ->
-//                    finish() // Exit app
-//                }
-                .setCancelable(false) // Prevent dismissing by back button
-                .create()
-                .apply {
-                    setCanceledOnTouchOutside(false) // Prevent dismissing by clicking outside
-                }
-            alertBuilder.show()
+        /* Listeners */
+//        fabVolumeList.setOnClickListener {
+//            val fragmentId = navController.currentDestination?.id
+//            when (fragmentId) {
+//                R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
+//                R.id.pageListFragment -> navController.navigate(R.id.action_pageListFragment_to_volumeListFragment)
+//            }
+//        }
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            when (destination.id) {
+//                R.id.homeFragment -> fabVolumeList.show()
+//                else -> fabVolumeList.hide()
+            }
+        }
+
+        alertBuilder.show()
 //        }
     }
 
@@ -217,7 +332,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         super.onDestroy()
 
         // Unregister EventBus
-//        EventBus.getDefault().unregister(this)
+        EventBus.getDefault().unregister(this)
 
     }
 
@@ -269,8 +384,8 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                                     restartActivity() // Restart activity
 
                                 }
-                                .setNeutralButton(getString(R.string.close)) { dialog, which ->
-                                    finish() // Exit app
+                                .setNeutralButton(getString(R.string.sign_out)) { dialog, which ->
+                                    signOut() // Sign out
                                 }
                                 .setCancelable(false) // Prevent dismissing by back button
                                 .create()
@@ -280,8 +395,8 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                                 .show()
 
                         }
-                        .setNeutralButton(getString(R.string.close)) { dialog, which ->
-                            finish() // Exit app
+                        .setNeutralButton(getString(R.string.sign_out)) { dialog, which ->
+                            signOut() // Sign out
                         }
                         .setCancelable(false) // Prevent dismissing by back button
                         .create()
@@ -334,7 +449,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                 }
             },
             { exception ->
-                Toast.makeText(this, exception, Toast.LENGTH_SHORT)
+                Toast.makeText(this, exception, Toast.LENGTH_LONG)
                     .show()
             }
         )
@@ -402,6 +517,25 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                 val errorMessage = task.exception?.localizedMessage ?: "Failed to reload user."
                 onFailure(errorMessage)
             }
+        }
+    }
+
+    private fun openEmailClient() {
+        // Define the email address
+        val email = getString(R.string.app_email_address)
+        val mailto = "mailto:$email"
+
+        // Create an intent
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse(mailto)
+        }
+
+        // Check if there's an email app available
+        if (emailIntent.resolveActivity(packageManager) != null) {
+            startActivity(emailIntent)
+        } else {
+            // Show a message if no email app is available
+            Toast.makeText(this, "No email app found", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -478,6 +612,15 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
         }
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    fun _053803052023(event: OnMainActivityFeatureRequest) {
+        when (event.event) {
+            OnMainActivityFeatureRequest.Event.OPEN_DRAWER -> binding.container.openDrawer(
+                GravityCompat.START
+            )
+        }
     }
 
 }
