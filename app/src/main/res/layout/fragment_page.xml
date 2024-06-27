@@ -172,8 +172,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/quran_page_image_description"
                     android:scaleType="fitCenter"
-                    android:src="@mipmap/vector_maghrib_mengaji"
-                    android:visibility="gone" />
+                    android:src="@mipmap/vector_maghrib_mengaji" />
 
                 <ImageView
                     android:id="@+id/pageImageViewScannedResult"
@@ -190,8 +189,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/pageCheckResultHolder"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
                     android:id="@+id/pageCheckResultLinearProgress"

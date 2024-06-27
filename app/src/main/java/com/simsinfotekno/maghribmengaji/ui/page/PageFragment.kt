@@ -23,8 +23,6 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
@@ -49,7 +47,6 @@ import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
 import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
-import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.UploadImageUseCase
 import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
 
@@ -60,7 +57,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         fun newInstance() = PageFragment()
     }
 
-    private val viewModel: PageViewModel by viewModels()
+    private val viewModel: PageViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
 
     private var _binding: FragmentPageBinding? = null
@@ -73,6 +70,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
     private lateinit var requestCameraPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var requestGalleryPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var bottomSheetBehaviorCheckResult: BottomSheetBehavior<View>
+    private var pageImageUrl: String? = null
+    private var isPageViewMode: Boolean = true
 
     // Use case
     private val uploadImageUseCase = UploadImageUseCase()
@@ -209,6 +208,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         binding.pageCollapsingToolbarLayout.title =
             getString(R.string.page_x, pageId.toString())
         binding.pageTextViewVolume.text = getString(R.string.volume_x, volume?.id.toString())
+        binding.pageImageViewPage.visibility = View.GONE
+        binding.pageCheckResultHolder.visibility = View.GONE
 
         bottomSheetBehaviorCheckResult =
             BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)
@@ -282,32 +283,32 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             binding.pageButtonCheckResult.visibility = View.VISIBLE // Show check result button
         }
 
-        binding.pageBottomSheetCheckResult.apply {
-            val ocrScore = pageStudent?.oCRScore ?: 0
-            val tidinessScore = pageStudent?.tidinessScore ?: 0
-            val accuracyScore = pageStudent?.accuracyScore ?: 0
-            val consistencyScore = pageStudent?.consistencyScore ?: 0
-
-            val overallScore = (ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4
-
-            this.checkResultTextViewOverallScore.text = overallScore.toString()
-            this.checkResultTextViewPreliminaryResult.text = ocrScore.toString()
-            this.checkResultTextViewTidinessResult.text = tidinessScore.toString()
-            this.checkResultTextViewAccuracyResult.text = accuracyScore.toString()
-            this.checkResultTextViewConsistencyResult.text = consistencyScore.toString()
-
-            this.checkResultCircularProgressScore.progress = overallScore
-            this.checkResultProgressIndicatorPreliminary.progress = ocrScore
-            this.checkResultProgressIndicatorTidiness.progress = tidinessScore
-            this.checkResultProgressIndicatorAccuracy.progress = accuracyScore
-            this.checkResultProgressIndicatorConsistency.progress = consistencyScore
-
-            pageStudent?.pictureUriString?.let {
-                loadImageIntoImageView(it, this.checkResultImageViewStudentPageImage, true)
-                this.checkResultLinearProgress.visibility = View.GONE
-            }
-        }
-
+//        binding.pageBottomSheetCheckResult.apply {
+//            val ocrScore = pageStudent?.oCRScore ?: 0
+//            val tidinessScore = pageStudent?.tidinessScore ?: 0
+//            val accuracyScore = pageStudent?.accuracyScore ?: 0
+//            val consistencyScore = pageStudent?.consistencyScore ?: 0
+//
+//            val overallScore = (ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4
+//
+//            this.checkResultTextViewOverallScore.text = overallScore.toString()
+//            this.checkResultTextViewPreliminaryResult.text = ocrScore.toString()
+//            this.checkResultTextViewTidinessResult.text = tidinessScore.toString()
+//            this.checkResultTextViewAccuracyResult.text = accuracyScore.toString()
+//            this.checkResultTextViewConsistencyResult.text = consistencyScore.toString()
+//
+//            this.checkResultCircularProgressScore.progress = overallScore
+//            this.checkResultProgressIndicatorPreliminary.progress = ocrScore
+//            this.checkResultProgressIndicatorTidiness.progress = tidinessScore
+//            this.checkResultProgressIndicatorAccuracy.progress = accuracyScore
+//            this.checkResultProgressIndicatorConsistency.progress = consistencyScore
+//
+//            pageStudent?.pictureUriString?.let {
+//                loadImageIntoImageView(it, this.checkResultImageViewStudentPageImage, true)
+//                this.checkResultLinearProgress.visibility = View.GONE
+//            }
+//        }
+//        viewModel.setToPageViewMode()
         setCheckResult()
 
         // Get the document from Firestore and load the image to ImageView
@@ -317,10 +318,12 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             { imageUrl ->
                 // Load image to ImageView
                 if (isAdded) {
-                    pageImage.visibility = View.VISIBLE
+//                    pageImage.visibility = View.VISIBLE
                     pageImage.setBackgroundColor(resources.getColor(R.color.md_theme_background))
-                    pageImage.setPadding(0, 16, 0, 0)
+//                    pageImage.setPadding(0, 16, 0, 0)
                     Log.d(TAG, imageUrl)
+                    pageImageUrl = imageUrl
+                    Log.d(TAG, pageImageUrl.toString())
                     loadImageIntoImageView(imageUrl, pageImage, isBottomSheet = false)
                 }
             },
@@ -340,6 +343,15 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         /* Observers */
         mainViewModel.connectionStatus.observe(viewLifecycleOwner) {
             binding.pageButtonSubmit.isEnabled = it == ConnectivityObserver.Status.Available
+        }
+        viewModel.pageViewMode.observe(viewLifecycleOwner) {
+            isPageViewMode = it
+            Log.d(TAG, "view mode $it")
+            Log.d(TAG, "$pageStudent")
+            if (pageStudent != null) {
+                if (it) showPage(container)
+                else showResult(container)
+            } else showPageNoPageStudent(container)
         }
 
         /* Listeners */
@@ -382,10 +394,12 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             }
         }
 
+        binding.pageButtonSubmit.isEnabled = true
         // Submit button
         binding.pageButtonSubmit.setOnClickListener {
             if (isAdded) {
                 if (Build.VERSION.SDK_INT >= 30) {
+                    binding.pageButtonSubmit.isEnabled = false
                     launchScannerUseCase(this, scannerLauncher)
                 } else {
                     val bottomSheet = ImagePickerBottomSheetDialog().apply {
@@ -425,46 +439,84 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
         binding.pageButtonCheckResult.setOnClickListener {
             if (isAdded) {
-                val materialFade = MaterialFade().apply {
-                    duration = 150L
-                }
-//                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
-                TransitionManager.beginDelayedTransition(binding.root, materialFade)
-                binding.pageButtonCheckResult.visibility = View.GONE
-                binding.pageButtonCheckPage.visibility = View.VISIBLE
-                binding.pageImageViewPage.visibility = View.GONE
-                binding.pageCheckResultHolder.visibility = View.VISIBLE
-//                Handler(Looper.getMainLooper()).postDelayed({
-//                    if (isAdded) {
-////                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
-//                    }
-//                }, 100)
-                binding.pageLinearLayout.isNestedScrollingEnabled = false
-                binding.pageCollapsingToolbarLayout.isNestedScrollingEnabled = false
-                TransitionManager.endTransitions(container)
+                viewModel.setToResultViewMode() // Set to result view mode on ViewMode
+                showResult(container)
             }
         }
         binding.pageButtonCheckPage.setOnClickListener {
             if (isAdded) {
-                val materialFade = MaterialFade().apply {
-                    duration = 150L
-                }
+                viewModel.setToPageViewMode() // Set to page view mode on ViewMode
+                showPage(container)
+            }
+        }
+
+        return binding.root
+    }
+
+    private fun showPage(container: ViewGroup?) {
+        val materialFade = MaterialFade().apply {
+            duration = 150L
+        }
 //                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
-                TransitionManager.beginDelayedTransition(binding.root, materialFade)
-                binding.pageButtonCheckResult.visibility = View.VISIBLE
-                binding.pageButtonCheckPage.visibility = View.GONE
-                binding.pageImageViewPage.visibility = View.VISIBLE
-                binding.pageCheckResultHolder.visibility = View.GONE
+        TransitionManager.beginDelayedTransition(binding.root, materialFade)
+//        loadImageIntoImageView(pageImageUrl, binding.pageImageViewPage, isBottomSheet = false)
+        Log.d("TAasdfasdfG", pageImageUrl.toString())
+        binding.pageButtonCheckResult.visibility = View.VISIBLE
+        binding.pageButtonCheckPage.visibility = View.GONE
+        binding.pageImageViewPage.visibility = View.VISIBLE
+        binding.pageCheckResultHolder.visibility = View.GONE
 //                Handler(Looper.getMainLooper()).postDelayed({
 //                    if (isAdded) {
 ////                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
 //                    }
 //                }, 100)
-                TransitionManager.endTransitions(container)
-            }
-        }
+        TransitionManager.endTransitions(container)
+    }
 
-        return binding.root
+    private fun showPageNoPageStudent(container: ViewGroup?) {
+        val materialFade = MaterialFade().apply {
+            duration = 150L
+        }
+        TransitionManager.beginDelayedTransition(binding.root, materialFade)
+//        loadImageIntoImageView(pageImageUrl, binding.pageImageViewPage, isBottomSheet = false)
+        Log.d("TAasdfasdfG", pageImageUrl.toString())
+        binding.pageButtonSubmit.visibility = View.VISIBLE
+        binding.pageButtonCheckResult.visibility = View.GONE
+        binding.pageButtonCheckPage.visibility = View.GONE
+        binding.pageImageViewPage.visibility = View.VISIBLE
+        binding.pageCheckResultHolder.visibility = View.GONE
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    if (isAdded) {
+////                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
+//                    }
+//                }, 100)
+        TransitionManager.endTransitions(container)
+    }
+
+    private fun showResult(container: ViewGroup?) {
+        val materialFade = MaterialFade().apply {
+            duration = 150L
+        }
+//                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
+        TransitionManager.beginDelayedTransition(binding.root, materialFade)
+        binding.pageButtonCheckResult.visibility = View.GONE
+        binding.pageButtonCheckPage.visibility = View.VISIBLE
+        binding.pageImageViewPage.visibility = View.GONE
+        binding.pageCheckResultHolder.visibility = View.VISIBLE
+        binding.pageProgressBar.visibility = View.GONE
+//        loadImageIntoImageView(
+//            pageStudent?.pictureUriString,
+//            binding.pageCheckResultImageViewStudentPageImage,
+//            false
+//        )
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    if (isAdded) {
+////                        bottomSheetBehaviorCheckResult.state = BottomSheetBehavior.STATE_COLLAPSED
+//                    }
+//                }, 100)
+        binding.pageLinearLayout.isNestedScrollingEnabled = false
+        binding.pageCollapsingToolbarLayout.isNestedScrollingEnabled = false
+        TransitionManager.endTransitions(container)
     }
 
 //    private fun checkConnection() {
@@ -496,21 +548,30 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         binding.pageCheckResultProgressIndicatorConsistency.progress = consistencyScore
 
         pageStudent?.pictureUriString?.let {
-            loadImageIntoImageView(it, binding.pageCheckResultImageViewStudentPageImage, true)
+            loadImageIntoImageView(it, binding.pageCheckResultImageViewStudentPageImage, false)
             binding.pageCheckResultLinearProgress.visibility = View.GONE
         }
     }
 
     // Load image to imageview
     private fun loadImageIntoImageView(
-        imageUrl: String,
+        imageUrl: String?,
         imageView: ImageView,
-        isBottomSheet: Boolean // Check position of imageView
+        isBottomSheet: Boolean = false // Check position of imageView
     ) {
-        val progress =
-            if (isBottomSheet) binding.pageBottomSheetCheckResult.checkResultLinearProgress else binding.pageProgressBar
-//        binding.pageProgressBar.visibility = View.VISIBLE
-        progress.visibility = View.VISIBLE
+        Log.d("TAG", imageUrl.toString())
+//        val progress =
+//            if (isBottomSheet) binding.pageBottomSheetCheckResult.checkResultLinearProgress else binding.pageProgressBar
+        binding.pageProgressBar.visibility = View.VISIBLE
+//        progress.visibility = View.VISIBLE
+        if (isPageViewMode) {
+            binding.pageImageViewPage.visibility = View.VISIBLE
+            binding.pageCheckResultImageViewStudentPageImage.visibility = View.GONE
+        } else {
+            binding.pageImageViewPage.visibility = View.GONE
+            binding.pageCheckResultImageViewStudentPageImage.visibility = View.VISIBLE
+        }
+
 
         Glide.with(imageView.context)
             .load(imageUrl)
@@ -524,9 +585,9 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     isFirstResource: Boolean
                 ): Boolean {
                     if (isAdded) {
-//                        binding.pageProgressBar.visibility = View.GONE
-                        progress.visibility = View.GONE
-                        imageView.visibility = View.VISIBLE
+                        binding.pageProgressBar.visibility = View.GONE
+//                        progress.visibility = View.GONE
+//                        imageView.visibility = View.VISIBLE
                     }
                     return false
                 }
@@ -538,9 +599,9 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     isFirstResource: Boolean
                 ): Boolean {
                     if (isAdded) {
-//                        binding.pageProgressBar.visibility = View.GONE
-                        progress.visibility = View.GONE
-                        imageView.visibility = View.VISIBLE
+                        binding.pageProgressBar.visibility = View.GONE
+//                        progress.visibility = View.GONE
+//                        imageView.visibility = View.VISIBLE
                         Toast.makeText(
                             requireContext(),
                             getString(R.string.failed_to_load_image),
@@ -637,6 +698,11 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.pageButtonSubmit.isEnabled = true
     }
 
     override fun onDestroyView() {
