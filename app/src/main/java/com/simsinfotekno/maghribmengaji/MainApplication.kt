@@ -10,7 +10,9 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import com.simsinfotekno.maghribmengaji.model.QuranPage
+import com.simsinfotekno.maghribmengaji.model.QuranPageBookmarkStudent
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
+import com.simsinfotekno.maghribmengaji.repository.QuranPageBookmarkStudentRepository
 import com.simsinfotekno.maghribmengaji.repository.QuranPageRepository
 import com.simsinfotekno.maghribmengaji.repository.QuranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.repository.QuranRecordingStudentRepository
@@ -28,6 +30,7 @@ class MainApplication: Application() {
         // User repos
         val quranVolumeRepository = QuranVolumeRepository()
         val quranPageRepository = QuranPageRepository()
+        val quranPageBookmarkStudentRepository = QuranPageBookmarkStudentRepository()
         val quranPageStudentRepository = QuranPageStudentRepository()
         val studentRepository = StudentRepository()
         val quranRecordingStudentRepository = QuranRecordingStudentRepository()
@@ -59,6 +62,15 @@ class MainApplication: Application() {
 
             QuranPage(pageId, "$pageId", volumeId = volumeId)
         }
+        val pageOffsets = listOf(
+            1, 22, 42, 62, 82, 102, 122, 142, 162, 182,
+            202, 222, 242, 262, 282, 302, 322, 342, 362, 382,
+            402, 422, 442, 462, 482, 502, 522, 542, 562, 582
+        )
+
+        val quranPageBookmarksStudent = (1..30).mapIndexed { index, juzId ->
+            QuranPageBookmarkStudent(pageOffsets[index], "$juzId")
+        }
 
     }
     override fun onCreate() {
@@ -67,6 +79,7 @@ class MainApplication: Application() {
         // Insert initial data set to repository
         quranVolumeRepository.setRecords(quranVolumes, false)
         quranPageRepository.setRecords(quranPages, false)
+        quranPageBookmarkStudentRepository.setRecords(quranPageBookmarksStudent, false)
 
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {

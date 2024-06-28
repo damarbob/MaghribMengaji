@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
@@ -24,6 +25,7 @@ import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageBookmarkStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
@@ -37,6 +39,7 @@ import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.BannerAdapter
+import com.simsinfotekno.maghribmengaji.ui.adapter.PageBookmarkStudentAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
@@ -63,8 +66,9 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
 
-    // Views
+    // Adapters
     private lateinit var volumeAdapter: VolumeAdapter
+    private lateinit var pageBookmarkStudentAdapter: PageBookmarkStudentAdapter
 
     // Use case
     private val showPopupMenu: ShowPopupMenu = ShowPopupMenu()
@@ -107,16 +111,18 @@ class HomeFragment : Fragment() {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        binding.homeLayoutInProgress.visibility = View.GONE
-        binding.homeLayoutNoProgress.visibility = View.GONE
-        binding.homeFabVolumeList.visibility = View.GONE
-        binding.homeLayoutNoNetwork.visibility = View.GONE
-
         // Check connection
 //        networkConnectivityUseCase = context?.let { NetworkConnectivityUseCase(it) }!!
 //        checkConnection()
 
         /* Views */
+
+        binding.homeLayoutInProgress.visibility = View.GONE
+        binding.homeLayoutNoProgress.visibility = View.GONE
+        binding.homeFabVolumeList.visibility = View.GONE
+        binding.homeLayoutNoNetwork.visibility = View.GONE
+        binding.homeLayoutJuzList.visibility = View.GONE
+
         binding.homeTextTitle.text =
             "${Firebase.auth.currentUser?.displayName}" // ${getString(R.string.salam)},
                 ?: getString(R.string.app_name)
@@ -129,11 +135,23 @@ class HomeFragment : Fragment() {
             this
         )
 
+        // Bookmark adapter
+        pageBookmarkStudentAdapter = PageBookmarkStudentAdapter(
+            quranPageBookmarkStudentRepository.getRecords(),
+            findNavController()
+        )
+
         // Volume list
         val recyclerView: RecyclerView = binding.homeRecyclerViewVolume
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = volumeAdapter
+
+        // Bookmark list
+        val recyclerViewBookmark: RecyclerView = binding.homeRecyclerViewJuzBookmarks
+        recyclerViewBookmark.layoutManager =
+            GridLayoutManager(context, 3)
+        recyclerViewBookmark.adapter = pageBookmarkStudentAdapter
 
 //        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.student.lastPageId) // Last written
 
@@ -340,13 +358,18 @@ class HomeFragment : Fragment() {
         }
         TransitionManager.beginDelayedTransition(binding.root, materialFade)
         Log.d(TAG, "$volumeInProgress")
+
         binding.homeProgressIndicatorLoading.visibility = View.VISIBLE
-//        binding.homeLayoutNoNetwork.visibility = View.VISIBLE
+        binding.homeLayoutJuzList.visibility = View.VISIBLE
+
         if (volumeInProgress != null) {
+
             binding.homeProgressIndicatorLoading.visibility = View.GONE
             binding.homeLayoutNoNetwork.visibility = View.GONE
             binding.homeFabVolumeList.visibility = View.VISIBLE
+
             Log.d(TAG, "volume in progress is not null")
+
             if (volumeInProgress!!.isNotEmpty()) {
                 Log.d(TAG, "volume in progress is not empty")
                 binding.homeLayoutInProgress.visibility = View.VISIBLE
@@ -356,6 +379,7 @@ class HomeFragment : Fragment() {
                 binding.homeLayoutInProgress.visibility = View.GONE
                 binding.homeLayoutNoProgress.visibility = View.VISIBLE
             }
+
         } else {
             Log.d(TAG, "volume in progress is null")
         }

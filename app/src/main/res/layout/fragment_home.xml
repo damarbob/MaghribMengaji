@@ -88,7 +88,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:navigationIcon="@drawable/menu_24px"
-                app:navigationIconTint="?attr/colorOnPrimary"/>
+                app:navigationIconTint="?attr/colorOnPrimary" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -104,7 +104,8 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:orientation="vertical"
-            android:paddingVertical="16dp">
+            android:paddingTop="16dp"
+            android:paddingBottom="64dp">
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.Material3.CardView.Filled"
@@ -222,15 +223,6 @@
                                 android:text="Muhammad Fikri Hizbullah"
                                 android:textColor="?attr/colorPrimary" />
 
-                            <!--                                <Button-->
-                            <!--                                    android:id="@+id/homeTextUstadhName"-->
-                            <!--                                    style="@style/Widget.Material3.Button.TextButton.Icon"-->
-                            <!--                                    android:textStyle="bold"-->
-                            <!--                                    android:layout_width="wrap_content"-->
-                            <!--                                    android:layout_height="wrap_content"-->
-                            <!--                                    android:text="Muhammad Fikri Hizbullah"-->
-                            <!--                                    android:textColor="?attr/colorPrimary" />-->
-
                         </LinearLayout>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -279,7 +271,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- No network volume list -->
+            <!-- No network -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/homeLayoutNoNetwork"
                 style="@style/Widget.Material3.CardView.Elevated"
@@ -301,8 +293,8 @@
                         style="@style/Widget.App.H5.Bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:text="@string/no_connection_please_connect" />
+                        android:text="@string/no_connection_please_connect"
+                        android:textAlignment="center" />
 
 
                 </LinearLayout>
@@ -334,7 +326,36 @@
 
             </LinearLayout>
 
-            <!-- No progress volume list -->
+            <!-- Juz bookmarks -->
+
+            <LinearLayout
+                android:id="@+id/homeLayoutJuzList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="visible">
+
+                <TextView
+                    style="@style/Widget.App.P.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/juz_list" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/homeRecyclerViewJuzBookmarks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingBottom="16dp" />
+
+            </LinearLayout>
+
+            <!-- No progress -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/homeLayoutNoProgress"
                 style="@style/Widget.Material3.CardView.Elevated"
@@ -373,11 +394,11 @@
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/homeProgressIndicatorLoading"
-                android:layout_marginTop="32dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp"
+                android:indeterminate="true" />
 
         </LinearLayout>
 
@@ -387,8 +408,8 @@
         android:id="@+id/homeFabVolumeList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
-        app:srcCompat="@drawable/rounded_apps_24"/>
+        android:layout_margin="16dp"
+        app:srcCompat="@drawable/rounded_apps_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
