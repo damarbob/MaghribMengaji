@@ -134,4 +134,5 @@
     <string name="no_connection_please_connect">Subhanallah, tidak ada jaringan internet. Mohon periksa kembali jaringan internet</string>
     <string name="please_enter_valid_phone">Mohon masukkan nomor telepon dengan benar</string>
     <string name="juz_list">Daftar Juz</string>
+    <string name="chapter_list">Daftar Surat</string>
 </resources>

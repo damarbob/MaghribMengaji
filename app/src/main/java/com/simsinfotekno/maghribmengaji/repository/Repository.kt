@@ -93,8 +93,8 @@ abstract class Repository<T> {
     abstract fun onRecordAdded(record: T)
     abstract fun onRecordDeleted(record: T)
     abstract fun onRecordCleared()
-    fun getRecordByIndex(i: Int): T {
-        return records[i]
+    fun getRecordByIndex(i: Int): T? {
+        return if (getRecordsCount() > 0) records[i] else null
     }
 
     /**

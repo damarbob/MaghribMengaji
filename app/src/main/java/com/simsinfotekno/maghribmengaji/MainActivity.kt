@@ -147,6 +147,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                 R.id.menu_volume_list -> {
                     navController.navigate(R.id.action_global_volumeListFragment)
                 }
+                R.id.menu_chapter_list -> {
+                    navController.navigate(R.id.action_global_chapterListFragment)
+                }
+                R.id.menu_juz_list -> {
+                    navController.navigate(R.id.action_global_juzListFragment)
+                }
                 R.id.menu_tc -> {
 
                     // Show tc confirmation
@@ -472,10 +478,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
             // Post a user data loaded event
             EventBus.getDefault().post(
-                OnUserDataLoaded(
-                    studentRepository.getStudent(),
-                    UserDataEvent.PAGE
-                )
+                studentRepository.getStudent()?.let { student ->
+                    OnUserDataLoaded(
+                        student,
+                        UserDataEvent.PAGE
+                    )
+                }
             )
 
             Log.d(TAG, "Page students imported")

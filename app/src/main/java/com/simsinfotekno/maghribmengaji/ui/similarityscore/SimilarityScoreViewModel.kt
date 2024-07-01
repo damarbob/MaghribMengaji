@@ -100,8 +100,8 @@ fun uploadPageStudent() {
                     quranPageStudentRepository.addRecord(
                         QuranPageStudent(
                             pageId!!,
-                            studentRepository.getStudent().id!!,
-                            studentRepository.getStudent().ustadhId,
+                            studentRepository.getStudent()?.id,
+                            studentRepository.getStudent()?.ustadhId,
                             pictureUriString = imageUriString,
                             createdAt = Timestamp.now(),
                         )

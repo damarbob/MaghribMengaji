@@ -107,6 +107,7 @@
             android:paddingTop="16dp"
             android:paddingBottom="64dp">
 
+            <!-- Header name -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
@@ -135,6 +136,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Statistics -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
@@ -143,7 +145,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:clipToPadding="false"
                     android:orientation="vertical">
 
@@ -271,6 +273,15 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Indeterminate progress indicator -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/homeProgressIndicatorLoading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp"
+                android:indeterminate="true" />
+
             <!-- No network -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/homeLayoutNoNetwork"
@@ -327,7 +338,6 @@
             </LinearLayout>
 
             <!-- Juz bookmarks -->
-
             <LinearLayout
                 android:id="@+id/homeLayoutJuzList"
                 android:layout_width="match_parent"
@@ -391,14 +401,6 @@
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/homeProgressIndicatorLoading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="32dp"
-                android:indeterminate="true" />
 
         </LinearLayout>
 

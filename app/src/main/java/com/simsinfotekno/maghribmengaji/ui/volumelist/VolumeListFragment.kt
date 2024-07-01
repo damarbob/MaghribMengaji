@@ -68,7 +68,7 @@ class VolumeListFragment : Fragment() {
         binding = FragmentVolumeListBinding.inflate(layoutInflater, container, false)
 
         /* Variables */
-        val lastPageId = MainApplication.studentRepository.getStudent().lastPageId
+        val lastPageId = MainApplication.studentRepository.getStudent()?.lastPageId
 
         /* Views */
         if (lastPageId == null) {

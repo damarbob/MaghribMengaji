@@ -44,7 +44,7 @@ class HomeViewModel() : ViewModel() {
         if (event.userDataEvent == UserDataEvent.PAGE) {
             _volumeInProgressDataSet.value = getQuranVolumeByStatus.invoke(QuranItemStatus.ON_PROGRESS)
 
-            _lastPageId.value = studentRepository.getStudent().lastPageId
+            _lastPageId.value = studentRepository.getStudent()?.lastPageId
             _progressVisibility.value = false
         }
     }

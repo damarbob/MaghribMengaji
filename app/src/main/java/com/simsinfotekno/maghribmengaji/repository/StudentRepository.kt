@@ -46,7 +46,7 @@ class StudentRepository() : Repository<MaghribMengajiUser>() {
         }
     }
 
-    fun getStudent(): MaghribMengajiUser {
+    fun getStudent(): MaghribMengajiUser? {
         return getRecordByIndex(0)
     }
 

@@ -45,7 +45,7 @@ class UstadhListViewModel : ViewModel() {
                                     _updateUstadhIdResult.value = Result.success(ustadhId)
 
                                     // Update in the repository too
-                                    studentRepository.getStudent().ustadhId = ustadhId
+                                    studentRepository.getStudent()?.ustadhId = ustadhId
                                 }
                                 .addOnFailureListener { e ->
                                     Log.w(MainActivity.TAG, "Error updating ustadh ID", e)

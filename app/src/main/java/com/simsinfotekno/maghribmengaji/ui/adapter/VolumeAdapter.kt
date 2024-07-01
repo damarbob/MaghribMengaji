@@ -48,7 +48,6 @@ class VolumeAdapter(
      * (custom ViewHolder)
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        /* Old */
         val textView: TextView
         val textViewVolume: TextView
         val cardView: CardView

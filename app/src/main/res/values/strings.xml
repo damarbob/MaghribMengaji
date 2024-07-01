@@ -140,7 +140,8 @@
     <string name="no_connection_please_connect">Subhanallah, no internet connection. Please connect to internet</string>
     <string name="please_enter_valid_phone">Please enter a valid phone number</string>
     <string name="juz_x" translatable="false">Juz %1$s</string>
-    <string name="juz_list">Juzt list</string>
+    <string name="juz_list">Juz List</string>
+    <string name="chapter_list">Chapter List</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

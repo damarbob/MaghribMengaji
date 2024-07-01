@@ -53,11 +53,12 @@ class UstadhPageListStudentFragment : Fragment() {
 
         /* Arguments */
         val volumeId = arguments?.getInt("volumeId")
+        val pageIds = quranVolumeRepository.getRecordById(volumeId)?.pageIds
 
         Log.d(
             TAG,
-            " Volume: ${
-                quranVolumeRepository.getRecordById(volumeId)?.pageIds?.toIntArray().toString()
+            " Volume $volumeId: ${
+                pageIds?.toIntArray().toString()
             }"
         )
 
@@ -85,7 +86,7 @@ class UstadhPageListStudentFragment : Fragment() {
         binding.ustadhPageListStudentTextVolume.text =
             getString(R.string.volume_x, volumeId.toString())
         binding.ustadhPageListStudentCollapsingToolbarLayout.title = binding.ustadhPageListStudentTextVolume.text
-        binding.ustadhPageListStudentTextPageRange.text = volumeId?.let { getQuranPageRangeString(it, getString(R.string.page)) }
+        binding.ustadhPageListStudentTextPageRange.text = volumeId?.let { getQuranPageRangeString(pageIds, getString(R.string.page)) }
 
         binding.ustadhPageListStudentTab.addOnTabSelectedListener(object :
             TabLayout.OnTabSelectedListener {

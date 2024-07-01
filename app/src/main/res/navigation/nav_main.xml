@@ -22,6 +22,12 @@
         <action
             android:id="@+id/action_homeFragment_to_pageListFragment"
             app:destination="@id/pageListFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_chapterListFragment"
+            app:destination="@id/chapterListFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_juzListFragment"
+            app:destination="@id/juzListFragment" />
     </fragment>
 
     <fragment
@@ -173,6 +179,26 @@
         android:id="@+id/action_global_pageListFragment"
         app:destination="@id/pageListFragment"
         app:popUpTo="@id/pageListFragment"
+        app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/chapterListFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.chapterlist.ChapterListFragment"
+        android:label="fragment_chapter_list"
+        tools:layout="@layout/fragment_chapter_list" />
+    <fragment
+        android:id="@+id/juzListFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.juzlist.JuzListFragment"
+        android:label="fragment_juz_list"
+        tools:layout="@layout/fragment_juz_list" />
+    <action
+        android:id="@+id/action_global_chapterListFragment"
+        app:destination="@id/chapterListFragment"
+        app:popUpTo="@id/chapterListFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_juzListFragment"
+        app:destination="@id/juzListFragment"
+        app:popUpTo="@id/juzListFragment"
         app:popUpToInclusive="true" />
 
 </navigation>

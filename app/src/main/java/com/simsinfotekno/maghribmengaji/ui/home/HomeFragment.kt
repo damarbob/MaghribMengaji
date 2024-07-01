@@ -13,7 +13,6 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +24,7 @@ import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranChapterRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageBookmarkStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
@@ -39,6 +39,7 @@ import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.BannerAdapter
+import com.simsinfotekno.maghribmengaji.ui.adapter.ChapterAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageBookmarkStudentAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
@@ -63,12 +64,13 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
 
     /* View models */
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: HomeViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
 
     // Adapters
     private lateinit var volumeAdapter: VolumeAdapter
     private lateinit var pageBookmarkStudentAdapter: PageBookmarkStudentAdapter
+    private lateinit var chapterAdapter: ChapterAdapter
 
     // Use case
     private val showPopupMenu: ShowPopupMenu = ShowPopupMenu()
@@ -141,6 +143,12 @@ class HomeFragment : Fragment() {
             findNavController()
         )
 
+        // Chapter adapter
+        chapterAdapter = ChapterAdapter(
+            quranChapterRepository.getRecords(),
+            findNavController(),
+        )
+
         // Volume list
         val recyclerView: RecyclerView = binding.homeRecyclerViewVolume
         recyclerView.layoutManager =
@@ -152,6 +160,12 @@ class HomeFragment : Fragment() {
         recyclerViewBookmark.layoutManager =
             GridLayoutManager(context, 3)
         recyclerViewBookmark.adapter = pageBookmarkStudentAdapter
+
+        // Chapter list
+//        val chapterRecyclerView: RecyclerView = binding.homeRecyclerViewChapters
+//        chapterRecyclerView.layoutManager =
+//            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+//        chapterRecyclerView.adapter = chapterAdapter
 
 //        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.student.lastPageId) // Last written
 

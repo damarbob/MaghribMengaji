@@ -8,6 +8,17 @@
         android:title="@string/volume_list" />
 
     <item
+        android:id="@+id/menu_chapter_list"
+        android:icon="@drawable/auto_stories_24px"
+        android:title="@string/chapter_list" />
+
+    <item
+        android:id="@+id/menu_juz_list"
+        android:icon="@drawable/book_24px"
+        android:title="@string/juz_list"
+        android:visible="false"/>
+
+    <item
         android:id="@+id/menu_profile"
         android:icon="@drawable/person_24px"
         android:title="@string/main_menu_profile"

@@ -77,8 +77,8 @@ class UstadhHomeFragment : Fragment() {
         binding.ustadhHomeLayoutStudentList.visibility = View.GONE // Hide the student list layout
 
         // Ustadh name
-        binding.ustadhHomeCollapsingToolbarLayout.title = String.format(getString(R.string.ust_x), ustadh.fullName)
-        binding.ustadhHomeTextName.text = String.format(getString(R.string.ust_x), ustadh.fullName)
+        binding.ustadhHomeCollapsingToolbarLayout.title = String.format(getString(R.string.ust_x), ustadh?.fullName)
+        binding.ustadhHomeTextName.text = String.format(getString(R.string.ust_x), ustadh?.fullName)
 
         // Student list
         studentAdapter = StudentAdapter(listOf())
