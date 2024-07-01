@@ -25,6 +25,7 @@ import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.home.HomeFragment
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
+import com.simsinfotekno.maghribmengaji.usecase.GetColorFromAttrUseCase
 import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 
 
@@ -47,6 +48,7 @@ class VolumeGridAdapter(
 
     /* Use cases */
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
+    private val getColorFromAttrUseCase = GetColorFromAttrUseCase()
 
     /**
      * Provide a reference to the type of views that you are using
@@ -132,7 +134,7 @@ class VolumeGridAdapter(
 
         // Load image cover
         Glide.with(viewHolder.imageCover.context)
-            .load(R.drawable.ic_maghrib_mengaji_notext) // TODO: change to volume cover
+            .load(dataSet[position].picture)
             .listener(object : RequestListener<Drawable> {
 
                 override fun onResourceReady(
@@ -143,6 +145,7 @@ class VolumeGridAdapter(
                     isFirstResource: Boolean
                 ): Boolean {
                     viewHolder.imageProgress.visibility = View.GONE
+                    viewHolder.imageCover.setBackgroundColor(getColorFromAttrUseCase(com.google.android.material.R.attr.colorPrimary, navController.context))
                     return false
                 }
 

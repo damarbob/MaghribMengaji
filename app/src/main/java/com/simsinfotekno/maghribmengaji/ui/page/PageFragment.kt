@@ -177,9 +177,9 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
         // Set the transition for this fragment
         enterTransition = if (arguments?.getBoolean("previous") == true) {
-            MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
-        } else {
             MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
+        } else {
+            MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
         }
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
@@ -379,6 +379,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             bundle.putInt("pageId", newPageId)
             if (isAdded) {
                 findNavController().navigate(R.id.action_global_pageFragment, bundle)
+                exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
             }
         }
 
@@ -390,7 +391,6 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             }
             if (isAdded) {
                 findNavController().navigate(R.id.action_global_pageFragment, bundle)
-                exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
             }
         }
 

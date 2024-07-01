@@ -27,7 +27,7 @@
                 android:layout_gravity="center"/>
 
             <ImageView
-                android:id="@+id/itemVolumeTwoColumnsImageViewCover"
+                android:id="@+id/itemVolumeTwoColumnsImageViewPlaceholder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -36,6 +36,14 @@
                 android:scaleY="0.5"
                 android:src="@drawable/ic_maghrib_mengaji_notext"
                 app:tint="@color/md_theme_primary" />
+
+            <ImageView
+                android:id="@+id/itemVolumeTwoColumnsImageViewCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center"
+                />
 
         </FrameLayout>
 

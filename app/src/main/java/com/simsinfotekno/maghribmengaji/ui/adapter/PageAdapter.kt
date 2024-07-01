@@ -1,6 +1,7 @@
 package com.simsinfotekno.maghribmengaji.ui.adapter
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
+import com.simsinfotekno.maghribmengaji.MainApplication
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranPage
@@ -23,6 +25,10 @@ class PageAdapter(
 ) :
     RecyclerView.Adapter<PageAdapter.ViewHolder>() {
 
+    companion object {
+        private val TAG = PageAdapter::class.java.simpleName
+    }
+
     /* Use cases */
     private val quranPageStatusCheck = QuranPageStatusCheck()
 
@@ -31,13 +37,15 @@ class PageAdapter(
      * (custom ViewHolder)
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView
+        val textViewPage: TextView
+        val textViewChapter: TextView
         val cardViewPage: CardView
         val imageStatus: ImageView
 
         init {
             // Define click listener for the ViewHolder's View
-            textView = view.findViewById(R.id.itemPageTextTitle)
+            textViewPage = view.findViewById(R.id.itemPageTextTitle)
+            textViewChapter = view.findViewById(R.id.itemPageTextTitleChapter)
             cardViewPage = view.findViewById(R.id.itemPageCardView)
             imageStatus = view.findViewById(R.id.itemPageImageStatus)
         }
@@ -56,12 +64,22 @@ class PageAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         val page = dataSet[position]
+//        val chapter = dataSet[position].chapterIds
+        val chapters =
+            MainApplication.quranChapterRepository.getRecordByPageId(page.id).map { it.name }
+        val chapterString = chapters.joinToString(", ")
+
+        Log.d(TAG, "page: $page | chapter: $chapters")
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.textView.text = String.format(
-            viewHolder.textView.context.getString(R.string.page_x),
+        viewHolder.textViewPage.text = String.format(
+            viewHolder.textViewPage.context.getString(R.string.page_x),
             page.name
+        )
+        viewHolder.textViewChapter.text = String.format(
+            viewHolder.textViewPage.context.getString(R.string.chapter_x),
+            chapterString
         )
 
         // Set the icon based on the completion status

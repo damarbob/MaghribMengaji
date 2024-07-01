@@ -69,10 +69,12 @@ class PageListFragment : Fragment() {
         /* Arguments */
         val volumeId = arguments?.getInt("volumeId")
         val pageIds = arguments?.getIntArray("pageIds")!!
+        val chapterName = arguments?.getString("chapterName")
 
         /* Variables */
         val pages = quranPageRepository.getRecordByIds(pageIds)
-        val pagesFinished = pages.filter { quranPageStatusCheck(it) == QuranItemStatus.FINISHED }.toMutableList().size
+        val pagesFinished = pages.filter { quranPageStatusCheck(it) == QuranItemStatus.FINISHED }
+            .toMutableList().size
 
         /* Views */
 
@@ -94,12 +96,21 @@ class PageListFragment : Fragment() {
         recyclerView.adapter = pageAdapter
 
         // Page info
-        binding.pageListTextViewVolume.text = String.format(
-            binding.pageListTextViewVolume.context.getString(R.string.volume_x),
-            volumeId
+        if (volumeId != -1) {
+            binding.pageListTextViewVolume.text = String.format(
+                binding.pageListTextViewVolume.context.getString(R.string.volume_x),
+                volumeId
+            )
+        } else binding.pageListTextViewVolume.text = String.format(
+            binding.pageListTextViewVolume.context.getString(
+                R.string.chapter_x,
+                chapterName
+            )
         )
-        binding.pageListTextPageRange.text = volumeId?.let { getQuranPageRangeString(pageIds.toList(), getString(R.string.page)) }
-        binding.pageListTextPageCompleted.text = String.format(getString(R.string.x_pages_completed), pagesFinished)
+        binding.pageListTextPageRange.text =
+            volumeId?.let { getQuranPageRangeString(pageIds.toList(), getString(R.string.page)) }
+        binding.pageListTextPageCompleted.text =
+            String.format(getString(R.string.x_pages_completed), pagesFinished)
 //        binding.pageListTextViewPageCompletion.text =
 //            "0" //TODO: add page completion logic or function
 //        binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function
@@ -114,8 +125,7 @@ class PageListFragment : Fragment() {
             if (verticalOffset == 0 || Math.abs(verticalOffset) <= limitOffset) {
                 // Half expanded
                 binding.pageListCollapsingToolbarLayout.isTitleEnabled = false
-            }
-            else if (Math.abs(verticalOffset) >= limitOffset) {
+            } else if (Math.abs(verticalOffset) >= limitOffset) {
                 // Half collapsed
                 binding.pageListCollapsingToolbarLayout.isTitleEnabled = true
             }

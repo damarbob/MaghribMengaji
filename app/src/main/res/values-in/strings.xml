@@ -135,4 +135,5 @@
     <string name="please_enter_valid_phone">Mohon masukkan nomor telepon dengan benar</string>
     <string name="juz_list">Daftar Juz</string>
     <string name="chapter_list">Daftar Surat</string>
+    <string name="chapter_x">Surat %1$s</string>
 </resources>

@@ -46,4 +46,23 @@ class QuranChapterRepository() : Repository<QuranChapter>() {
         return result
     }
 
+    fun getRecordByPageId(pageId: Int): List<QuranChapter> {
+        val result: ArrayList<QuranChapter> = arrayListOf()
+        for (r in getRecords()) {
+            if (r.pageIds.contains(pageId)) {
+                result.add(r)
+            }
+        }
+        return result
+    }
+
+    fun getRecordByPageIds(pageIds: IntArray): List<QuranChapter> {
+        val result: HashSet<QuranChapter> = hashSetOf()
+
+        pageIds.forEach { pageId ->
+            result.addAll(getRecordByPageId(pageId))
+        }
+
+        return result.toList()
+    }
 }

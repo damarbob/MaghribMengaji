@@ -432,7 +432,7 @@
         android:padding="@dimen/activity_vertical_margin">
 
         <Button
-            android:id="@+id/pageButtonPrevious"
+            android:id="@+id/pageButtonForward"
             style="@style/Widget.Material3.Button.IconButton.Filled"
             android:backgroundTint="@color/md_theme_tertiary"
             android:layout_width="wrap_content"
@@ -453,7 +453,7 @@
             app:icon="@drawable/auto_stories_24px"
             app:iconGravity="textStart"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/pageButtonPrevious"
+            app:layout_constraintStart_toEndOf="@+id/pageButtonForward"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
@@ -467,12 +467,12 @@
             app:icon="@drawable/photo_camera_24px"
             app:iconGravity="textStart"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/pageButtonForward"
-            app:layout_constraintStart_toEndOf="@+id/pageButtonPrevious"
+            app:layout_constraintEnd_toStartOf="@+id/pageButtonPrevious"
+            app:layout_constraintStart_toEndOf="@+id/pageButtonForward"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/pageButtonForward"
+            android:id="@+id/pageButtonPrevious"
             style="@style/Widget.Material3.Button.IconButton.Filled"
             android:backgroundTint="@color/md_theme_tertiary"
             android:layout_width="wrap_content"

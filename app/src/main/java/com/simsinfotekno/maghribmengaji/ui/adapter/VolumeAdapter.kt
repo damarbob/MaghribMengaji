@@ -76,6 +76,7 @@ class VolumeAdapter(
         val id = dataSet[position].id
         val name = dataSet[position].name
         val pageIds = dataSet[position].pageIds
+        val chapterIds = dataSet[position].chapterIds
 
         Log.d(TAG, "id: $id. name: $name.")
 
@@ -123,6 +124,7 @@ class VolumeAdapter(
             val bundle = Bundle()
             bundle.putInt("volumeId", id)
             bundle.putIntArray("pageIds", pageIds.toIntArray())
+            bundle.putIntArray("chapterIds", chapterIds.toIntArray())
             when (invoker) {
                 is VolumeListFragment -> {
                     navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)

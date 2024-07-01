@@ -5,4 +5,5 @@ data class QuranVolume(
     val name: String,
     val pageIds: List<Int> = listOf(),
     val chapterIds: List<Int> = listOf(),
+    val picture: Int? = null
 )

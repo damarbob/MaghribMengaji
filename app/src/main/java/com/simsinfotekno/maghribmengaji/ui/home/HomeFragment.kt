@@ -1,15 +1,12 @@
 package com.simsinfotekno.maghribmengaji.ui.home
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -42,6 +39,7 @@ import com.simsinfotekno.maghribmengaji.ui.adapter.BannerAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.ChapterAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageBookmarkStudentAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
+import com.simsinfotekno.maghribmengaji.usecase.GetColorFromAttrUseCase
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.OpenWhatsApp
@@ -78,6 +76,7 @@ class HomeFragment : Fragment() {
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
     private val openWhatsApp = OpenWhatsApp()
     private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
+    private val getColorFromAttrUseCase = GetColorFromAttrUseCase()
 
     // Handlers
     private lateinit var autoScrollHandler: Handler
@@ -190,7 +189,8 @@ class HomeFragment : Fragment() {
                 binding.homeTextLastWritten.text = getString(R.string.no_data)
                 binding.homeTextLastWrittenVolume.text = getString(R.string.no_data)
             } else {
-                val lastVolume = quranVolumeRepository.getRecordByPageId(lastPageId) // Get last volume based on lastPageId
+                val lastVolume =
+                    quranVolumeRepository.getRecordByPageId(lastPageId) // Get last volume based on lastPageId
 
                 binding.homeTextLastWritten.text = String.format(
                     requireContext().getString(R.string.page_x),
@@ -263,8 +263,7 @@ class HomeFragment : Fragment() {
             if (it != ConnectivityObserver.Status.Available) {
                 binding.homeProgressIndicatorLoading.visibility = View.GONE
                 binding.homeLayoutNoNetwork.visibility = View.VISIBLE
-            }
-            setHomeUI()
+            } else setHomeUI()
         }
 //        viewModel.progressVisibility.observe(viewLifecycleOwner) {
 //            binding.homeProgressIndicatorLoading.visibility = if (it) View.VISIBLE else View.GONE
@@ -290,7 +289,7 @@ class HomeFragment : Fragment() {
                 // Half expanded
                 binding.homeCollapsingToolbarLayout.isTitleEnabled = false
                 binding.homeToolbar.setNavigationIconTint(
-                    getColorFromAttr(
+                    getColorFromAttrUseCase(
                         com.google.android.material.R.attr.colorOnPrimary,
                         requireContext()
                     )
@@ -301,7 +300,7 @@ class HomeFragment : Fragment() {
                 // Half collapsed
                 binding.homeCollapsingToolbarLayout.isTitleEnabled = true
                 binding.homeToolbar.setNavigationIconTint(
-                    getColorFromAttr(
+                    getColorFromAttrUseCase(
                         com.google.android.material.R.attr.colorPrimary,
                         requireContext()
                     )
@@ -485,13 +484,4 @@ class HomeFragment : Fragment() {
 
         }
     }
-
-    // TODO: Move to use case
-    @ColorInt
-    private fun getColorFromAttr(attr: Int, context: Context): Int {
-        val tv = TypedValue()
-        context.theme.resolveAttribute(attr, tv, true)
-        return context.resources.getColor(tv.resourceId)
-    }
-
 }

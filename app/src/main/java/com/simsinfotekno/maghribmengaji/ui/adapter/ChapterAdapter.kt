@@ -60,8 +60,8 @@ class ChapterAdapter(
         // Listener
         viewHolder.cardView.setOnClickListener {
             val bundle = Bundle()
-            bundle.putInt("volumeId", -1)
             bundle.putIntArray("pageIds", chapter.pageIds.toIntArray())
+            bundle.putString("chapterName", chapter.name)
             navController.navigate(R.id.action_global_pageListFragment, bundle)
         }
     }

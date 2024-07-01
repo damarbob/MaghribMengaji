@@ -142,6 +142,7 @@
     <string name="juz_x" translatable="false">Juz %1$s</string>
     <string name="juz_list">Juz List</string>
     <string name="chapter_list">Chapter List</string>
+    <string name="chapter_x">Surah %1$s</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>
