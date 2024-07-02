@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.model.QuranChapter
+import com.simsinfotekno.maghribmengaji.usecase.GetChapterNameFromStringResourceUseCase
 
 class ChapterAdapter(
     var dataSet: List<QuranChapter>,
@@ -18,11 +19,15 @@ class ChapterAdapter(
 ) :
     RecyclerView.Adapter<ChapterAdapter.ViewHolder>() {
 
+    /* Use case */
+    private val getChapterNameFromStringResourceUseCase = GetChapterNameFromStringResourceUseCase()
+
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder)
      */
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {val textView: TextView
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val textView: TextView
         val textViewVolume: TextView
         val cardView: CardView
         val imageStatus: ImageView
@@ -54,7 +59,7 @@ class ChapterAdapter(
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.textView.text = chapter.name
+        viewHolder.textView.text = getChapterNameFromStringResourceUseCase(chapter.id, navController.context)
         viewHolder.textViewVolume.text = chapter.id.toString()
 
         // Listener

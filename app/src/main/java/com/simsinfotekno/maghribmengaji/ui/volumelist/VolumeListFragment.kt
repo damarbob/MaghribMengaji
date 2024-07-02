@@ -61,6 +61,24 @@ class VolumeListFragment : Fragment() {
 //        getQuranVolume()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Restore scroll position
+        savedInstanceState?.let {
+            val scrollY = it.getInt("scroll_position", 0)
+            binding.volumeListScroll.post {
+                binding.volumeListScroll.scrollTo(0, scrollY)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putInt("scroll_position", binding.volumeListScroll.scrollY)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

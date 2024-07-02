@@ -16,6 +16,7 @@ import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.pagelist.PageListFragment
+import com.simsinfotekno.maghribmengaji.usecase.GetChapterNameFromStringResourceUseCase
 import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
 
 class PageAdapter(
@@ -24,6 +25,9 @@ class PageAdapter(
     private val invoker: Any,
 ) :
     RecyclerView.Adapter<PageAdapter.ViewHolder>() {
+
+    /* Use case */
+    private val getChapterNameFromStringResourceUseCase = GetChapterNameFromStringResourceUseCase()
 
     companion object {
         private val TAG = PageAdapter::class.java.simpleName
@@ -66,7 +70,9 @@ class PageAdapter(
         val page = dataSet[position]
 //        val chapter = dataSet[position].chapterIds
         val chapters =
-            MainApplication.quranChapterRepository.getRecordByPageId(page.id).map { it.name }
+            MainApplication.quranChapterRepository.getRecordByPageId(page.id).map {
+                getChapterNameFromStringResourceUseCase(it.id, navController.context)
+            }
         val chapterString = chapters.joinToString(", ")
 
         Log.d(TAG, "page: $page | chapter: $chapters")

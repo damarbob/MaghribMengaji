@@ -11,7 +11,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/pageAppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:expanded="false">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/pageCollapsingToolbarLayout"
@@ -71,7 +72,7 @@
         android:layout_gravity="center"
         android:indeterminate="true"
         app:layout_anchor="@id/pageAppBarLayout"
-        app:layout_anchorGravity="bottom|end"/>
+        app:layout_anchorGravity="bottom|end" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/pageNestedScrollViewPage"
@@ -162,9 +163,9 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="360dp"
+                android:background="@color/md_theme_surfaceContainerHigh"
                 android:maxHeight="720dp"
-                android:background="@color/md_theme_surfaceContainerHigh">
+                android:minHeight="360dp">
 
                 <ImageView
                     android:id="@+id/pageImageViewPage"
@@ -173,7 +174,7 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/quran_page_image_description"
-                    android:scaleType="fitCenter"
+                    android:scaleType="center"
                     android:src="@mipmap/vector_maghrib_mengaji" />
 
                 <ImageView
@@ -195,9 +196,9 @@
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
                     android:id="@+id/pageCheckResultLinearProgress"
-                    android:indeterminate="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:indeterminate="true"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -434,9 +435,9 @@
         <Button
             android:id="@+id/pageButtonForward"
             style="@style/Widget.Material3.Button.IconButton.Filled"
-            android:backgroundTint="@color/md_theme_tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/md_theme_tertiary"
             app:icon="@drawable/round_arrow_back_ios_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -474,10 +475,10 @@
         <Button
             android:id="@+id/pageButtonPrevious"
             style="@style/Widget.Material3.Button.IconButton.Filled"
-            android:backgroundTint="@color/md_theme_tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
+            android:backgroundTint="@color/md_theme_tertiary"
             app:icon="@drawable/round_arrow_forward_ios_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -514,10 +515,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:text="@string/check_page"
+        android:visibility="gone"
         app:icon="@drawable/task_24px"
         app:layout_anchor="@id/pageAppBarLayout"
-        app:layout_anchorGravity="bottom|end"
-        android:visibility="gone"/>
+        app:layout_anchorGravity="bottom|end" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/pageButtonRecite"
@@ -535,6 +536,6 @@
     <include
         android:id="@+id/pageBottomSheetCheckResult"
         layout="@layout/bottom_sheet_check_result"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

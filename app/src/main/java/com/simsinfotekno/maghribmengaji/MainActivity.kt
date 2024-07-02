@@ -97,7 +97,6 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         // menu should be considered as top level destinations.
 
         /* Views */
-//        val fabVolumeList = binding.mainFabVolumeList
         val mainNavigationHeader =
             binding.mainNavigationView.inflateHeaderView(R.layout.header_drawer_main)
 
@@ -106,40 +105,20 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         mainNavigationHeader.findViewById<TextView>(R.id.headerMainEmail).text =
             Firebase.auth.currentUser?.email
 
+
         // Show confirmation dialog
         alertBuilder = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.no_internet))
             .setMessage(getString(R.string.you_have_to_connect_internet))
-            .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-////                    recreate() // Reload activity
-//                    checkConnection()
-//                    checkConnectionAndShowAlertIfNeeded()
-            }
-//                .setNeutralButton(getString(R.string.close)) { dialog, which ->
-//                    finish() // Exit app
-//                }
+            .setPositiveButton(getString(R.string.yes), null)
             .setCancelable(false) // Prevent dismissing by back button
             .create()
             .apply {
                 setCanceledOnTouchOutside(false) // Prevent dismissing by clicking outside
             }
-//        /* Views */
-//        val fabVolumeList = binding.mainFabVolumeList
-//
-//        /* Listeners */
-//        fabVolumeList.setOnClickListener {
-//            val fragmentId = navController.currentDestination?.id
-//            when (fragmentId) {
-//                R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
-//                R.id.pageListFragment -> navController.navigate(R.id.action_pageListFragment_to_volumeListFragment)
-//            }
-//        }
-//        navController.addOnDestinationChangedListener { controller, destination, arguments ->
-//            when (destination.id) {
-//                R.id.homeFragment -> fabVolumeList.show()
-//                else -> fabVolumeList.hide()
-//            }
-//        }
+
+        // Hide some menu from navigation menu
+        setInternetRequiredMenusVisible(false)
 
         /* Listeners */
         binding.mainNavigationView.setNavigationItemSelectedListener { item ->
@@ -242,17 +221,6 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
     // Check connection
     private fun checkConnection() {
-//        connectivityObserver = NetworkConnectivityObserver(applicationContext)
-//        connectivityObserver.observe().onEach {
-//            connectionStatus = it
-//            Log.d(TAG, "Status is $it")
-//            when (it) {
-//                ConnectivityObserver.Status.Available -> viewModel.networkAvailable()
-//                else -> viewModel.networkUnavailable()
-//            }
-////            handleConnectionStatus(it)
-//        }.launchIn(lifecycleScope)
-
         networkConnectivityUseCase(this, onAvailableNetwork = {
             viewModel.networkAvailable()
             Log.d(TAG, viewModel.connectionStatus.value.toString())
@@ -264,56 +232,28 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
     // Show alert when no connection
     private fun noConnectionAlert() {
-//        if (connectionStatus != ConnectivityObserver.Status.Available) {
-
-        /* Listeners */
-//        fabVolumeList.setOnClickListener {
-//            val fragmentId = navController.currentDestination?.id
-//            when (fragmentId) {
-//                R.id.homeFragment -> navController.navigate(R.id.action_homeFragment_to_volumeListFragment)
-//                R.id.pageListFragment -> navController.navigate(R.id.action_pageListFragment_to_volumeListFragment)
-//            }
-//        }
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            when (destination.id) {
-//                R.id.homeFragment -> fabVolumeList.show()
-//                else -> fabVolumeList.hide()
-            }
-        }
-
+        Toast.makeText(
+            this,
+            getString(R.string.network_status_x, connectionStatus),
+            Toast.LENGTH_SHORT
+        ).show()
         alertBuilder.show()
-//        }
     }
-
-//    private fun checkConnectionAndShowAlertIfNeeded() {
-//        connectivityObserver = NetworkConnectivityObserver(applicationContext)
-//        connectivityObserver.observe().onEach {
-//            connectionStatus = it
-//            Log.d(TAG, "Status is $it")
-//            Toast.makeText(applicationContext, "Internet status $it", Toast.LENGTH_SHORT).show()
-//            handleConnectionStatus(it)
-//        }.launchIn(lifecycleScope)
-//    }
 
     // Handle connection base on network status
     private fun handleConnectionStatus(status: ConnectivityObserver.Status) {
         when (status) {
             ConnectivityObserver.Status.Available -> {
+
+                // If connection is available
                 runAuthentication()
                 alertBuilder.dismiss()
-                Toast.makeText(
-                    this,
-                    getString(R.string.network_status_x, status),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
 
+                // Show internet required menus
+                setInternetRequiredMenusVisible(true)
+
+            }
             else -> {
-                Toast.makeText(
-                    this,
-                    getString(R.string.network_status_x, status),
-                    Toast.LENGTH_SHORT
-                ).show()
                 noConnectionAlert()
             }
         }
@@ -545,6 +485,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             // Show a message if no email app is available
             Toast.makeText(this, "No email app found", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // Set the visibility of internet required menu items
+    private fun setInternetRequiredMenusVisible(isVisible: Boolean) {
+        binding.mainNavigationView.menu.findItem(R.id.menu_volume_list).setVisible(isVisible)
+        binding.mainNavigationView.menu.findItem(R.id.menu_chapter_list).setVisible(isVisible)
     }
 
     private fun testFirestore() {

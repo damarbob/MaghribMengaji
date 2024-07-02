@@ -104,6 +104,31 @@ class HomeFragment : Fragment() {
         materialAlertDialog = MaterialAlertDialogBuilder(requireContext()).create()
     }
 
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        Log.d(TAG, "onViewCreated")
+//
+//        // Restore scroll position
+//        savedInstanceState?.let {
+//            val scrollY = it.getInt("scroll_position", 0)
+//            binding.homeScroll.post {
+//                binding.homeScroll.scrollTo(0, scrollY)
+//
+//                // Collapse app bar if scroll
+//                if (binding.homeScroll.scrollY > 0) {
+//                    binding.homeAppBarLayout.setExpanded(false)
+//                }
+//            }
+//            Log.d(TAG, "Scroll Y: $scrollY")
+//        }
+//    }
+//
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//
+//        outState.putInt("scroll_position", binding.homeScroll.scrollY)
+//    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -251,29 +276,31 @@ class HomeFragment : Fragment() {
                 ustadhName = it.fullName
             }
         }
+
+        // Observe connection status
         mainViewModel.connectionStatus.observe(viewLifecycleOwner) {
-            Log.d("HomeFragment connection", connectionStatus.toString())
+
+            Log.d(TAG, "Connection: ${connectionStatus.toString()}")
             Log.d(TAG, it.toString())
+
             connectionStatus = when (it) {
                 ConnectivityObserver.Status.Available -> ConnectivityObserver.Status.Available
                 else -> {
                     ConnectivityObserver.Status.Unavailable
                 }
             }
+
             if (it != ConnectivityObserver.Status.Available) {
+                // If not available
                 binding.homeProgressIndicatorLoading.visibility = View.GONE
                 binding.homeLayoutNoNetwork.visibility = View.VISIBLE
-            } else setHomeUI()
+            } else {
+                // If available
+                setHomeUI()
+
+
+            }
         }
-//        viewModel.progressVisibility.observe(viewLifecycleOwner) {
-//            binding.homeProgressIndicatorLoading.visibility = if (it) View.VISIBLE else View.GONE
-//            binding.homeFabVolumeList.visibility = if (it) View.GONE else View.VISIBLE
-//            if (volumeInProgress != null) {
-//                if (volumeInProgress!!.isNotEmpty()) {
-//                    binding.homeLayoutInProgress.visibility = if (it) View.GONE else View.VISIBLE
-//                } else binding.homeLayoutNoProgress.visibility = if (it) View.VISIBLE else View.GONE
-//            }
-//        }
 
         /* Listeners */
         binding.homeToolbar.setNavigationOnClickListener {
@@ -307,6 +334,9 @@ class HomeFragment : Fragment() {
                 )
 
             }
+        }
+        binding.homeCardHeaderName.setOnClickListener {
+            binding.homeAppBarLayout.setExpanded(false)
         }
         binding.homeTextUstadhName.setOnClickListener {
             if (ustadhName != null) { // Check if user has Ustadh
@@ -355,16 +385,6 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-//    private fun checkConnection() {
-//        networkConnectivityUseCase(viewLifecycleOwner, onAvailableNetwork = {
-////            setHomeUI(true)
-//            connectionStatus = ConnectivityObserver.Status.Available
-//        }, onUnavailableNetwork = {
-//            connectionStatus = ConnectivityObserver.Status.Unavailable
-////            setHomeUI(false)
-//        })
-//    }
-
     private fun setHomeUI() {
         val materialFade = MaterialFade().apply {
             duration = 150L
@@ -373,13 +393,13 @@ class HomeFragment : Fragment() {
         Log.d(TAG, "$volumeInProgress")
 
         binding.homeProgressIndicatorLoading.visibility = View.VISIBLE
-        binding.homeLayoutJuzList.visibility = View.VISIBLE
 
         if (volumeInProgress != null) {
 
             binding.homeProgressIndicatorLoading.visibility = View.GONE
             binding.homeLayoutNoNetwork.visibility = View.GONE
             binding.homeFabVolumeList.visibility = View.VISIBLE
+            binding.homeLayoutJuzList.visibility = View.VISIBLE
 
             Log.d(TAG, "volume in progress is not null")
 
@@ -397,10 +417,6 @@ class HomeFragment : Fragment() {
             Log.d(TAG, "volume in progress is null")
         }
 
-//        if (connectionStatus != ConnectivityObserver.Status.Available) {
-//            binding.homeProgressIndicatorLoading.visibility = View.GONE
-//            binding.homeLayoutNoNetwork.visibility = View.VISIBLE
-//        }
     }
 
     private fun setupBanner() {

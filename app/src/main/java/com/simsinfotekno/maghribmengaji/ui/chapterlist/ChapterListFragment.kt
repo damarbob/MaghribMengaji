@@ -40,6 +40,8 @@ class ChapterListFragment : Fragment() {
     ): View {
         binding = FragmentChapterListBinding.inflate(layoutInflater, container, false)
 
+        /* Views */
+
         // Chapter adapter
         chapterAdapter = ChapterAdapter(
             MainApplication.quranChapterRepository.getRecords(),
@@ -51,6 +53,11 @@ class ChapterListFragment : Fragment() {
         chapterRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         chapterRecyclerView.adapter = chapterAdapter
+
+        /* Listeners */
+        binding.chapterListToolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
 
         return binding.root
     }

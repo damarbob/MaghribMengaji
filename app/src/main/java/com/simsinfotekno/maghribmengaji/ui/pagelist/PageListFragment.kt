@@ -115,7 +115,7 @@ class PageListFragment : Fragment() {
 //            "0" //TODO: add page completion logic or function
 //        binding.pageListTextViewAverageScore.text = "20" //TODO: add average score logic or function
 
-        // Listeners
+        /* Listeners */
         binding.pageListToolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
@@ -169,7 +169,7 @@ class PageListFragment : Fragment() {
 
             }
             .addOnFailureListener { exception ->
-                Log.d(VolumeListFragment.TAG, "get failed with ", exception)
+                Log.d(VolumeListFragment.TAG, "Get failed: ", exception)
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.failed_to_fetch_data),
