@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="maghrib_mengaji_primary">#01796F</color>
+    <color name="maghrib_mengaji_primary_variant">#29AB87</color>
     <!-- Material Color Theme Dark -->
     <color name="md_theme_primary">#82D5CA</color>
     <color name="md_theme_onPrimary">#003732</color>

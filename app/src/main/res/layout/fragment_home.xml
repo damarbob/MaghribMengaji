@@ -216,23 +216,20 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="16dp"
-                                android:text="@string/volume_x"
-                                android:textColor="?attr/colorSurfaceContainerHighest" />
+                                android:text="@string/volume_x" />
 
                             <TextView
                                 style="@style/Widget.App.Small"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/with_ustadh"
-                                android:textColor="?attr/colorSurfaceContainerHighest" />
+                                android:text="@string/with_ustadh" />
 
                             <TextView
                                 android:id="@+id/homeTextUstadhName"
                                 style="@style/Widget.App.H5.Bold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/with_ustadh"
-                                android:textColor="?attr/colorSurfaceContainerHighest" />
+                                android:text="@string/with_ustadh" />
 
                         </LinearLayout>
 
@@ -381,34 +378,6 @@
 
             </LinearLayout>
 
-            <!-- Juz bookmarks -->
-            <LinearLayout
-                android:id="@+id/homeLayoutJuzList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                android:visibility="visible">
-
-                <TextView
-                    style="@style/Widget.App.P.Bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="4dp"
-                    android:text="@string/juz_list" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/homeRecyclerViewJuzBookmarks"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingHorizontal="8dp"
-                    android:paddingBottom="16dp" />
-
-            </LinearLayout>
-
             <!-- No progress -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/homeLayoutNoProgress"
@@ -445,6 +414,34 @@
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
+            <!-- Juz bookmarks -->
+            <LinearLayout
+                android:id="@+id/homeLayoutJuzList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <TextView
+                    style="@style/Widget.App.P.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/juz_list" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/homeRecyclerViewJuzBookmarks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="8dp"
+                    android:paddingBottom="16dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

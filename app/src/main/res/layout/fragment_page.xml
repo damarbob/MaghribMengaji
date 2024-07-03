@@ -164,8 +164,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/md_theme_surfaceContainerHigh"
-                android:maxHeight="720dp"
-                android:minHeight="360dp">
+                android:maxHeight="720dp">
 
                 <ImageView
                     android:id="@+id/pageImageViewPage"

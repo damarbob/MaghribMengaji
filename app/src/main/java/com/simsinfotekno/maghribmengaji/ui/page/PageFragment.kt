@@ -321,9 +321,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //                    pageImage.visibility = View.VISIBLE
                     pageImage.setBackgroundColor(resources.getColor(R.color.md_theme_background))
 //                    pageImage.setPadding(0, 16, 0, 0)
-                    Log.d(TAG, imageUrl)
                     pageImageUrl = imageUrl
-                    Log.d(TAG, pageImageUrl.toString())
                     loadImageIntoImageView(imageUrl, pageImage, isBottomSheet = false)
                 }
             },
@@ -334,7 +332,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                         "${getString(R.string.failed_to_load_image)} ${exception.message}",
                         Toast.LENGTH_SHORT
                     ).show()
-                    pageImage.visibility = View.VISIBLE
+                    loadImageIntoImageView(imageView =  pageImage, isBottomSheet = false)
                     pageImage.scaleType = ImageView.ScaleType.CENTER
                     binding.pageProgressBar.visibility = View.GONE // Hide progress bar
                 }
@@ -460,7 +458,6 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
         TransitionManager.beginDelayedTransition(binding.root, materialFade)
 //        loadImageIntoImageView(pageImageUrl, binding.pageImageViewPage, isBottomSheet = false)
-        Log.d("TAasdfasdfG", pageImageUrl.toString())
         binding.pageButtonCheckResult.visibility = View.VISIBLE
         binding.pageButtonCheckPage.visibility = View.GONE
         binding.pageImageViewPage.visibility = View.VISIBLE
@@ -479,7 +476,6 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         }
         TransitionManager.beginDelayedTransition(binding.root, materialFade)
 //        loadImageIntoImageView(pageImageUrl, binding.pageImageViewPage, isBottomSheet = false)
-        Log.d("TAasdfasdfG", pageImageUrl.toString())
         binding.pageButtonSubmit.visibility = View.VISIBLE
         binding.pageButtonCheckResult.visibility = View.GONE
         binding.pageButtonCheckPage.visibility = View.GONE
@@ -555,7 +551,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
     // Load image to imageview
     private fun loadImageIntoImageView(
-        imageUrl: String?,
+        imageUrl: String? = null,
         imageView: ImageView,
         isBottomSheet: Boolean = false // Check position of imageView
     ) {
@@ -564,16 +560,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //            if (isBottomSheet) binding.pageBottomSheetCheckResult.checkResultLinearProgress else binding.pageProgressBar
         binding.pageProgressBar.visibility = View.VISIBLE
 //        progress.visibility = View.VISIBLE
-        if (isPageViewMode) {
-            binding.pageImageViewPage.visibility = View.VISIBLE
-            binding.pageCheckResultImageViewStudentPageImage.visibility = View.GONE
-        } else {
-            binding.pageImageViewPage.visibility = View.GONE
-            binding.pageCheckResultImageViewStudentPageImage.visibility = View.VISIBLE
-        }
 
-
-        Glide.with(imageView.context)
+        Glide.with(requireContext())
             .load(imageUrl)
             .listener(object : RequestListener<Drawable> {
 
@@ -586,6 +574,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 ): Boolean {
                     if (isAdded) {
                         binding.pageProgressBar.visibility = View.GONE
+                        imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 //                        progress.visibility = View.GONE
 //                        imageView.visibility = View.VISIBLE
                     }
@@ -604,17 +593,18 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //                        imageView.visibility = View.VISIBLE
                         Toast.makeText(
                             requireContext(),
-                            getString(R.string.failed_to_load_image),
+                            getString(R.string.failed_to_load_image) + e,
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        Log.d(TAG, e.toString())
 
                     }
                     return false
                 }
             })
-            .error(R.drawable.img_quran)
-            .fallback(R.drawable.img_quran)
+            .error(R.mipmap.vector_maghrib_mengaji)
+            .fallback(R.mipmap.vector_maghrib_mengaji)
             .into(imageView)
     }
 
