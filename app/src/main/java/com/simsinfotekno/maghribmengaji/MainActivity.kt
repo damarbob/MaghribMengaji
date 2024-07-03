@@ -470,11 +470,13 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private fun openEmailClient() {
         // Define the email address
         val email = getString(R.string.app_email_address)
-        val mailto = "mailto:$email"
+        val mailto = "mailto:"
 
         // Create an intent
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse(mailto)
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+            putExtra(Intent.EXTRA_SUBJECT, "Feedback Maghrib Mengaji App")
         }
 
         // Check if there's an email app available
