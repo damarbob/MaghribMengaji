@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient xmlns:android="http://schemas.android.com/apk/res/android"
-        android:startColor="@color/maghrib_mengaji_primary"
-        android:endColor="@color/maghrib_mengaji_primary"
+        android:startColor="@color/md_theme_primary"
+        android:endColor="@color/md_theme_primary"
         android:angle="270"
         android:type="linear"
         android:useLevel="false"

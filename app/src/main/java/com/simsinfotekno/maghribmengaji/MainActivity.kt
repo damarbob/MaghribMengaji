@@ -9,7 +9,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -70,7 +69,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         super.onCreate(savedInstanceState)
 
         // Set the status bar color
-        window.statusBarColor = ContextCompat.getColor(this, R.color.maghrib_mengaji_primary)
+//        window.statusBarColor = ContextCompat.getColor(this, R.color.md_theme_primary)
 //        setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
         // Register EventBus
@@ -388,7 +387,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
                             // Navigate to ustadh selection if ustadhId is null
                             if (it == MaghribMengajiUser.ROLE_STUDENT && student.ustadhId == null) {
-                                navController.navigate(R.id.action_global_ustadhListFragment)
+//                                navController.navigate(R.id.action_global_ustadhListFragment)
                             }
                         }
                     }
@@ -555,16 +554,16 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
     private fun adjustNavGraph(role: String) {
 
-        if (role == MaghribMengajiUser.ROLE_TEACHER) {
-
-            val navGraph = navController.navInflater.inflate(R.navigation.nav_main)
-            navGraph.setStartDestination(R.id.ustadhHomeFragment)
-            navController.graph = navGraph
-
-            // Navigate to the ustadhHomeFragment
-            navController.navigate(R.id.ustadhHomeFragment)
-
-        }
+//        if (role == MaghribMengajiUser.ROLE_TEACHER) {
+//
+//            val navGraph = navController.navInflater.inflate(R.navigation.nav_main)
+//            navGraph.setStartDestination(R.id.ustadhHomeFragment)
+//            navController.graph = navGraph
+//
+//            // Navigate to the ustadhHomeFragment
+//            navController.navigate(R.id.ustadhHomeFragment)
+//
+//        }
 
     }
 

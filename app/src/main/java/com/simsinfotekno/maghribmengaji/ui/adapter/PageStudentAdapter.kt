@@ -10,9 +10,11 @@ import androidx.cardview.widget.CardView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.simsinfotekno.maghribmengaji.MainApplication
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
+import com.simsinfotekno.maghribmengaji.usecase.GetChapterNameFromStringResourceUseCase
 import com.simsinfotekno.maghribmengaji.usecase.QuranPageStudentStatusCheck
 
 class PageStudentAdapter(
@@ -26,6 +28,7 @@ class PageStudentAdapter(
 
     /* Use cases */
     private val quranPageStudentStatusCheck = QuranPageStudentStatusCheck()
+    private val getChapterNameFromStringResourceUseCase = GetChapterNameFromStringResourceUseCase()
 
     /**
      * Provide a reference to the type of views that you are using
@@ -33,12 +36,14 @@ class PageStudentAdapter(
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView
+        val textViewChapter: TextView
         val cardViewPage: CardView
         val imageStatus: ImageView
 
         init {
             // Define click listener for the ViewHolder's View
             textView = view.findViewById(R.id.itemPageTextTitle)
+            textViewChapter = view.findViewById(R.id.itemPageTextTitleChapter)
             cardViewPage = view.findViewById(R.id.itemPageCardView)
             imageStatus = view.findViewById(R.id.itemPageImageStatus)
         }
@@ -57,12 +62,23 @@ class PageStudentAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         val page = dataSet[position]
+        val chapters =
+            page.pageId?.let {
+                MainApplication.quranChapterRepository.getRecordByPageId(it).map {
+                    getChapterNameFromStringResourceUseCase(it.id, viewHolder.textView.context)
+                }
+            }
+        val chapterString = chapters?.joinToString(", ")
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         viewHolder.textView.text = String.format(
             viewHolder.textView.context.getString(R.string.page_x),
             page.pageId
+        )
+        viewHolder.textViewChapter.text = String.format(
+            viewHolder.textView.context.getString(R.string.chapter_x),
+            chapterString
         )
 
         // Set the icon based on the completion status

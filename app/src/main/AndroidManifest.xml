@@ -30,7 +30,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_maghrib_mengaji_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaghribMengaji"
+        android:theme="@style/AppTheme"
         tools:targetApi="31">
 
         <provider

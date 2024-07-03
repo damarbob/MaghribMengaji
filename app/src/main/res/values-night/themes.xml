@@ -1,23 +1,11 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.MaghribMengaji" parent="Theme.Material3.Dark.NoActionBar">
-        <!-- Primary brand color. -->
-<!--        <item name="colorPrimary">@color/purple_200</item>-->
-        <item name="colorPrimaryVariant">@color/maghrib_mengaji_primary_variant</item>
-<!--        <item name="colorOnPrimary">@color/black</item>-->
-        <!-- Secondary brand color. -->
-<!--        <item name="colorSecondary">@color/teal_200</item>-->
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-<!--        <item name="colorOnSecondary">@color/black</item>-->
-        <!-- Status bar color. -->
-<!--        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
-<!--        <item name="android:statusBarColor">@color/md_theme_surface</item>-->
-        <item name="android:statusBarColor">@color/md_theme_primaryContainer</item>
-        <!-- Customize your theme here. -->
+<resources>
 
+    <style name="AppThemeOverlay.Dark" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Customization -->
         <item name="android:windowActivityTransitions">true</item>
-
-        <!-- Material Theme -->
+        <!-- End of customization -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
@@ -64,13 +52,5 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
-    </style>
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MaghribMengaji" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <item name="fontFamily">@font/plus_jakarta_sans_variable</item>
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-
-        <item name="android:windowActivityTransitions">true</item>
     </style>
 </resources>

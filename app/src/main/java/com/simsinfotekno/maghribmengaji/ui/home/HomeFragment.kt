@@ -7,9 +7,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,11 +36,14 @@ import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
 import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.adapter.BannerAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.ChapterAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageBookmarkStudentAdapter
+import com.simsinfotekno.maghribmengaji.ui.adapter.StudentAdapter
 import com.simsinfotekno.maghribmengaji.ui.adapter.VolumeAdapter
+import com.simsinfotekno.maghribmengaji.ui.ustadhhome.UstadhHomeViewModel
 import com.simsinfotekno.maghribmengaji.usecase.GetColorFromAttrUseCase
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeByStatus
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
@@ -64,9 +69,11 @@ class HomeFragment : Fragment() {
     /* View models */
     private val viewModel: HomeViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
+    private val ustadhHomeViewModel: UstadhHomeViewModel by activityViewModels()
 
     // Adapters
     private lateinit var volumeAdapter: VolumeAdapter
+    private lateinit var studentAdapter: StudentAdapter
     private lateinit var pageBookmarkStudentAdapter: PageBookmarkStudentAdapter
     private lateinit var chapterAdapter: ChapterAdapter
 
@@ -83,6 +90,7 @@ class HomeFragment : Fragment() {
     private lateinit var autoScrollRunnable: Runnable
 
     // Variables
+    private var user: MaghribMengajiUser? = null
     private var ustadhPhoneNumber: String? = null
     private var ustadhName: String? = null
     private var volumeInProgress: List<QuranVolume>? = null
@@ -142,15 +150,21 @@ class HomeFragment : Fragment() {
 //        checkConnection()
 
         /* Views */
-
+        binding.homeStatistics.visibility = if (user != null && user?.role == MaghribMengajiUser.ROLE_STUDENT) View.VISIBLE else View.GONE
+        binding.homeUstadhStatistics.visibility = if (user != null && user?.role == MaghribMengajiUser.ROLE_TEACHER) View.VISIBLE else View.GONE
         binding.homeLayoutInProgress.visibility = View.GONE
+        binding.homeLayoutUstadhStudentList.visibility = View.GONE
         binding.homeLayoutNoProgress.visibility = View.GONE
         binding.homeFabVolumeList.visibility = View.GONE
         binding.homeLayoutNoNetwork.visibility = View.GONE
         binding.homeLayoutJuzList.visibility = View.GONE
 
         binding.homeTextTitle.text =
-            "${Firebase.auth.currentUser?.displayName}" // ${getString(R.string.salam)},
+            "${Firebase.auth.currentUser?.displayName}"
+                ?: getString(R.string.app_name)
+
+        binding.homeTextUstadhNameSelf.text =
+            "${Firebase.auth.currentUser?.displayName}"
                 ?: getString(R.string.app_name)
 
         // Volume adapter
@@ -185,13 +199,13 @@ class HomeFragment : Fragment() {
             GridLayoutManager(context, 3)
         recyclerViewBookmark.adapter = pageBookmarkStudentAdapter
 
-        // Chapter list
-//        val chapterRecyclerView: RecyclerView = binding.homeRecyclerViewChapters
-//        chapterRecyclerView.layoutManager =
-//            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-//        chapterRecyclerView.adapter = chapterAdapter
+        // Student list
+        studentAdapter = StudentAdapter(listOf())
 
-//        binding.homeTextLastWritten.text = String.format(requireContext().getString(R.string.quran_page), MainActivity.student.lastPageId) // Last written
+        val recyclerViewStudent = binding.homeRecyclerViewStudent
+        recyclerViewStudent.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerViewStudent.adapter = studentAdapter
 
         // Progress indicator
         val allPagesCount = 604
@@ -264,7 +278,7 @@ class HomeFragment : Fragment() {
             volumeAdapter.dataSet = data
             volumeAdapter.notifyDataSetChanged()
             Log.d(TAG, "Added ${data.size} records to volume adapter")
-//            binding.homeRecyclerViewVolume.visibility = View.VISIBLE
+
             volumeInProgress = data
         }
         studentRepository.ustadhLiveData.observe(viewLifecycleOwner) {
@@ -276,6 +290,40 @@ class HomeFragment : Fragment() {
                 ustadhName = it.fullName
             }
         }
+
+        // Student list
+        studentAdapter.selectedStudent.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+
+            Log.d(TAG, "studentAdapter.selectedStudent.observe: Student: ${it.id}")
+
+            // Navigate to student volume list and pass student id
+            val bundle = Bundle()
+            bundle.putString("studentId", it.id)
+            findNavController().navigate(R.id.action_homeFragment_to_ustadhVolumeListStudentFragment, bundle)
+        }
+        ustadhHomeViewModel.getStudentResult.observe(viewLifecycleOwner, Observer { result ->
+            result?.onSuccess {
+
+                studentAdapter.dataSet = it
+                studentAdapter.notifyDataSetChanged()
+
+                // Update student stat
+                val studentCount = it.size
+
+                if (studentCount == 0) {
+                    binding.homeTextUstadhStudentCount.text = getString(R.string.no_student_yet) // Set number to the student count stat
+                }
+                else {
+                    binding.homeTextUstadhStudentCount.text = String.format(getString(R.string.x_students), it.size) // Set number to the student count stat
+                    binding.homeLayoutUstadhStudentList.visibility = View.VISIBLE // Show the student list layout
+                }
+
+            }?.onFailure { exception ->
+                // Show error message
+                Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+            }
+        })
 
         // Observe connection status
         mainViewModel.connectionStatus.observe(viewLifecycleOwner) {
@@ -297,8 +345,6 @@ class HomeFragment : Fragment() {
             } else {
                 // If available
                 setHomeUI()
-
-
             }
         }
 
@@ -401,20 +447,25 @@ class HomeFragment : Fragment() {
             binding.homeFabVolumeList.visibility = View.VISIBLE
             binding.homeLayoutJuzList.visibility = View.VISIBLE
 
-            Log.d(TAG, "volume in progress is not null")
+            Log.d(TAG, "Volume in progress is not null")
 
+            // Check if user is ustadh, if yes, return
+            if (studentRepository.getStudent()?.role == MaghribMengajiUser.ROLE_TEACHER)
+                return
+
+            // The following code only applies if user role is student
             if (volumeInProgress!!.isNotEmpty()) {
-                Log.d(TAG, "volume in progress is not empty")
+                Log.d(TAG, "Volume in progress is not empty")
                 binding.homeLayoutInProgress.visibility = View.VISIBLE
                 binding.homeLayoutNoProgress.visibility = View.GONE
             } else {
-                Log.d(TAG, "volume in progress is empty")
+                Log.d(TAG, "Volume in progress is empty")
                 binding.homeLayoutInProgress.visibility = View.GONE
                 binding.homeLayoutNoProgress.visibility = View.VISIBLE
             }
 
         } else {
-            Log.d(TAG, "volume in progress is null")
+            Log.d(TAG, "Volume in progress is null")
         }
 
     }
@@ -494,9 +545,31 @@ class HomeFragment : Fragment() {
         EventBus.getDefault().unregister(this)
     }
 
+    private fun getMyStudents() {
+        if (studentAdapter.dataSet.size == 0) {
+            Firebase.auth.currentUser?.let { ustadhHomeViewModel.getStudentFromDb(it.uid) }
+        }
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun _105606032024(event: OnUserDataLoaded) {
-        if (event.userDataEvent == UserDataEvent.PAGE) {
+        if (event.userDataEvent == UserDataEvent.PROFILE) {
+            user = event.maghribMengajiUser
+
+            // Adjust UI
+            val materialFade = MaterialFade().apply {
+                duration = 150L
+            }
+            TransitionManager.beginDelayedTransition(binding.root, materialFade)
+
+            if (user?.role == MaghribMengajiUser.ROLE_TEACHER) {
+                binding.homeUstadhStatistics.visibility = View.VISIBLE
+
+                getMyStudents()
+                return
+            }
+
+            binding.homeStatistics.visibility = View.VISIBLE
 
         }
     }

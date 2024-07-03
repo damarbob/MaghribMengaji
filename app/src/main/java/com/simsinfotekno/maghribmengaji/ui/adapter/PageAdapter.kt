@@ -26,7 +26,7 @@ class PageAdapter(
 ) :
     RecyclerView.Adapter<PageAdapter.ViewHolder>() {
 
-    /* Use case */
+    /* Use cases */
     private val getChapterNameFromStringResourceUseCase = GetChapterNameFromStringResourceUseCase()
 
     companion object {
@@ -68,7 +68,6 @@ class PageAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         val page = dataSet[position]
-//        val chapter = dataSet[position].chapterIds
         val chapters =
             MainApplication.quranChapterRepository.getRecordByPageId(page.id).map {
                 getChapterNameFromStringResourceUseCase(it.id, navController.context)

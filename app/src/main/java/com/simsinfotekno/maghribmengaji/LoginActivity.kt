@@ -57,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
 
         // Set the status bar color
         window.statusBarColor =
-            ContextCompat.getColor(this, R.color.maghrib_mengaji_primary_variant)
+            ContextCompat.getColor(this, R.color.md_theme_primaryContainer)
         setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
         // Bottom sheet attributes

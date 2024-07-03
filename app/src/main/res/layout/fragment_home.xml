@@ -141,14 +141,15 @@
 
             <!-- Statistics -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/homeStatistics"
                 style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="0dp"
-                android:layout_marginTop="0dp"
-                android:theme="@style/Theme.MaghribMengaji.AppBarOverlay"
-                app:cardCornerRadius="0dp"
-                app:cardBackgroundColor="?attr/colorPrimaryVariant">
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:theme="@style/AppThemeOverlay.Dark"
+                app:cardBackgroundColor="?attr/colorPrimaryVariant"
+                app:cardCornerRadius="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -279,36 +280,95 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Ustadh -->
+            <!-- Ustadh statistics -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/homeLayoutUstadh"
+                android:id="@+id/homeUstadhStatistics"
                 style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
-                android:visibility="gone">
+                android:theme="@style/AppThemeOverlay.Dark"
+                app:cardBackgroundColor="?attr/colorPrimaryVariant"
+                app:cardCornerRadius="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:visibility="visible">
+                    android:clipToPadding="false"
+                    android:orientation="vertical">
 
-                    <TextView
-                        style="@style/Widget.App.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/with_ustadh" />
+                    <!-- Statistics -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/homeTextUstadhNameX"
-                        style="@style/Widget.App.H5.Bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/with_ustadh"
-                        android:textColor="?attr/colorPrimary" />
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginBottom="-0dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/imageView2"
+                                android:layout_width="192dp"
+                                android:layout_height="192dp"
+                                android:rotation="0"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/img_student_phone"
+                                android:translationX="0dp"
+                                android:translationY="-16dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:id="@+id/linearLayout2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="16dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="12dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <TextView
+                                style="@style/Widget.App.Small"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/ustadh_name" />
+
+                            <TextView
+                                android:id="@+id/homeTextUstadhNameSelf"
+                                style="@style/Widget.App.H5.Bold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:text="@string/app_name" />
+
+                            <TextView
+                                style="@style/Widget.App.Small"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/together_with" />
+
+                            <TextView
+                                android:id="@+id/homeTextUstadhStudentCount"
+                                style="@style/Widget.App.H5.Bold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/x_students" />
+
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </LinearLayout>
 
@@ -329,8 +389,7 @@
                 style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp">
+                android:layout_marginHorizontal="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -354,29 +413,72 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- In progress volume list -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/homeLayoutInProgress"
+                style="@style/Widget.Material3.CardView.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:visibility="gone">
 
-                <TextView
-                    style="@style/Widget.App.P.Bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="4dp"
-                    android:text="@string/in_progress" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/homeRecyclerViewVolume"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingBottom="8dp" />
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <TextView
+                        style="@style/Widget.App.H5.Bold.Primary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="4dp"
+                        android:text="@string/in_progress" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/homeRecyclerViewVolume"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingBottom="16dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Ustadh's student list -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/homeLayoutUstadhStudentList"
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/Widget.App.H5.Bold.Primary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/student_list" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/homeRecyclerViewStudent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingBottom="16dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- No progress -->
             <com.google.android.material.card.MaterialCardView
@@ -416,32 +518,41 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Juz bookmarks -->
-            <LinearLayout
-                android:id="@+id/homeLayoutJuzList"
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Outlined"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                android:visibility="visible">
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp">
 
-                <TextView
-                    style="@style/Widget.App.P.Bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="4dp"
-                    android:text="@string/juz_list" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/homeRecyclerViewJuzBookmarks"
+                <LinearLayout
+                    android:id="@+id/homeLayoutJuzList"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingHorizontal="8dp"
-                    android:paddingBottom="16dp" />
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="visible">
 
-            </LinearLayout>
+                    <TextView
+                        style="@style/Widget.App.H5.Bold.Primary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="4dp"
+                        android:text="@string/juz_list" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/homeRecyclerViewJuzBookmarks"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingHorizontal="8dp"
+                        android:paddingBottom="16dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 

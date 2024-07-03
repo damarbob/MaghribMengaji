@@ -26,7 +26,12 @@
         <item name="android:visible">false</item>
     </style>
 
-    <style name="Widget.App.H1" parent="Widget.AppCompat.TextView">
+    <!-- Heading style -->
+    <style name="Widget.App.Heading" parent="Widget.AppCompat.TextView">
+        <item name="fontFamily">@font/abel_regular</item>
+    </style>
+
+    <style name="Widget.App.H1" parent="Widget.App.Heading">
         <item name="android:textSize">@dimen/Text.H1</item>
     </style>
     <style  name="Widget.App.H1.Bold" parent="Widget.App.H1">
@@ -36,27 +41,31 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="Widget.App.H2" parent="Widget.AppCompat.TextView">
+    <style name="Widget.App.H2" parent="Widget.App.Heading">
         <item name="android:textSize">@dimen/Text.H2</item>
     </style>
-    <style name="Widget.App.H3" parent="Widget.AppCompat.TextView">
+    <style name="Widget.App.H3" parent="Widget.App.Heading">
         <item name="android:textSize">@dimen/Text.H3</item>
     </style>
 
-    <style name="Widget.App.H4" parent="Widget.AppCompat.TextView">
+    <style name="Widget.App.H4" parent="Widget.App.Heading">
         <item name="android:textSize">@dimen/Text.H4</item>
     </style>
     <style  name="Widget.App.H4.Bold" parent="Widget.App.H4">
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Widget.App.H5" parent="Widget.AppCompat.TextView">
+    <style name="Widget.App.H5" parent="Widget.App.Heading">
         <item name="android:textSize">@dimen/Text.H5</item>
     </style>
     <style  name="Widget.App.H5.Bold" parent="Widget.App.H5">
         <item name="android:textStyle">bold</item>
     </style>
+    <style  name="Widget.App.H5.Bold.Primary" parent="Widget.App.H5.Bold">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
 
+    <!-- Normal text style -->
     <style name="Widget.App.P" parent="Widget.AppCompat.TextView">
         <item name="android:textSize">@dimen/Text.P</item>
     </style>
