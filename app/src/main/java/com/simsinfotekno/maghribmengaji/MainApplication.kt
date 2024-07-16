@@ -219,21 +219,26 @@ class MainApplication : Application() {
             1,
             2,
             50,
+
             77,
             106,
+
             128,
             151,
             177,
+
             187,
             208,
             221,
             235,
+
             249,
             255,
             262,
             267,
             282,
             293,
+
             305,
             312,
             322,
@@ -241,6 +246,7 @@ class MainApplication : Application() {
             342,
             350,
             359,
+
             367,
             377,
             385,
@@ -249,6 +255,7 @@ class MainApplication : Application() {
             411,
             415,
             418,
+
             428,
             434,
             440,
@@ -257,6 +264,7 @@ class MainApplication : Application() {
             458,
             467,
             477,
+
             483,
             489,
             496,
@@ -271,13 +279,11 @@ class MainApplication : Application() {
             526,
             528,
             531,
-            533,
-            536,
-            538,
-            540,
+            534,
+            537,
+
             542,
             545,
-            547,
             549,
             551,
             553,
@@ -293,7 +299,9 @@ class MainApplication : Application() {
             572,
             574,
             575,
-
+            577,
+            578,
+            580,
             582,
             583,
             585,
@@ -341,7 +349,36 @@ class MainApplication : Application() {
         // Start from top
         // List of chapters that starts from the very top of the page
         // Juz 30: 78, 80, 82, 86, 103, 106, 109, 112
-        private val startFromTopChapterIds = mutableListOf(78, 80, 82, 86, 103, 106, 109, 112)
+        private val startFromTopChapterIds = mutableListOf(
+            // Volume 1
+            1, 2, 3,
+
+            // Volume 2
+            4,
+
+            // Volume 3
+            6, 7, 8,
+
+            // Volume 4
+            9, 10,
+
+            // Volume 5
+            13, 15, 17,
+
+            // Volume 6
+            19, 21, 22, 23, 24,
+
+            // Volume 7
+            26, 27, 31, 32, 33,
+
+            // Volume 8
+            34, 37, 38, 41,
+
+            // Volume 9
+            42, 44, 45, 47, 48, 50, 53,
+
+            // Volume 10
+            58, 60, 62, 64, 65, 66, 67, 72, 73, 78, 80, 82, 86, 103, 106, 109, 112)
 
         //////////////////////////
 
