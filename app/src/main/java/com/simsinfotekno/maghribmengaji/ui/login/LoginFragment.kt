@@ -61,9 +61,8 @@ class LoginFragment : Fragment() {
         binding.loginTextForgotPassword.setOnClickListener {
 
             val email = binding.loginInputEmailAddress.text.toString()
-            val password = binding.loginInputPassword.text.toString()
 
-            validateAndProceed(email, password) { validatedEmail ->
+            validateEmailAndProceed(email) { validatedEmail ->
                 // Show confirmation dialog
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(getString(R.string.auth_forgot_password))
@@ -117,6 +116,25 @@ class LoginFragment : Fragment() {
 
             password.isEmpty() -> {
                 showErrorDialog(getString(R.string.password_is_required))
+            }
+
+            else -> {
+                onSuccess(email)
+            }
+        }
+    }
+
+    fun validateEmailAndProceed(
+        email: String,
+        onSuccess: (String) -> Unit
+    ) {
+        when {
+            email.isEmpty() -> {
+                showErrorDialog(getString(R.string.email_is_required))
+            }
+
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                showErrorDialog(getString(R.string.invalid_email_format))
             }
 
             else -> {
