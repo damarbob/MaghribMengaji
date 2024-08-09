@@ -387,7 +387,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
                             // Navigate to ustadh selection if ustadhId is null
                             if (it == MaghribMengajiUser.ROLE_STUDENT && student.ustadhId == null) {
-//                                navController.navigate(R.id.action_global_ustadhListFragment)
+                                navController.navigate(R.id.action_global_ustadhListFragment)
                             }
                         }
                     }
