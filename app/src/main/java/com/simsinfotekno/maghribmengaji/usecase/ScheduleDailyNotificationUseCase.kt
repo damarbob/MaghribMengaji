@@ -20,7 +20,7 @@ class ScheduleDailyNotificationUseCase {
 
         // Title and message can be hardcoded or dynamically set
         val title = "Maghrib Mengaji"
-        val message = "Jangan lupa untuk mengaji agar menjadi SIGMA"
+        val message = "Jangan lupa untuk mengaji"
 
         intent.putExtra(titleExtra, title)
         intent.putExtra(messageExtra, message)
