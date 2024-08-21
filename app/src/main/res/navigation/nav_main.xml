@@ -203,5 +203,13 @@
         app:destination="@id/juzListFragment"
         app:popUpTo="@id/juzListFragment"
         app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.setting.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" />
+    <action
+        android:id="@+id/action_global_settingFragment"
+        app:destination="@id/settingFragment" />
 
 </navigation>

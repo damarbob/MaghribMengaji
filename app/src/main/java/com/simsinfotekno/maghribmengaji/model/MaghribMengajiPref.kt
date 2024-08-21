@@ -8,6 +8,7 @@ class MaghribMengajiPref {
     companion object {
 
         val USER_NAME_KEY = "UserNameKey"
+        val NOTIF_ENABLED_KEY = "NotificationsEnabled"
 
         fun readString(activity: Activity, key: String?): String? {
             return activity.getPreferences(Context.MODE_PRIVATE).getString(key, null)
@@ -21,6 +22,16 @@ class MaghribMengajiPref {
             val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
             val editor = sharedPref.edit()
             editor.putString(key, value)
+            editor.apply()
+        }
+        fun readBoolean(activity: Activity, key: String): Boolean {
+            return activity.getPreferences(Context.MODE_PRIVATE).getBoolean(key, false)
+        }
+
+        fun saveBoolean(activity: Activity, key: String?, value: Boolean) {
+            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            val editor = sharedPref.edit()
+            editor.putBoolean(key, value)
             editor.apply()
         }
 

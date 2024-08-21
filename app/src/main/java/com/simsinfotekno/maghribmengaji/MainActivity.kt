@@ -35,7 +35,7 @@ import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
-import org.greenrobot.eventbus.EventBus
+import com.simsinfotekno.maghribmengaji.usecase.ScheduleDailyNotificationUseCase
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private val retrieveUserProfile = RetrieveUserProfile()
     private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
     private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
+    private val scheduleDailyNotificationUseCase = ScheduleDailyNotificationUseCase()
 
     companion object {
         val TAG: String = MainActivity::class.java.simpleName
@@ -68,12 +69,15 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //set schedule notif
+        scheduleDailyNotificationUseCase(this)
+
         // Set the status bar color
 //        window.statusBarColor = ContextCompat.getColor(this, R.color.md_theme_primary)
 //        setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
         // Register EventBus
-        EventBus.getDefault().register(this)
+        org.greenrobot.eventbus.EventBus.getDefault().register(this)
 
 //        runAuthentication()
 
@@ -182,6 +186,10 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                         }
                         .show()
                 }
+                R.id.menu_setting -> {
+                    navController.navigate(R.id.action_global_settingFragment)
+
+                }
 
                 R.id.menu_sign_out -> {
 
@@ -277,7 +285,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         super.onDestroy()
 
         // Unregister EventBus
-        EventBus.getDefault().unregister(this)
+        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
 
     }
 
@@ -362,7 +370,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                         studentRepository.setStudent(student)
 
                         // Post a user data loaded event
-                        EventBus.getDefault().post(
+                        org.greenrobot.eventbus.EventBus.getDefault().post(
                             OnUserDataLoaded(
                                 student,
                                 UserDataEvent.PROFILE
@@ -416,7 +424,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             quranPageStudentRepository.setRecords(pageStudents, true)
 
             // Post a user data loaded event
-            EventBus.getDefault().post(
+            org.greenrobot.eventbus.EventBus.getDefault().post(
                 studentRepository.getStudent()?.let { student ->
                     OnUserDataLoaded(
                         student,
