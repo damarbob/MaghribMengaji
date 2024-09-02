@@ -48,6 +48,11 @@
     <item android:title="@string/other">
         <menu>
             <item
+                android:id="@+id/menu_setting"
+                android:icon="@drawable/rounded_apps_24"
+                android:title="setting"
+                android:visible="true"/>
+            <item
                 android:id="@+id/menu_sign_out"
                 android:icon="@drawable/logout_24px"
                 android:title="@string/sign_out" />

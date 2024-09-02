@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "907262070062",
-    "project_id": "nth-agent-330707",
-    "storage_bucket": "nth-agent-330707.appspot.com"
+    "project_number": "1064367673906",
+    "project_id": "test-maghrib-mengaji",
+    "storage_bucket": "test-maghrib-mengaji.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:907262070062:android:e504817bfd871e6b2b3ebf",
+        "mobilesdk_app_id": "1:1064367673906:android:c51b508d1f7c83a5ab222b",
         "android_client_info": {
           "package_name": "com.simsinfotekno.maghribmengaji"
         }
       },
       "oauth_client": [
         {
-          "client_id": "907262070062-b66viakni2bhirqg8cv5qtmo7dd2hit7.apps.googleusercontent.com",
+          "client_id": "1064367673906-jkqf4cu7n6nsrr2vd2frjkjc7kj2gp6r.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDyxc7hP58XnD_Jp2dOphdJO8Bu1y8Go9U"
+          "current_key": "AIzaSyBQW-m5UfTuEqbRDrNMS6GoMwmoFVrL9T0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "907262070062-b66viakni2bhirqg8cv5qtmo7dd2hit7.apps.googleusercontent.com",
+              "client_id": "1064367673906-jkqf4cu7n6nsrr2vd2frjkjc7kj2gp6r.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
