@@ -48,21 +48,6 @@ class PaymentFragment : Fragment(){
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Inisialisasi BillingClient
-        billingClient = BillingClient.newBuilder(requireContext())
-            .setListener { billingResult, purchases ->
-                handlePurchases(purchases)
-            }
-            .enablePendingPurchases()
-            .build()
-
-        // Mulai koneksi ke Google Play
-        startBillingConnection()
-    }
-
     private fun startBillingConnection() {
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
