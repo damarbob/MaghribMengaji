@@ -141,7 +141,6 @@ class UstadhHomeFragment : Fragment() {
                 binding.ustadhHomeCollapsingToolbarLayout.isTitleEnabled = true
             }
         }
-
         /* Get ustadh list */
         getMyStudents()
 

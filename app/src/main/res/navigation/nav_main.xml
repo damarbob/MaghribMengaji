@@ -211,5 +211,13 @@
     <action
         android:id="@+id/action_global_settingFragment"
         app:destination="@id/settingFragment" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.payment.PaymentFragment"
+        android:label="fragment_payment"
+        tools:layout="@layout/fragment_payment" />
+    <action
+        android:id="@+id/action_global_paymentFragment"
+        app:destination="@id/paymentFragment" />
 
 </navigation>

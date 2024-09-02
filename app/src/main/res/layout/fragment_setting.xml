@@ -21,9 +21,9 @@
     <Switch
         android:id="@+id/SwitchNotificationButton"
         android:layout_width="match_parent"
-        android:layout_height="43dp"
+        android:layout_height="52dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="74dp"
         android:layout_marginEnd="16dp"
         android:text="Perbolehkan Notifikasi"
         tools:ignore="UseSwitchCompatOrMaterialXml" />

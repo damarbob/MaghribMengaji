@@ -13,8 +13,10 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.android.billingclient.api.BillingClient
 import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.api.Billing
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -32,6 +34,7 @@ import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.usecase.CancelDailyNotificationUseCase
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
@@ -60,7 +63,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private val retrieveUserProfile = RetrieveUserProfile()
     private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
     private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
+    /*Notification*/
     private val scheduleDailyNotificationUseCase = ScheduleDailyNotificationUseCase()
+    private val cancelDailyNotificationUseCase= CancelDailyNotificationUseCase()
+    /*Billing*/
+    private lateinit var myBilled: BillingClient
+    private val courseList = listOf("")
 
     companion object {
         val TAG: String = MainActivity::class.java.simpleName
@@ -70,9 +78,35 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         super.onCreate(savedInstanceState)
 
         //set schedule notif
-        scheduleDailyNotificationUseCase(this)
+        val sharedPreferences = getSharedPreferences("NotificationPrefs", MODE_PRIVATE)
+        val isNotificationsEnabled = sharedPreferences.getBoolean("notificationsEnabled", true)
 
-        // Set the status bar color
+        if (isNotificationsEnabled) {
+            scheduleDailyNotificationUseCase // Enable notifications
+        } else {
+            cancelDailyNotificationUseCase// Disable notifications
+        }
+        // setup for IAP
+//        private fun doMyBiller() {
+//            myBiller = MyBiller.newBuilder(this)
+//                .enablePendingPurchases()
+//                .setListener(this)
+//                .build()
+//            myBiller.startConnection(object : MyBillerStateListener {
+//                override fun onBillingSetupFinished(billingResult: BillingResult) {
+//                    if (billingResult.responseCode == MyBiller.BillingResponseCode.OK) {
+//                        // The MyBiller is setup successfully
+//                    }
+//                }
+//
+//                override fun onBillingServiceDisconnected() {
+//                    // Do something, like restarting the billing service
+//
+//                }
+//            })
+
+
+            // Set the status bar color
 //        window.statusBarColor = ContextCompat.getColor(this, R.color.md_theme_primary)
 //        setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
@@ -585,5 +619,6 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             )
         }
     }
+
 
 }

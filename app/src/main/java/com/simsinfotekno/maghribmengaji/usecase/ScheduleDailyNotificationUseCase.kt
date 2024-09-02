@@ -16,8 +16,6 @@ class ScheduleDailyNotificationUseCase {
     operator fun invoke(context: Context) {
 
         val intent = Intent(context.applicationContext, Notification::class.java)
-
-
         // Title and message can be hardcoded or dynamically set
         val title = "Maghrib Mengaji"
         val message = "Jangan lupa untuk mengaji"
