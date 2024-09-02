@@ -86,4 +86,8 @@ dependencies {
 
     implementation("com.jakewharton:process-phoenix:2.1.2")
 
+    //billing client
+    val billing_version = "5.1.0"
+    implementation("com.android.billingclient:billing-ktx:$billing_version")
+
 }

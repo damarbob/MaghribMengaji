@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="12dp" /> <!-- Mengatur radius sudut menjadi 50dp -->
+    <solid android:color="@color/md_theme_secondaryContainer"/> <!-- Warna background dari bentuk pil -->
+    <!--<item android:fillAlpha="0.5"/-->
+</shape>
