@@ -20,23 +20,6 @@
             android:layout_height="160dp"
             android:background="?attr/colorSurfaceContainerHighest">
 
-            <TextView
-                android:id="@+id/tv_volume_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/score_background"
-                android:paddingStart="3dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="3dp"
-                android:paddingBottom="2dp"
-                android:text="100/100"
-                android:textColor="@color/cardview_light_background"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/itemVolumeTwoColumnsImageProgress"
                 android:layout_width="wrap_content"
@@ -61,6 +44,29 @@
                 android:scaleType="fitCenter"
                 android:layout_gravity="center"
                 />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:id="@+id/itemVolumeScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:background="@drawable/score_background"
+                    android:paddingStart="3dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="3dp"
+                    android:paddingBottom="2dp"
+                    android:text="100/100"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
 
         </FrameLayout>
 
