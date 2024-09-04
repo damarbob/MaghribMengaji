@@ -1,23 +1,19 @@
 package com.simsinfotekno.maghribmengaji.ui.payment
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPaymentBinding
-import com.simsinfotekno.maghribmengaji.databinding.FragmentSettingBinding
 
 class PaymentFragment : Fragment(){
 
@@ -89,7 +85,8 @@ class PaymentFragment : Fragment(){
         if (purchases != null) {
             for (purchase in purchases) {
                 // Implementasi logika pembelian
-                // Misalnya, tambahkan poin ke akun pengguna
+                // Misalnya, tambahkan jilid ke akun pengguna
+                purchase.products
             }
         }
     }

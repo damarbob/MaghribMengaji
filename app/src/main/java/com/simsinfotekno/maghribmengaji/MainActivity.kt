@@ -16,7 +16,6 @@ import androidx.navigation.findNavController
 import com.android.billingclient.api.BillingClient
 import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.api.Billing
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -63,10 +62,10 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private val retrieveUserProfile = RetrieveUserProfile()
     private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
     private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
-    /*Notification*/
+    /* Notification */
     private val scheduleDailyNotificationUseCase = ScheduleDailyNotificationUseCase()
     private val cancelDailyNotificationUseCase= CancelDailyNotificationUseCase()
-    /*Billing*/
+    /* Billing */
     private lateinit var myBilled: BillingClient
     private val courseList = listOf("")
 
