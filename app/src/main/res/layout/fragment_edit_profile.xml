@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.editprofile.EditProfileFragment">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/volumeListToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/md_theme_primary"
+        android:textAlignment="center"
+        app:navigationIcon="@drawable/arrow_left"
+        app:title="Edit Profile"
+        app:titleCentered="true"
+        app:titleTextColor="@color/cardview_light_background" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="261dp"
+            android:layout_height="275dp"
+            android:layout_marginStart="-50dp"
+            android:layout_marginBottom="-120dp"
+            android:src="@drawable/img_cloud_blur"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="-50dp"
+            android:layout_marginBottom="-120dp"
+            android:scaleX="-1"
+            android:src="@drawable/img_cloud_blur"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nama"
+            app:endIconMode="clear_text"
+            app:startIconContentDescription="full name"
+            app:startIconDrawable="@drawable/person_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/InputNama"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="Alamat Rumah"
+            app:endIconMode="clear_text"
+            app:startIconContentDescription="full name"
+            app:startIconDrawable="@drawable/location_on_24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/InputAlamatRumah"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/signUpSpinnerCountryCode"
+                style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="4dp"
+                android:layout_marginEnd="4dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/signUpTextInputLayoutPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="true"
+                android:hint="@string/auth_phone_number"
+                app:boxBackgroundMode="outline"
+                app:endIconMode="clear_text"
+                app:startIconContentDescription="@string/auth_phone_number">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/signUpInputPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="Nama Sekolah"
+            app:endIconMode="clear_text"
+            app:startIconContentDescription="full name"
+            app:startIconDrawable="@drawable/school_24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/InputNamaSekolah"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="Alamat Sekolah"
+            app:endIconMode="clear_text"
+            app:startIconContentDescription="full name"
+            app:startIconDrawable="@drawable/location_on_24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/InputAlamatSekolah"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="Bank"
+            app:endIconMode="clear_text"
+            app:startIconContentDescription="full name"
+            app:startIconDrawable="@drawable/bank_24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/InputBank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="No Rekening"
+            app:endIconMode="clear_text"
+            app:startIconContentDescription="full name"
+            app:startIconDrawable="@drawable/rounded_checkbook_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/InputNoRekening"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Simpan"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            app:icon="@drawable/save_24dp"
+            app:iconGravity="start" />
+
+
+    </LinearLayout>
+
+</FrameLayout>

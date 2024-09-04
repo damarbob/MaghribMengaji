@@ -36,7 +36,7 @@
             app:startIconDrawable="@drawable/person_24px">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/signUpInputFullName"
+                android:id="@+id/InputAlamatSekolah"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

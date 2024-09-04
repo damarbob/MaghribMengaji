@@ -52,9 +52,6 @@ class SettingFragment : Fragment() {
         val calendar = Calendar.getInstance()
         binding.SwitchNotificationButton.isChecked = isNotificationsEnabled
 
-//        createNotificationChannel()
-//        scheduleDailyNotification()
-
         // Set listener for the Switch
         binding.SwitchNotificationButton.setOnCheckedChangeListener { _, isChecked ->
             MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.NOTIF_ENABLED_KEY, isChecked)
