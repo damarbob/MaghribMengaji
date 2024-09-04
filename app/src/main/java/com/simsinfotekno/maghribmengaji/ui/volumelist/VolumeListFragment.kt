@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -43,6 +44,7 @@ class VolumeListFragment : Fragment() {
     private lateinit var volumeAdapter: VolumeAdapter
     private lateinit var volumeGridAdapter: VolumeGridAdapter
 
+
     /* Use cases */
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
 
@@ -59,10 +61,21 @@ class VolumeListFragment : Fragment() {
 
         // Read quran volume from database
 //        getQuranVolume()
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //menggnati nilai score
+        val dynamicTextView: TextView = view.findViewById(R.id.tv_volume_score)
+        // Mengubah teks secara dinamis
+        dynamicTextView.text = "Teks Baru yang Diperbarui"
+        // Contoh lain: Mengubah teks berdasarkan kondisi tertentu
+        val someCondition = true
+        if (someCondition) {
+            dynamicTextView.text = "Teks berubah berdasarkan kondisi"
+        }
 
         // Restore scroll position
         savedInstanceState?.let {

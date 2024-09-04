@@ -20,12 +20,18 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
+import com.simsinfotekno.maghribmengaji.MainApplication
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
 import com.simsinfotekno.maghribmengaji.ui.home.HomeFragment
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
 import com.simsinfotekno.maghribmengaji.usecase.GetColorFromAttrUseCase
+import com.simsinfotekno.maghribmengaji.usecase.GetQuranVolumeStudentScore
 import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 
 
@@ -49,6 +55,7 @@ class VolumeGridAdapter(
     /* Use cases */
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
     private val getColorFromAttrUseCase = GetColorFromAttrUseCase()
+    private val quranVolumeStudentScore = GetQuranVolumeStudentScore()
 
     /**
      * Provide a reference to the type of views that you are using
@@ -62,6 +69,7 @@ class VolumeGridAdapter(
         val imageStatus: ImageView
         val imageCover: ImageView
         val imageProgress: CircularProgressIndicator
+        val textViewVolumeScore: TextView
 
         init {
             // Define click listener for the ViewHolder's View
@@ -72,6 +80,7 @@ class VolumeGridAdapter(
             imageCover = view.findViewById(R.id.itemVolumeTwoColumnsImageViewCover)
             imageProgress =
                 view.findViewById(R.id.itemVolumeTwoColumnsImageProgress)
+            textViewVolumeScore = view.findViewById(R.id.itemVolumeScore)
         }
     }
 
@@ -100,6 +109,9 @@ class VolumeGridAdapter(
             name
         )
         viewHolder.textViewVolume.text = name
+        quranVolumeStudentScore(Firebase.auth.currentUser?.uid!!, id) {
+            viewHolder.textViewVolumeScore.text = it.toString()
+        }
 
         // Set the icon based on the completion status
         val status = quranVolumeStatusCheck(dataSet[position])

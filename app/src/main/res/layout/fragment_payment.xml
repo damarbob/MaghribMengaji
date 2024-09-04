@@ -12,7 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/md_theme_primary"
         android:textAlignment="center"
-        app:navigationIcon="@drawable/arrow_back_24px"
+        app:navigationIcon="@drawable/arrow_left"
         app:title="Upgrade"
         app:titleCentered="true"
         app:titleTextColor="@color/cardview_light_background" />
