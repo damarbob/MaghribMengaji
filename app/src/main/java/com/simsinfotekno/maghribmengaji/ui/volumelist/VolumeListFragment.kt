@@ -68,7 +68,7 @@ class VolumeListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //menggnati nilai score
-        val dynamicTextView: TextView = view.findViewById(R.id.tv_volume_score)
+        val dynamicTextView: TextView = view.findViewById(R.id.itemVolumeScore)
         // Mengubah teks secara dinamis
         dynamicTextView.text = "Teks Baru yang Diperbarui"
         // Contoh lain: Mengubah teks berdasarkan kondisi tertentu
