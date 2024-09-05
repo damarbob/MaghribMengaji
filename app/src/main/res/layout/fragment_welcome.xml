@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="32dp"
     android:transitionGroup="true"
@@ -26,27 +26,46 @@
         android:layout_height="wrap_content"
         android:text="@string/write_your_own_mushaf" />
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/welcomeLoginButton"
-            style="@style/Widget.Material3.Button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="@string/auth_login" />
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/welcomeSignUpButton"
-            style="@style/Widget.Material3.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/auth_signup" />
+            <Button
+                android:id="@+id/welcomeLoginGoogleButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:enabled="true"
+                android:text="@string/auth_login_google"
+                android:visibility="visible"
+                app:icon="@drawable/icon_google" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/welcomeLoginButton"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/login_with_email" />
+
+            <Button
+                android:id="@+id/welcomeSignUpButton"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/auth_signup"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
 </LinearLayout>

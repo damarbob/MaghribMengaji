@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "1064367673906-173evhp5kqh68t1vbcj70ud0ju8i6hn7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.simsinfotekno.maghribmengaji",
+            "certificate_hash": "0bd8231d287c93ed9284efd06f5aa1ae48b96380"
+          }
+        },
+        {
+          "client_id": "1064367673906-gg2kql5mr1clv8747jh4bff9e2n6aqk1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.simsinfotekno.maghribmengaji",
+            "certificate_hash": "fe2184e4543cd1c353a112c63464c99a24b38c08"
+          }
+        },
+        {
           "client_id": "1064367673906-jkqf4cu7n6nsrr2vd2frjkjc7kj2gp6r.apps.googleusercontent.com",
           "client_type": 3
         }

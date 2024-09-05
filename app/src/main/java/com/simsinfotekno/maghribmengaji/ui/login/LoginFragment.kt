@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.simsinfotekno.maghribmengaji.LoginActivity
 import com.simsinfotekno.maghribmengaji.MainActivity
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentLoginBinding
@@ -95,6 +96,10 @@ class LoginFragment : Fragment() {
         }
         binding.loginSignUpText.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
+        }
+        binding.loginGoogleButton.setOnClickListener {
+            // Do google login
+            (requireActivity() as LoginActivity).signIn()
         }
 
         return binding.root

@@ -261,4 +261,5 @@
     <string name="ustadh_name">Ustadh Name</string>
     <string name="together_with">Together with</string>
     <string name="must_be_filled">must be filled</string>
+    <string name="login_with_email">Login using Email</string>
 </resources>

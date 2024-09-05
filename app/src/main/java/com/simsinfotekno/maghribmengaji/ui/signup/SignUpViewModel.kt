@@ -39,6 +39,7 @@ class SignUpViewModel : ViewModel() {
                             .addOnCompleteListener { profileUpdateTask ->
                                 if (profileUpdateTask.isSuccessful) {
 
+                                    // TODO: Move to use case
                                     // Create new student instance
                                     val newStudent = MaghribMengajiUser(
                                         id = user.uid,

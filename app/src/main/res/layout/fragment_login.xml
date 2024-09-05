@@ -83,9 +83,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:enabled="false"
+            android:enabled="true"
             android:text="@string/auth_login_google"
-            android:visibility="gone"
+            android:visibility="visible"
             app:icon="@drawable/icon_google" />
 
         <LinearLayout

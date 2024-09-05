@@ -1,6 +1,8 @@
 package com.simsinfotekno.maghribmengaji.usecase
 
 import android.util.Log
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
@@ -38,8 +40,32 @@ class RetrieveUserProfile {
                     onUserProfileRetrieved(student)
                 }
 
+                // If user's document is nowhere to be found, create new
                 if (documents.isEmpty) {
-                    Log.d(TAG, "No matching documents found.")
+
+                    val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
+                    val auth = FirebaseAuth.getInstance()
+
+                    Log.d(TAG, "No matching documents found. Creating new document for ${auth.currentUser?.email}")
+
+                    val newStudent = MaghribMengajiUser(
+                        id = auth.currentUser?.uid,
+                        fullName = auth.currentUser?.displayName,
+                        email = auth.currentUser?.email,
+                        createdAt = Timestamp.now(),
+                        updatedAt = Timestamp.now(),
+                    )
+
+                    db.add(newStudent).addOnCompleteListener{
+                        if (it.isSuccessful) {
+
+                            onUserProfileRetrieved(newStudent)
+
+                        }
+                        else {
+                            Log.w(TAG, "Error getting documents: ", it.exception)
+                        }
+                    }
                 }
             }
             .addOnFailureListener { exception ->
