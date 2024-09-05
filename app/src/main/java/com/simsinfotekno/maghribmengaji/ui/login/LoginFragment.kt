@@ -58,6 +58,15 @@ class LoginFragment : Fragment() {
                 Toast.makeText(requireContext(), exception.localizedMessage, Toast.LENGTH_SHORT).show()
             }
         })
+        viewModel.progressVisibility.observe(viewLifecycleOwner) { isVisible->
+            binding.loginLoading.visibility = if (isVisible) View.VISIBLE else View.GONE
+            binding.loginInputEmailAddress.isEnabled = !isVisible
+            binding.loginInputPassword.isEnabled = !isVisible
+            binding.loginButton.isEnabled = !isVisible
+            binding.loginGoogleButton.isEnabled = !isVisible
+            binding.loginTextForgotPassword.isEnabled = !isVisible
+            binding.loginSignUpText.isEnabled = !isVisible
+        }
 
         /* Listeners */
         binding.loginTextForgotPassword.setOnClickListener {

@@ -17,7 +17,12 @@ class SignUpViewModel : ViewModel() {
     private val _authResult = MutableLiveData<Result<FirebaseUser>?>()
     val authResult: LiveData<Result<FirebaseUser>?> get() = _authResult
 
+    private val _progressVisibility = MutableLiveData<Boolean>(false)
+    val progressVisibility: LiveData<Boolean> get() = _progressVisibility
+
     fun signUpWithEmailPassword(displayName: String, email: String, phone: String, password: String, address: String, school: String, referral: String) {
+
+        _progressVisibility.value = true
 
         val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
         val auth = FirebaseAuth.getInstance()
@@ -61,23 +66,28 @@ class SignUpViewModel : ViewModel() {
                                             studentRepository.setStudent(newStudent) // Set newStudent to repository
                                             _authResult.value = Result.success(user) // Return user
 
+                                            _progressVisibility.value = false
                                         }
                                         else {
                                             _authResult.value = Result.failure(it.exception ?: Exception("Failed to create newStudent data"))
+                                            _progressVisibility.value = false
                                         }
                                     }
 
                                 } else {
                                     _authResult.value = Result.failure(profileUpdateTask.exception ?: Exception("Failed to update profile"))
+                                    _progressVisibility.value = false
                                 }
                             }
 
                     } else {
                         _authResult.value = Result.failure(Exception("User is null"))
+                        _progressVisibility.value = false
                     }
                 } else {
                     // If sign up fails, display a message to the user.
                     _authResult.value = Result.failure(task.exception ?: Exception("Sign up failed"))
+                    _progressVisibility.value = false
                 }
             }
     }

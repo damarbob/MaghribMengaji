@@ -79,6 +79,20 @@ class SignUpFragment : Fragment() {
                 Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
             }
         }
+        viewModel.progressVisibility.observe(viewLifecycleOwner) { isVisible->
+            binding.signUpLoading.visibility = if (isVisible) View.VISIBLE else View.GONE
+            binding.signUpInputFullName.isEnabled = !isVisible
+            binding.signUpInputEmailAddress.isEnabled = !isVisible
+            binding.signUpInputPhoneNumber.isEnabled = !isVisible
+            binding.signUpSpinnerCountryCode.isEnabled = !isVisible
+            binding.signUpInputAddress.isEnabled = !isVisible
+            binding.signUpInputSchool.isEnabled = !isVisible
+            binding.signUpInputPassword.isEnabled = !isVisible
+            binding.signUpInputReferral.isEnabled = !isVisible
+            binding.signUpLoginGoogleButton.isEnabled = !isVisible
+            binding.signUpLoginText.isEnabled = !isVisible
+            binding.signUpButton.isEnabled = !isVisible
+        }
 
         setUpCountryCodeSpinner()
 

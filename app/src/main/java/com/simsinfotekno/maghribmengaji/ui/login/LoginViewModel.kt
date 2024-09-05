@@ -20,7 +20,12 @@ class LoginViewModel : ViewModel() {
     private val _loginResult = MutableLiveData<Result<FirebaseUser>?>()
     val loginResult: LiveData<Result<FirebaseUser>?> get() = _loginResult
 
+    private val _progressVisibility = MutableLiveData<Boolean>(false)
+    val progressVisibility: LiveData<Boolean> get() = _progressVisibility
+
     fun loginWithEmailPassword(email: String, password: String) {
+
+        _progressVisibility.value = true
 
         val auth = FirebaseAuth.getInstance()
         val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
@@ -43,13 +48,19 @@ class LoginViewModel : ViewModel() {
                                     )
 
                                     _loginResult.value = Result.success(user)
+
+                                    _progressVisibility.value = false
                                 }
                                 if (documents.isEmpty) {
                                     Log.d(TAG, "No matching documents found.")
+
+                                    _progressVisibility.value = false
                                 }
                             }
                             .addOnFailureListener { exception ->
                                 Log.w(TAG, "Error getting documents: ", exception)
+
+                                _progressVisibility.value = false
                             }
 
                         val student = MaghribMengajiUser(
@@ -61,10 +72,14 @@ class LoginViewModel : ViewModel() {
                         studentRepository.setStudent(student) // Set newStudent to repository
                     } else {
                         _loginResult.value = Result.failure(Exception("User is null"))
+
+                        _progressVisibility.value = false
                     }
                 } else {
                     // If login fails, display a message to the user.
                     _loginResult.value = Result.failure(task.exception ?: Exception("Login failed"))
+
+                    _progressVisibility.value = false
                 }
             }
     }
