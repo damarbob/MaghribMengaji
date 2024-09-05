@@ -253,4 +253,14 @@
     <string name="ustadh_name">Nama Ustadz</string>
     <string name="together_with">Bersama dengan</string>
     <string name="must_be_filled">harus diisi</string>
+    <string name="referral_optional">Kode Referral (Opsional)</string>
+    <string name="referral_code">Kode Referral</string>
+    <string name="address">Alamat</string>
+    <string name="school">Sekolah</string>
+    <string name="optional">Opsional</string>
+    <string name="address_is_required">Mohon isi alamat Antum</string>
+    <string name="school_npsn">NPSN Sekolah</string>
+    <string name="search_npsn_by_click_search_icon">Cari NPSN dengan menekan ikon cari</string>
+    <string name="npsn_is_invalid">NPSN tidak valid. Harus mengandung 8 digit</string>
+    <string name="address_purpose">Isi dengan alamat lengkap. Untuk keperluan pengantaran Al Quran Tulis.</string>
 </resources>

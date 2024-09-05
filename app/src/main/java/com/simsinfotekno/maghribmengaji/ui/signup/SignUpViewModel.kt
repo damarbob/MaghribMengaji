@@ -17,7 +17,7 @@ class SignUpViewModel : ViewModel() {
     private val _authResult = MutableLiveData<Result<FirebaseUser>?>()
     val authResult: LiveData<Result<FirebaseUser>?> get() = _authResult
 
-    fun signUpWithEmailPassword(displayName: String, email: String, phone: String, password: String) {
+    fun signUpWithEmailPassword(displayName: String, email: String, phone: String, password: String, address: String, school: String, referral: String) {
 
         val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
         val auth = FirebaseAuth.getInstance()
@@ -49,6 +49,9 @@ class SignUpViewModel : ViewModel() {
                                         ustadhId = null,
                                         createdAt = Timestamp.now(),
                                         updatedAt = Timestamp.now(),
+                                        referralCode = referral,
+                                        address = address,
+                                        school = school,
                                     )
 
                                     db.add(newStudent).addOnCompleteListener{
