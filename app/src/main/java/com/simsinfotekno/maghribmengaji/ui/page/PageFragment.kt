@@ -314,7 +314,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         // Get the document from Firestore and load the image to ImageView
         val pageImage = binding.pageImageViewPage
 
-        quranPageRepository.getFirebaseRecordById(pageId!!,
+        /*quranPageRepository.getFirebaseRecordById(pageId!!,
             { imageUrl ->
                 // Load image to ImageView
                 if (isAdded) {
@@ -336,7 +336,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     pageImage.scaleType = ImageView.ScaleType.CENTER
                     binding.pageProgressBar.visibility = View.GONE // Hide progress bar
                 }
-            })
+            })*/
 
         /* Observers */
         mainViewModel.connectionStatus.observe(viewLifecycleOwner) {

@@ -274,4 +274,5 @@
     <string name="search_npsn_url" translatable="false">https://dapo.kemdikbud.go.id/pencarian</string>
     <string name="npsn_is_invalid">NPSN is invalid. Must contain 8 digits</string>
     <string name="address_purpose">Fill in the complete address. For the purpose of delivering the Write Quran (Al Quran Tulis).</string>
+    <string name="settings">Settings</string>
 </resources>

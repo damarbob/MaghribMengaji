@@ -30,7 +30,7 @@ class SignUpFragment : Fragment() {
     private lateinit var binding: FragmentSignUpBinding
 
     companion object {
-        fun newInstance() = SignUpFragmentBackup()
+        fun newInstance() = SignUpFragment()
         private const val RC_SIGN_IN = 9001
     }
 

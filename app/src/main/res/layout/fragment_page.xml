@@ -71,6 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true"
+        android:visibility="gone"
         app:layout_anchor="@id/pageAppBarLayout"
         app:layout_anchorGravity="bottom|end" />
 

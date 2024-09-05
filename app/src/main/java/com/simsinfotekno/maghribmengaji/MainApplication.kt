@@ -47,16 +47,16 @@ class MainApplication : Application() {
         /* Data set preparation */
         // Volume and pages
         val quranVolumes = listOf(
-            QuranVolume(1, "1", (1..61).toList(), (1..3).toList()),
-            QuranVolume(2, "2", (62..121).toList(), (3..5).toList()),
-            QuranVolume(3, "3", (122..181).toList(), (5..8).toList()),
-            QuranVolume(4, "4", (182..241).toList(), (8..12).toList()),
-            QuranVolume(5, "5", (242..301).toList(), (12..18).toList()),
-            QuranVolume(6, "6", (302..361).toList(), (18..25).toList()),
-            QuranVolume(7, "7", (362..421).toList(), (25..33).toList()),
-            QuranVolume(8, "8", (422..481).toList(), (33..41).toList()),
-            QuranVolume(9, "9", (482..541).toList(), (41..57).toList()),
-            QuranVolume(10, "10", (542..604).toList(), (58..114).toList(), R.drawable.cover_volume_10),
+            QuranVolume(1, "1", (1..61).toList(), (1..3).toList(), R.drawable.cover_quran_volume_1),
+            QuranVolume(2, "2", (62..121).toList(), (3..5).toList(), R.drawable.cover_quran_volume_2),
+            QuranVolume(3, "3", (122..181).toList(), (5..8).toList(), R.drawable.cover_quran_volume_3),
+            QuranVolume(4, "4", (182..241).toList(), (8..12).toList(), R.drawable.cover_quran_volume_4),
+            QuranVolume(5, "5", (242..301).toList(), (12..18).toList(), R.drawable.cover_quran_volume_5),
+            QuranVolume(6, "6", (302..361).toList(), (18..25).toList(), R.drawable.cover_quran_volume_6),
+            QuranVolume(7, "7", (362..421).toList(), (25..33).toList(), R.drawable.cover_quran_volume_7),
+            QuranVolume(8, "8", (422..481).toList(), (33..41).toList(), R.drawable.cover_quran_volume_8),
+            QuranVolume(9, "9", (482..541).toList(), (41..57).toList(), R.drawable.cover_quran_volume_9),
+            QuranVolume(10, "10", (542..604).toList(), (58..114).toList(), R.drawable.cover_quran_volume_10),
         )
         val quranPages = (1..604).map { pageId ->
             // Find the volume for this page

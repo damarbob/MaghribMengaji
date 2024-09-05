@@ -264,4 +264,5 @@
     <string name="search_npsn_by_click_search_icon">Cari NPSN dengan menekan ikon cari</string>
     <string name="npsn_is_invalid">NPSN tidak valid. Harus mengandung 8 digit</string>
     <string name="address_purpose">Isi dengan alamat lengkap. Untuk keperluan pengantaran Al Quran Tulis.</string>
+    <string name="settings">Pengaturan</string>
 </resources>
