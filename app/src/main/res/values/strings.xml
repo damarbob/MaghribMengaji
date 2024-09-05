@@ -262,4 +262,16 @@
     <string name="together_with">Together with</string>
     <string name="must_be_filled">must be filled</string>
     <string name="login_with_email">Login using Email</string>
+    <string name="referral_optional">Referral Code (optional)</string>
+    <string name="referral_code">Referral Code</string>
+    <string name="address">Address</string>
+    <string name="school">School</string>
+    <string name="optional">Optional</string>
+    <string name="address_is_required">Please fill your address</string>
+    <string name="school_npsn">School NPSN</string>
+    <string name="npsn_stand_for" translatable="false">Nomor Pokok Sekolah Nasional</string>
+    <string name="search_npsn_by_click_search_icon">Search NPSN by click search icon</string>
+    <string name="search_npsn_url" translatable="false">https://dapo.kemdikbud.go.id/pencarian</string>
+    <string name="npsn_is_invalid">NPSN is invalid. Must contain 8 digits</string>
+    <string name="address_purpose">Fill in the complete address. For the purpose of delivering the Write Quran (Al Quran Tulis).</string>
 </resources>

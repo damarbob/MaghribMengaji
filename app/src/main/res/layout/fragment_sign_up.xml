@@ -28,6 +28,7 @@
             android:text="@string/start_your_koran_journey" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/signUpTextInputLayoutFullName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/auth_fullname"
@@ -43,6 +44,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/signUpTextInputLayoutEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/auth_email"
@@ -89,6 +91,50 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/signUpTextInputLayoutAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:hint="@string/address"
+            app:endIconMode="clear_text"
+            app:startIconContentDescription="@string/address"
+            app:startIconDrawable="@drawable/home_24px"
+            app:helperTextEnabled="true"
+            app:helperText="@string/address_purpose">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/signUpInputAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoComplete" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/signUpTextInputLayoutSchool"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:enabled="true"
+            android:hint="@string/school_npsn"
+            app:counterEnabled="true"
+            app:counterMaxLength="8"
+            app:endIconDrawable="@drawable/search_24px"
+            app:endIconMode="custom"
+            app:helperTextEnabled="true"
+            app:startIconContentDescription="@string/school_npsn"
+            app:startIconDrawable="@drawable/school_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/signUpInputSchool"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/signUpTextInputLayoutPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -102,6 +148,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/signUpTextInputLayoutReferral"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:enabled="true"
+            android:hint="@string/referral_optional"
+            app:endIconMode="clear_text"
+            app:helperText="@string/optional"
+            app:helperTextEnabled="true"
+            app:startIconContentDescription="@string/referral_code">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/signUpInputReferral"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -84,12 +85,20 @@ class LoginFragment : Fragment() {
             }
 
         }
+        setupListeners()
         binding.loginButton.setOnClickListener {
 
-            val email = binding.loginInputEmailAddress.text.toString()
-            val password = binding.loginInputPassword.text.toString()
+//            val email = binding.loginInputEmailAddress.text.toString()
+//            val password = binding.loginInputPassword.text.toString()
 
-            validateAndProceed(email, password) { _ ->
+//            validateAndProceed(email, password) { _ ->
+//                viewModel.loginWithEmailPassword(email, password)
+//            }
+
+            if (isValidate()){
+                val email = binding.loginInputEmailAddress.text.toString()
+                val password = binding.loginInputPassword.text.toString()
+
                 viewModel.loginWithEmailPassword(email, password)
             }
 
@@ -103,6 +112,57 @@ class LoginFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun setupListeners() {
+        binding.loginInputEmailAddress.addTextChangedListener { validateEmail() }
+        binding.loginInputPassword.addTextChangedListener { validatePassword() }
+    }
+
+    private fun isValidate(): Boolean {
+        // Validate all fields simultaneously
+        val isEmailValid = validateEmail()
+        val isPasswordValid = validatePassword()
+
+        // Return true only if all fields are valid
+        return isEmailValid && isPasswordValid
+    }
+
+    private fun validateEmail(): Boolean {
+        val email = binding.loginInputEmailAddress.text.toString()
+        return when {
+            email.isBlank() -> {
+                binding.loginTextInputLayoutEmail.error =
+                    resources.getString(R.string.email_is_required)
+                false
+            }
+
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                binding.loginTextInputLayoutEmail.error =
+                    resources.getString(R.string.invalid_email_format)
+                false
+            }
+
+            else -> {
+                binding.loginTextInputLayoutEmail.isErrorEnabled = false
+                true
+            }
+        }
+    }
+
+    private fun validatePassword(): Boolean {
+        val password = binding.loginInputPassword.text.toString()
+        return when {
+            password.isBlank() -> {
+                binding.loginTextInputLayoutPassword.error =
+                    resources.getString(R.string.password_is_required)
+                false
+            }
+            else -> {
+                binding.loginTextInputLayoutPassword.isErrorEnabled = false
+                true
+            }
+        }
     }
 
     fun validateAndProceed(
