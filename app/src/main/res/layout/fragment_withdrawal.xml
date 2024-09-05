@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.withdrawal.WithdrawalFragment">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,7 +18,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/arrow_back_ios_24px"
+            android:src="@drawable/arrow_left"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -28,7 +27,7 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Withdrawal"
+            android:text="withdrawal"
             android:textColor="@color/md_theme_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,6 +45,7 @@
         android:layout_marginEnd="16dp"
         android:animateLayoutChanges="false"
         android:background="@drawable/card_background"
+        android:elevation="3dp"
         android:orientation="vertical">
 
 
@@ -77,30 +77,50 @@
             android:textColor="@color/ic_launcher_maghrib_mengaji_background"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tv_balance"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="4dp"
-            android:gravity="center_vertical"
-            android:lineSpacingExtra="4sp"
-            android:text="100.000"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_balance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:gravity="center_vertical"
+                android:lineSpacingExtra="4sp"
+                android:text="100.000"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/btn_img"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/visibility"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="14dp"
+            android:layout_marginBottom="8dp"
             android:insetTop="5dp"
             android:insetBottom="5dp"
             android:text="Tarik Tunai"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:icon="@drawable/payments_24dp" />
 
 
     </LinearLayout>
