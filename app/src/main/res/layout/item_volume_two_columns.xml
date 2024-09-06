@@ -17,7 +17,7 @@
         <FrameLayout
             android:id="@+id/itemVolumeHeader"
             android:layout_width="match_parent"
-            android:layout_height="385dp"
+            android:layout_height="wrap_content"
             android:background="?attr/colorSurfaceContainerHighest">
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -40,7 +40,7 @@
             <ImageView
                 android:id="@+id/itemVolumeTwoColumnsImageViewCover"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:scaleType="fitCenter"
                 android:layout_gravity="center"
                 />

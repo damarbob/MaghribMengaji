@@ -270,12 +270,20 @@
     <string name="address_is_required">Please fill your address</string>
     <string name="school_npsn">School NPSN</string>
     <string name="npsn_stand_for" translatable="false">Nomor Pokok Sekolah Nasional</string>
-    <string name="search_npsn_by_click_search_icon">Search NPSN by click search icon</string>
+    <string name="search_npsn_by_click_search_icon">Search NPSN by clicking the search icon</string>
     <string name="search_npsn_url" translatable="false">https://dapo.kemdikbud.go.id/pencarian</string>
     <string name="npsn_is_invalid">NPSN is invalid. Must contain 8 digits</string>
     <string name="address_purpose">Fill in the complete address. For the purpose of delivering the Write Quran (Al Quran Tulis).</string>
     <string name="settings">Settings</string>
+    <string name="bank" translatable="false">Bank</string>
+    <string name="account_number">Account Number</string>
+    <string name="save">Save</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="bank_code">Bank Code</string>
+    <string name="only_accepts_indonesian_bank_search_bank_code_by_clicking_the_search_icon">Only accepts Indonesian Bank. Search Bank Code by clicking the search icon.</string>
+    <string name="for_withdrawal_purposes">For withdrawal purposes.</string>
     <string name="loading">Loading</string>
     <string name="you_dont_have_that_volume">You don\'t have that volume</string>
     <string name="afwan">Afwan</string>
+    <string name="allow_notification">Allow notification</string>
 </resources>

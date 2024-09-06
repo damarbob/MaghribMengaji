@@ -265,7 +265,14 @@
     <string name="npsn_is_invalid">NPSN tidak valid. Harus mengandung 8 digit</string>
     <string name="address_purpose">Isi dengan alamat lengkap. Untuk keperluan pengantaran Al Quran Tulis.</string>
     <string name="settings">Pengaturan</string>
+    <string name="account_number">Nomor Rekening</string>
+    <string name="save">Simpan</string>
+    <string name="edit_profile">Edit Profil</string>
+    <string name="bank_code">Kode Bank</string>
+    <string name="only_accepts_indonesian_bank_search_bank_code_by_clicking_the_search_icon">Hanya menerima Bank di Indonesia. Cari kode bank dengan menekan ikon cari.</string>
+    <string name="for_withdrawal_purposes">Untuk keperluan penarikan.</string>
     <string name="loading">Loading</string>
     <string name="you_dont_have_that_volume">Antum tidak mempunyai jilid ini</string>
     <string name="afwan">Afwan</string>
+    <string name="allow_notification">Izinkan notifikasi</string>
 </resources>

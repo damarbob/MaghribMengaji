@@ -219,5 +219,13 @@
     <action
         android:id="@+id/action_global_paymentFragment"
         app:destination="@id/paymentFragment" />
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.editprofile.EditProfileFragment"
+        android:label="fragment_edit_profile"
+        tools:layout="@layout/fragment_edit_profile" />
+    <action
+        android:id="@+id/action_global_editProfileFragment"
+        app:destination="@id/editProfileFragment" />
 
 </navigation>

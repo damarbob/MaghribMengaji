@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.setting.SettingFragment">
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/volumeListToolbar"
         android:layout_width="match_parent"
@@ -12,7 +13,7 @@
         app:layout_collapseMode="pin"
         app:navigationIcon="@drawable/arrow_left"
         android:background="@color/md_theme_primary"
-        app:title="Setting"
+        app:title="@string/settings"
         app:titleCentered="true"
         android:textAlignment="center"
         app:titleTextColor="@color/cardview_light_background"
@@ -25,7 +26,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="74dp"
         android:layout_marginEnd="16dp"
-        android:text="Izinkan Notifikasi"
+        android:text="@string/allow_notification"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <Button

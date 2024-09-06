@@ -49,6 +49,11 @@
     <item android:title="@string/other">
         <menu>
             <item
+                android:id="@+id/menu_edit_profile"
+                android:icon="@drawable/person_24px"
+                android:title="@string/edit_profile"
+                android:visible="true"/>
+            <item
                 android:id="@+id/menu_setting"
                 android:icon="@drawable/settings_24dp"
                 android:title="@string/settings"

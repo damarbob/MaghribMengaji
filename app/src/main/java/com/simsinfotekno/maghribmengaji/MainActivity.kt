@@ -219,6 +219,10 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                         }
                         .show()
                 }
+                R.id.menu_edit_profile -> {
+                    navController.navigate(R.id.action_global_editProfileFragment)
+
+                }
                 R.id.menu_setting -> {
                     navController.navigate(R.id.action_global_settingFragment)
 

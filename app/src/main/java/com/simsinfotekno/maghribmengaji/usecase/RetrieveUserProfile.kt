@@ -36,7 +36,7 @@ class RetrieveUserProfile {
                         referralCode = data["referralCode"] as String?,
                         balance = data["balance"] as Int?,
                         bank = data["bank"] as String?,
-                        bankAccount = data["bankAccount"] as Int?,
+                        bankAccount = data["bankAccount"] as String?,
                         ownedVolumeId = data["ownedVolumeId"] as? List<Int>?,
                         role = data["role"] as String?,
                         lastPageId = (data["lastPageId"] as Long?)?.toInt(),

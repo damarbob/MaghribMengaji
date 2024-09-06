@@ -1,199 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionGroup="true"
     tools:context=".ui.editprofile.EditProfileFragment">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/volumeListToolbar"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/volumeListAppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/md_theme_primary"
-        android:textAlignment="center"
-        app:navigationIcon="@drawable/arrow_left"
-        app:title="Edit Profile"
-        app:titleCentered="true"
-        app:titleTextColor="@color/cardview_light_background" />
+        android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ImageView
-            android:id="@+id/imageView9"
-            android:layout_width="261dp"
-            android:layout_height="275dp"
-            android:layout_marginStart="-50dp"
-            android:layout_marginBottom="-120dp"
-            android:src="@drawable/img_cloud_blur"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="-50dp"
-            android:layout_marginBottom="-120dp"
-            android:scaleX="-1"
-            android:src="@drawable/img_cloud_blur"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="72dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="vertical"
-        android:visibility="visible">
-
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/volumeListCollapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nama"
-            app:endIconMode="clear_text"
-            app:startIconContentDescription="full name"
-            app:startIconDrawable="@drawable/person_24px">
+            app:collapsedTitleTextAppearance="@style/Widget.App.P.Bold"
+            app:expandedTitleGravity="bottom"
+            app:expandedTitleMarginBottom="48dp"
+            app:expandedTitleTextAppearance="@style/Widget.App.H1.Bold.Primary"
+            app:extraMultilineHeightEnabled="false"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+            app:maxLines="1"
+            app:title="@string/edit_profile"
+            app:titleCollapseMode="fade"
+            app:titleEnabled="true">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/InputNama"
+            <ImageView
+                android:id="@+id/editProfileAvatar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="200dp"
+                android:background="@drawable/gradient_background_horizontal"
+                android:scaleType="centerInside"
+                app:layout_collapseMode="parallax" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="Alamat Rumah"
-            app:endIconMode="clear_text"
-            app:startIconContentDescription="full name"
-            app:startIconDrawable="@drawable/location_on_24dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/InputAlamatRumah"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/volumeListToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/arrow_back_24px" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/volumeListScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/signUpSpinnerCountryCode"
-                style="@style/Widget.AppCompat.DropDownItem.Spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginVertical="4dp"
-                android:layout_marginEnd="4dp" />
+            android:layout_height="match_parent"
+            android:padding="32dp"
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/signUpTextInputLayoutPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="true"
-                android:hint="@string/auth_phone_number"
-                app:boxBackgroundMode="outline"
+                android:hint="@string/auth_fullname"
                 app:endIconMode="clear_text"
-                app:startIconContentDescription="@string/auth_phone_number">
+                app:startIconContentDescription="full name"
+                app:startIconDrawable="@drawable/person_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/signUpInputPhoneNumber"
+                    android:id="@+id/editProfileInputFullName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone" />
+                    android:layout_height="wrap_content" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/address"
+                app:endIconMode="clear_text"
+                app:startIconContentDescription="full name"
+                app:startIconDrawable="@drawable/location_on_24dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editProfileInputAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/editProfileTextInputLayoutPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    android:hint="@string/auth_phone_number"
+                    app:boxBackgroundMode="outline"
+                    app:endIconMode="clear_text"
+                    app:startIconContentDescription="@string/auth_phone_number"
+                    app:startIconDrawable="@drawable/outline_local_phone_24">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editProfileInputPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editProfileInputLayoutNPSN"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/npsn_stand_for"
+                app:counterEnabled="true"
+                app:counterMaxLength="8"
+                app:endIconDrawable="@drawable/search_24px"
+                app:endIconMode="custom"
+                app:helperTextEnabled="true"
+                app:startIconContentDescription="full name"
+                app:startIconDrawable="@drawable/school_24dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editProfileInputNPSN"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editProfileInputLayoutBank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/bank_code"
+                app:endIconDrawable="@drawable/search_24px"
+                app:endIconMode="custom"
+                app:counterEnabled="true"
+                app:counterMaxLength="3"
+                app:startIconContentDescription="full name"
+                app:startIconDrawable="@drawable/bank_24dp"
+                app:helperText="@string/only_accepts_indonesian_bank_search_bank_code_by_clicking_the_search_icon">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editProfileInputBank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editProfileInputLayoutAccountNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/account_number"
+                app:endIconMode="clear_text"
+                app:startIconContentDescription="full name"
+                app:startIconDrawable="@drawable/rounded_checkbook_24"
+                app:helperText="@string/for_withdrawal_purposes">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editProfileInputAccountNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/editProfileSaveButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/save"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                app:icon="@drawable/save_24dp"
+                app:iconGravity="start" />
+
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="Nama Sekolah"
-            app:endIconMode="clear_text"
-            app:startIconContentDescription="full name"
-            app:startIconDrawable="@drawable/school_24dp">
+    </androidx.core.widget.NestedScrollView>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/InputNamaSekolah"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="Alamat Sekolah"
-            app:endIconMode="clear_text"
-            app:startIconContentDescription="full name"
-            app:startIconDrawable="@drawable/location_on_24dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/InputAlamatSekolah"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="Bank"
-            app:endIconMode="clear_text"
-            app:startIconContentDescription="full name"
-            app:startIconDrawable="@drawable/bank_24dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/InputBank"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="No Rekening"
-            app:endIconMode="clear_text"
-            app:startIconContentDescription="full name"
-            app:startIconDrawable="@drawable/rounded_checkbook_24">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/InputNoRekening"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/btn_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Simpan"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            app:icon="@drawable/save_24dp"
-            app:iconGravity="start" />
-
-
-    </LinearLayout>
-
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
