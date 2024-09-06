@@ -1,5 +1,8 @@
 package com.simsinfotekno.maghribmengaji.ui.adapter
 
+import android.content.Context
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.LiveData
@@ -19,12 +23,13 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
 import com.simsinfotekno.maghribmengaji.MainApplication
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
@@ -39,6 +44,7 @@ class VolumeGridAdapter(
     var dataSet: List<QuranVolume>,
     private val navController: NavController,
     private val invoker: Any,
+    private val context: Context
 ) :
     RecyclerView.Adapter<VolumeGridAdapter.ViewHolder>() {
 
@@ -51,6 +57,7 @@ class VolumeGridAdapter(
     /* Variables */
     private val _selectedVolume = MutableLiveData<QuranVolume>().apply { value = null }
     val selectedVolume: LiveData<QuranVolume> = _selectedVolume
+    private var materialAlertDialog: AlertDialog? = null
 
     /* Use cases */
     private val quranVolumeStatusCheck = QuranVolumeStatusCheck()
@@ -99,6 +106,8 @@ class VolumeGridAdapter(
         val id = dataSet[position].id
         val name = dataSet[position].name
         val pageIds = dataSet[position].pageIds
+
+        val ownedQuranVolumeId = MainApplication.studentRepository.getStudent()?.ownedVolumeId
 
         Log.d(TAG, "id: $id. name: $name.")
 
@@ -157,7 +166,13 @@ class VolumeGridAdapter(
                     isFirstResource: Boolean
                 ): Boolean {
                     viewHolder.imageProgress.visibility = View.GONE
-                    viewHolder.imageCover.setBackgroundColor(getColorFromAttrUseCase(com.google.android.material.R.attr.colorPrimary, navController.context))
+
+//                    viewHolder.imageCover.setBackgroundColor(
+//                        getColorFromAttrUseCase(
+//                            com.google.android.material.R.attr.colorPrimary,
+//                            navController.context
+//                        )
+//                    )
                     return false
                 }
 
@@ -175,26 +190,72 @@ class VolumeGridAdapter(
             })
             .into(viewHolder.imageCover)
 
-        // Listener
-        viewHolder.cardView.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putInt("volumeId", id)
-            bundle.putIntArray("pageIds", pageIds.toIntArray())
-            if (invoker is VolumeListFragment) {
-                navController.navigate(R.id.action_volumeListFragment_to_pageListFragment, bundle)
-            } else if (invoker is HomeFragment) {
-                navController.navigate(R.id.action_homeFragment_to_pageListFragment, bundle)
-            }
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setSaturation(0f)
+        val filter = ColorMatrixColorFilter(colorMatrix)
+        colorMatrix.setSaturation(1f)
+        val noFilter = ColorMatrixColorFilter(colorMatrix)
+        if (ownedQuranVolumeId != null) {
+            viewHolder.imageCover.colorFilter =
+                if (!ownedQuranVolumeId.toIntArray().contains(id)) filter else noFilter
+        } else viewHolder.imageCover.colorFilter = filter
 
-            // Set selected volume
-            _selectedVolume.value = dataSet[position]
+        /* Listener */
+        // Check owned Quran Volume
+        viewHolder.cardView.setOnClickListener {
+            Log.d("asdfasdfasdf", "id: ${quranVolumes.reversed()[position].id}")
+            Log.d("asdfasdfasdf", "owned: $ownedQuranVolumeId")
+            Log.d("asdfasdfasdf", "aslinya punya? ${ownedQuranVolumeId?.toIntArray()?.contains(quranVolumes.reversed()[position].id)}")
+
+            if (ownedQuranVolumeId.isNullOrEmpty()) {
+                showAlertDialog()
+                Log.d("asdfasdfasdf", "null")
+            } else {
+                if (ownedQuranVolumeId.toIntArray().contains(id)) {
+                    Log.d("asdfasdfasdf", "punya")
+                    // If own, go to page list
+                    val bundle = Bundle().apply {
+                        putInt("volumeId", id)
+                        putIntArray("pageIds", pageIds.toIntArray())
+                    }
+
+                    when (invoker) {
+                        is VolumeListFragment -> navController.navigate(
+                            R.id.action_volumeListFragment_to_pageListFragment, bundle
+                        )
+
+                        is HomeFragment -> navController.navigate(
+                            R.id.action_homeFragment_to_pageListFragment, bundle
+                        )
+                    }
+
+                    // Set selected volume
+                    _selectedVolume.value = dataSet[position]
+                } else {
+                    showAlertDialog()
+                    Log.d("asdfasdfasdf", "tidak")
+                }
+            }
         }
+
     }
+
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size
 
     override fun getItemViewType(position: Int): Int {
         return super.getItemViewType(position)
+    }
+
+    // Function to show the Material Alert Dialog
+    private fun showAlertDialog() {
+        MaterialAlertDialogBuilder(context)
+            .setTitle(context.getString(R.string.afwan))
+            .setMessage(context.getString(R.string.you_dont_have_that_volume))
+            .setPositiveButton(context.getString(R.string.okay)) { dialog, _ ->
+                dialog.dismiss()  // Dismiss the dialog when OK is clicked
+            }
+            .show()
     }
 }

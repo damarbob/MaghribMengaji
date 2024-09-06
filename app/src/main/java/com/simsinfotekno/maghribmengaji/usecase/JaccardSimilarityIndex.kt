@@ -1,5 +1,6 @@
 package com.simsinfotekno.maghribmengaji.usecase
 
+import android.util.Log
 import kotlin.math.round
 
 class JaccardSimilarityIndex {
@@ -33,9 +34,9 @@ class JaccardSimilarityIndex {
      */
     private fun normalizeScore(rawScore: Double): Double {
         // Normalize to a 0-100 scale where 70 maps to 100
-        val normalizedScore = (rawScore / (70.0 / 100.0))
+        val normalizedScore = (rawScore / (80.0 / 100.0))
 
         // Round and return the normalized score
-        return round(normalizedScore * 100) / 100
+        return if (round(normalizedScore * 100) <= 100) round(normalizedScore * 100) else 100.0
     }
 }

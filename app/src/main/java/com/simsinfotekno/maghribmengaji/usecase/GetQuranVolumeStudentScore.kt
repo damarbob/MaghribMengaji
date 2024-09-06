@@ -28,6 +28,8 @@ class GetQuranVolumeStudentScore {
         var score = 0
         val quranVolumeStudentScore: QuranVolumeStudentScore
 
+        Log.d(TAG, quranPages.toString())
+
         for (quranPage in quranPages) {
             db.whereEqualTo("id", userId).whereEqualTo("pageId", quranPage).get()
                 .addOnSuccessListener { documents ->
@@ -42,7 +44,7 @@ class GetQuranVolumeStudentScore {
                     }
 
                     if (documents.isEmpty) {
-                        Log.d(TAG, "No matching documents found.")
+//                        Log.d(TAG, "No matching documents found.")
                     }
                 }
                 .addOnFailureListener { exception ->

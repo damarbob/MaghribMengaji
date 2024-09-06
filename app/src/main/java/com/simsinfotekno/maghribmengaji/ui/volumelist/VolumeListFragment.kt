@@ -51,8 +51,6 @@ class VolumeListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // TODO: Use the ViewModel
-
         // Set the transition for this fragment
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ false)
@@ -188,9 +186,10 @@ class VolumeListFragment : Fragment() {
         /* Observers */
         // Observe the selected volume LiveData of grid view type
         volumeGridAdapter = VolumeGridAdapter(
-            quranVolumes,
+            quranVolumes.reversed(),
             findNavController(),
-            this
+            this,
+            requireContext()
         )
         volumeGridAdapter.selectedVolume.observe(viewLifecycleOwner) {
             if (it == null) return@observe
