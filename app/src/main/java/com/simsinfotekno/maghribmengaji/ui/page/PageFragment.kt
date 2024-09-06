@@ -9,10 +9,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -210,6 +212,16 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         binding.pageTextViewVolume.text = getString(R.string.volume_x, volume?.id.toString())
         binding.pageImageViewPage.visibility = View.GONE
         binding.pageCheckResultHolder.visibility = View.GONE
+
+        // Set background image height
+        val displayMetrics = DisplayMetrics()
+        activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+        val params = binding.pageImageViewPage.layoutParams
+        params.height = displayMetrics.heightPixels - resources.getDimension(com.google.android.material.R.dimen.abc_action_bar_default_height_material).toInt() - 176
+        binding.pageImageViewPage.layoutParams = params
+
+
+        if (pageStudent != null) viewModel.setToResultViewMode() else viewModel.setToPageViewMode()
 
         bottomSheetBehaviorCheckResult =
             BottomSheetBehavior.from(binding.pageBottomSheetCheckResult.bottomSheetCheckResult)
@@ -532,16 +544,16 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         val overallScore = (ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4
 
         binding.pageCheckResultTextViewOverallScore.text = overallScore.toString()
-        binding.pageCheckResultTextViewPreliminaryResult.text = ocrScore.toString()
+        /*binding.pageCheckResultTextViewPreliminaryResult.text = ocrScore.toString()
         binding.pageCheckResultTextViewTidinessResult.text = tidinessScore.toString()
         binding.pageCheckResultTextViewAccuracyResult.text = accuracyScore.toString()
-        binding.pageCheckResultTextViewConsistencyResult.text = consistencyScore.toString()
+        binding.pageCheckResultTextViewConsistencyResult.text = consistencyScore.toString()*/
 
         binding.pageCheckResultCircularProgressScore.progress = overallScore
-        binding.pageCheckResultProgressIndicatorPreliminary.progress = ocrScore
+        /*binding.pageCheckResultProgressIndicatorPreliminary.progress = ocrScore
         binding.pageCheckResultProgressIndicatorTidiness.progress = tidinessScore
         binding.pageCheckResultProgressIndicatorAccuracy.progress = accuracyScore
-        binding.pageCheckResultProgressIndicatorConsistency.progress = consistencyScore
+        binding.pageCheckResultProgressIndicatorConsistency.progress = consistencyScore*/
 
         pageStudent?.pictureUriString?.let {
             loadImageIntoImageView(it, binding.pageCheckResultImageViewStudentPageImage, false)

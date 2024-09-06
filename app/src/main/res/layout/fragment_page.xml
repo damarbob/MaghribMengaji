@@ -79,6 +79,7 @@
         android:id="@+id/pageNestedScrollViewPage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/md_theme_surfaceContainerHigh"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -162,10 +163,10 @@
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
             <FrameLayout
+                android:id="@+id/pageImageFrameLayoutImageContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/md_theme_surfaceContainerHigh"
-                android:maxHeight="720dp">
+                android:background="@color/md_theme_surfaceContainerHigh">
 
                 <ImageView
                     android:id="@+id/pageImageViewPage"
@@ -185,6 +186,15 @@
                     android:contentDescription="@string/quran_page_image_description"
                     android:maxHeight="720dp"
                     android:visibility="gone" />
+
+<!--                <Button-->
+<!--                    android:id="@+id/pageButtonSubmitCenter"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:translationY="96dp"-->
+<!--                    style="@style/Widget.Material3.Button"-->
+<!--                    android:text="@string/submit" />-->
 
             </FrameLayout>
 
@@ -206,7 +216,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="@string/overall_score"
+                    android:text="@string/score"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
                     android:textStyle="bold"
@@ -243,7 +253,7 @@
                     app:trackCornerRadius="8dp"
                     app:trackThickness="16dp" />
 
-                <TextView
+                <!--<TextView
                     android:id="@+id/pageCheckResultTextViewPreliminaryText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -396,7 +406,7 @@
                     app:layout_constraintStart_toEndOf="@id/pageCheckResultProgressIndicatorAccuracy"
                     app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewConsistencyText"
                     app:trackCornerRadius="4dp"
-                    app:trackThickness="8dp" />
+                    app:trackThickness="8dp" />-->
 
                 <ImageView
                     android:id="@+id/pageCheckResultImageViewStudentPageImage"
@@ -411,7 +421,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultProgressIndicatorPreliminary" />
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
