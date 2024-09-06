@@ -276,4 +276,6 @@
     <string name="address_purpose">Fill in the complete address. For the purpose of delivering the Write Quran (Al Quran Tulis).</string>
     <string name="settings">Settings</string>
     <string name="loading">Loading</string>
+    <string name="you_dont_have_that_volume">You don\'t have that volume</string>
+    <string name="afwan">Afwan</string>
 </resources>

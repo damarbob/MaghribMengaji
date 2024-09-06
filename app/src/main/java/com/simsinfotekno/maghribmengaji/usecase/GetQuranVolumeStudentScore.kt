@@ -16,36 +16,41 @@ class GetQuranVolumeStudentScore {
     }
 
     // Method to retrieve the user profile
-    operator fun invoke(userId: String, volumeId: Int, onQuranVolumeStudentScoreRetrieved: (Int) -> Unit) {
+    operator fun invoke(
+        userId: String,
+        volumeId: Int,
+        onQuranVolumeStudentScoreRetrieved: (Int) -> Unit
+    ) {
         val db = Firebase.firestore.collection(QuranPageStudent.COLLECTION)
-        Log.d(TAG, "quranPages ${MainApplication.quranVolumes[volumeId-1].pageIds}")
-        val quranPages = MainApplication.quranVolumes[volumeId-1].pageIds
+//        Log.d(TAG, "quranPages ${MainApplication.quranVolumes[volumeId - 1].pageIds}")
+        val quranPages = MainApplication.quranVolumes[volumeId - 1].pageIds
         val quranPageStudent: ArrayList<Int> = arrayListOf()
         var score = 0
         val quranVolumeStudentScore: QuranVolumeStudentScore
 
-        for (quranPage in quranPages)
-        db.whereEqualTo("id", userId).whereEqualTo("pageId", quranPage).get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
+        for (quranPage in quranPages) {
+            db.whereEqualTo("id", userId).whereEqualTo("pageId", quranPage).get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
 
-                    // Get quranPage data
-                    val data = document.data
+                        // Get quranPage data
+                        val data = document.data
 
-                    score += data["ocrscore"] as Int
-                    quranPageStudent.add(data["pageId"] as Int)
+                        score += data["ocrscore"] as Int
+                        quranPageStudent.add(data["pageId"] as Int)
 //                    Log.d(TAG, "Document found with ID: ${document.id} => $data")
-                }
+                    }
 
-                if (documents.isEmpty) {
-                    Log.d(TAG, "No matching documents found.")
+                    if (documents.isEmpty) {
+                        Log.d(TAG, "No matching documents found.")
+                    }
                 }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
-            }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        }
 
-        Log.d(TAG, "the volume score is $score")
+//        Log.d(TAG, "the volume score is $score")
         // Call the lambda function with the retrieved score
         onQuranVolumeStudentScoreRetrieved(score)
 
