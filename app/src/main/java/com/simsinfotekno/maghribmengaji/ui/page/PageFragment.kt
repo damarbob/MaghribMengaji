@@ -14,7 +14,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -565,15 +564,13 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         val accuracyScore = pageStudent?.accuracyScore ?: 0
         val consistencyScore = pageStudent?.consistencyScore ?: 0
 
-        val overallScore = (ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4
-
-        binding.pageCheckResultTextViewOverallScore.text = overallScore.toString()
+        binding.pageCheckResultTextViewOverallScore.text = ocrScore.toString()
         /*binding.pageCheckResultTextViewPreliminaryResult.text = ocrScore.toString()
         binding.pageCheckResultTextViewTidinessResult.text = tidinessScore.toString()
         binding.pageCheckResultTextViewAccuracyResult.text = accuracyScore.toString()
         binding.pageCheckResultTextViewConsistencyResult.text = consistencyScore.toString()*/
 
-        binding.pageCheckResultCircularProgressScore.progress = overallScore
+        binding.pageCheckResultCircularProgressScore.progress = ocrScore
         /*binding.pageCheckResultProgressIndicatorPreliminary.progress = ocrScore
         binding.pageCheckResultProgressIndicatorTidiness.progress = tidinessScore
         binding.pageCheckResultProgressIndicatorAccuracy.progress = accuracyScore

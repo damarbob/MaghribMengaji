@@ -23,6 +23,7 @@ import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.jakewharton.processphoenix.ProcessPhoenix
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranChapterRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageBookmarkStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
@@ -158,6 +159,7 @@ class HomeFragment : Fragment() {
         binding.homeFabVolumeList.visibility = View.GONE
         binding.homeLayoutNoNetwork.visibility = View.GONE
         binding.homeLayoutJuzList.visibility = View.GONE
+        binding.homeSwipeRefreshLayout.isEnabled = false
 
         binding.homeTextTitle.text =
             "${Firebase.auth.currentUser?.displayName}"
@@ -380,9 +382,15 @@ class HomeFragment : Fragment() {
                 )
 
             }
+            // Enable or disable swipe refresh based on AppBarLayout's state
+            binding.homeSwipeRefreshLayout.isEnabled = (verticalOffset == 0 && binding.homeScroll.scrollY == 0)
         }
         binding.homeCardHeaderName.setOnClickListener {
             binding.homeAppBarLayout.setExpanded(false)
+        }
+        binding.homeSwipeRefreshLayout.setOnRefreshListener {
+            // Restart the current activity
+            ProcessPhoenix.triggerRebirth(requireContext())
         }
         binding.homeTextUstadhName.setOnClickListener {
             if (ustadhName != null) { // Check if user has Ustadh

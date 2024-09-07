@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.MainApplication
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.model.QuranVolume
@@ -28,31 +29,15 @@ class GetQuranVolumeStudentScore {
         var score = 0
         val quranVolumeStudentScore: QuranVolumeStudentScore
 
-        Log.d(TAG, quranPages.toString())
+        val studentsQuranPage = quranPageStudentRepository.getRecordByIdsNoStrict(quranPages.toIntArray())
 
-        for (quranPage in quranPages) {
-            db.whereEqualTo("id", userId).whereEqualTo("pageId", quranPage).get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-
-                        // Get quranPage data
-                        val data = document.data
-
-                        score += data["ocrscore"] as Int
-                        quranPageStudent.add(data["pageId"] as Int)
-//                    Log.d(TAG, "Document found with ID: ${document.id} => $data")
-                    }
-
-                    if (documents.isEmpty) {
-//                        Log.d(TAG, "No matching documents found.")
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
+        for (quranPage in studentsQuranPage) {
+            if (quranPage.oCRScore != null) {
+                score += quranPage.oCRScore!!
+            }
         }
 
-//        Log.d(TAG, "the volume score is $score")
+        if (!studentsQuranPage.isEmpty()) score /= studentsQuranPage.size
         // Call the lambda function with the retrieved score
         onQuranVolumeStudentScoreRetrieved(score)
 
