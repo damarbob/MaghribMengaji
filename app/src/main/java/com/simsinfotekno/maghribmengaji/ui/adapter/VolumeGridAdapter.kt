@@ -252,7 +252,7 @@ class VolumeGridAdapter(
     private fun showAlertDialog() {
         MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(R.string.afwan))
-            .setMessage(context.getString(R.string.you_dont_have_that_volume))
+            .setMessage(context.getString(R.string.this_volume_is_locked))
             .setPositiveButton(context.getString(R.string.okay)) { dialog, _ ->
                 dialog.dismiss()  // Dismiss the dialog when OK is clicked
             }

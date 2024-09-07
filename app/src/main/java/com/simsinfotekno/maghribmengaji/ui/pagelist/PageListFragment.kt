@@ -11,10 +11,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import com.simsinfotekno.maghribmengaji.MainApplication
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
@@ -24,6 +26,7 @@ import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageAdapter
 import com.simsinfotekno.maghribmengaji.ui.page.PageViewModel
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
+import com.simsinfotekno.maghribmengaji.usecase.CheckOwnedQuranVolumeUseCase
 import com.simsinfotekno.maghribmengaji.usecase.GetQuranPageRangeString
 import com.simsinfotekno.maghribmengaji.usecase.QuranPageStatusCheck
 
@@ -45,6 +48,7 @@ class PageListFragment : Fragment() {
     /* Use case */
     private val quranPageStatusCheck = QuranPageStatusCheck()
     private val getQuranPageRangeString = GetQuranPageRangeString()
+    private val checkOwnedQuranVolumeUseCase = CheckOwnedQuranVolumeUseCase()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +74,15 @@ class PageListFragment : Fragment() {
         val volumeId = arguments?.getInt("volumeId")
         val pageIds = arguments?.getIntArray("pageIds")!!
         val chapterName = arguments?.getString("chapterName")
+        val ownedVolume = MainApplication.studentRepository.getStudent()?.ownedVolumeId
+
+        /* Check owned volume ID */
+        checkOwnedQuranVolumeUseCase(ownedVolume,
+            volumeId = volumeId,
+            pageId = pageIds.first(),
+            onNotOwnedVolume = {
+                notOwnedVolume()
+            })
 
         /* Variables */
         val pages = quranPageRepository.getRecordByIds(pageIds)
@@ -135,6 +148,18 @@ class PageListFragment : Fragment() {
 //        }
 
         return binding.root
+    }
+
+    private fun notOwnedVolume() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.afwan))
+            .setMessage(resources.getString(R.string.this_volume_is_locked))
+            .setPositiveButton(resources.getString(R.string.okay)) { dialog, _ ->
+                findNavController().popBackStack()
+                dialog.dismiss()  // Dismiss the dialog when OK is clicked
+            }
+            .setCancelable(false)
+            .show()
     }
 
     override fun onDestroyView() {
