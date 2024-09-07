@@ -43,6 +43,11 @@
                 android:icon="@drawable/baseline_copyright_24"
                 android:title="@string/about"
                 android:visible="true" />
+            <item
+                android:id="@+id/menu_donation"
+                android:icon="@drawable/outline_mosque_24"
+                android:title="@string/infaq"
+                android:visible="true" />
         </menu>
     </item>
 

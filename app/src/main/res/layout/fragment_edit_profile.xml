@@ -17,6 +17,7 @@
             android:id="@+id/volumeListCollapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/gradient_background_horizontal"
             app:collapsedTitleTextAppearance="@style/Widget.App.P.Bold"
             app:expandedTitleGravity="bottom"
             app:expandedTitleMarginBottom="48dp"
@@ -30,14 +31,15 @@
 
             <ImageView
                 android:id="@+id/editProfileAvatar"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="200dp"
-                android:background="@drawable/gradient_background_horizontal"
+                android:layout_marginEnd="32dp"
+                android:layout_gravity="center|end"
                 android:scaleType="centerInside"
                 app:layout_collapseMode="parallax" />
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/volumeListToolbar"
+                android:id="@+id/editProfileToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
@@ -48,7 +50,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/volumeListScroll"
+        android:id="@+id/editProfileScroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">

@@ -275,4 +275,9 @@
     <string name="you_dont_have_that_volume">Antum tidak mempunyai jilid ini</string>
     <string name="afwan">Afwan</string>
     <string name="allow_notification">Izinkan notifikasi</string>
+    <string name="updated_successfully">Berhasil diupdate</string>
+    <string name="infaq">Infaq</string>
+    <string name="withdrawal">Penarikan</string>
+    <string name="history">Riwayat</string>
+    <string name="deposit">Deposit</string>
 </resources>

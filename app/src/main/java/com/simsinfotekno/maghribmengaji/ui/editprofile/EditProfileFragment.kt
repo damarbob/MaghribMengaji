@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.jakewharton.processphoenix.ProcessPhoenix
@@ -71,7 +72,7 @@ class EditProfileFragment : Fragment() {
 
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.upload_successful),
+                    getString(R.string.updated_successfully),
                     Toast.LENGTH_SHORT
                 ).show()
 //                findNavController().popBackStack() // Back to previous page
@@ -108,21 +109,36 @@ class EditProfileFragment : Fragment() {
 
         /* Listeners */
         binding.editProfileSaveButton.setOnClickListener {
-            if (user != null) {
-                viewModel.updateProfile(
-                    user.uid,
-                    hashMapOf(
-                        "fullName" to binding.editProfileInputFullName.text.toString(),
-                        "address" to binding.editProfileInputAddress.text.toString(),
-                        "phone" to binding.editProfileInputPhoneNumber.text.toString(),
-                        "school" to binding.editProfileInputNPSN.text.toString(),
-                        "bank" to binding.editProfileInputBank.text.toString(),
-                        "bankAccount" to binding.editProfileInputAccountNumber.text.toString(),
-                    )
-                )
-            }
+
+            // Show confirmation dialog
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.edit_profile))
+                .setMessage(getString(R.string.continue_please_ensure_the_data_you_entered_is_correct))
+                .setPositiveButton(getString(R.string.send)) { dialog, which ->
+
+                    // Update profile
+                    if (user != null) {
+                        viewModel.updateProfile(
+                            user.uid,
+                            hashMapOf(
+                                "fullName" to binding.editProfileInputFullName.text.toString(),
+                                "address" to binding.editProfileInputAddress.text.toString(),
+                                "phone" to binding.editProfileInputPhoneNumber.text.toString(),
+                                "school" to binding.editProfileInputNPSN.text.toString(),
+                                "bank" to binding.editProfileInputBank.text.toString(),
+                                "bankAccount" to binding.editProfileInputAccountNumber.text.toString(),
+                            )
+                        )
+                    }
+
+                }
+                .setNeutralButton(getString(R.string.close)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .show()
+
         }
-        binding.volumeListToolbar.setNavigationOnClickListener {
+        binding.editProfileToolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
         return binding.root

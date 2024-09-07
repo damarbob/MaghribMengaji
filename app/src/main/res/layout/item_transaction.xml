@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/itemPageCardView"
-    style="@style/Widget.Material3.CardView.Elevated"
+    android:id="@+id/itemTransactionCardView"
+    style="@style/Widget.Material3.CardView.Filled"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
@@ -11,50 +11,41 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:padding="16dp">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/auto_stories_24px"
+            android:layout_marginEnd="16dp"
+            app:srcCompat="@drawable/round_add_24"
             app:tint="?attr/colorPrimary" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_weight="1">
 
             <TextView
-                android:id="@+id/itemPageTextTitle"
+                android:id="@+id/itemTransactionTitle"
+                style="@style/Widget.App.P.Bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:text="Page 0" />
+                android:text="Rp. 50.000,-" />
 
             <TextView
-                android:id="@+id/itemPageTextTitleChapter"
+                android:id="@+id/itemTransactionType"
                 android:layout_marginTop="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:text="Surah X"
+                android:text="Withdraw"
                 style="@style/Widget.App.Small"/>
 
         </LinearLayout>
-
-
-        <ImageView
-            android:id="@+id/itemPageImageStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            app:srcCompat="@drawable/hourglass_empty_24px"
-            app:tint="?attr/colorPrimary" />
 
     </LinearLayout>
 
