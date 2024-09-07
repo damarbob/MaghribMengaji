@@ -58,6 +58,7 @@ class SignUpViewModel : ViewModel() {
                                         referralCode = referral,
                                         address = address,
                                         school = school,
+                                        ownedVolumeId = listOf(10)
                                     )
 
                                     db.add(newStudent).addOnCompleteListener{

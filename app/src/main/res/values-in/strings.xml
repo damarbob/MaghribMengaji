@@ -280,4 +280,5 @@
     <string name="withdrawal">Penarikan</string>
     <string name="history">Riwayat</string>
     <string name="deposit">Deposit</string>
+    <string name="this_volume_is_locked">Jilid ini terkunci</string>
 </resources>

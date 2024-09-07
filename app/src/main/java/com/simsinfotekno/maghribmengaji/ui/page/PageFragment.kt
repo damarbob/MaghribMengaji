@@ -33,9 +33,11 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
+import com.simsinfotekno.maghribmengaji.MainApplication
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
@@ -46,6 +48,7 @@ import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
 import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
+import com.simsinfotekno.maghribmengaji.usecase.CheckOwnedQuranVolumeUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
@@ -80,6 +83,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
     private val launchScannerUseCase = LaunchScannerUseCase()
     private val launchCameraUseCase = LaunchCameraUseCase()
     private val launchGalleryUseCase = LaunchGalleryUseCase()
+    private val checkOwnedQuranVolumeUseCase = CheckOwnedQuranVolumeUseCase()
 //    private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
 
     private val PICK_IMAGE_REQUEST = 1
@@ -205,6 +209,14 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         val volume = quranVolumeRepository.getRecordByPageId(page!!.id) // Get QuranVolume instance
         pageStudent =
             quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
+        val ownedVolume = MainApplication.studentRepository.getStudent()?.ownedVolumeId
+
+        /* Check owned volume ID */
+        checkOwnedQuranVolumeUseCase(ownedVolume,
+            pageId = pageId,
+            onNotOwnedVolume = {
+                notOwnedVolume()
+            })
 
         /* Views */
         binding.pageCollapsingToolbarLayout.title =
@@ -461,6 +473,18 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         }
 
         return binding.root
+    }
+
+    private fun notOwnedVolume() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.afwan))
+            .setMessage(resources.getString(R.string.this_volume_is_locked))
+            .setPositiveButton(resources.getString(R.string.okay)) { dialog, _ ->
+                findNavController().popBackStack()
+                dialog.dismiss()  // Dismiss the dialog when OK is clicked
+            }
+            .setCancelable(false)
+            .show()
     }
 
     private fun showPage(container: ViewGroup?) {
