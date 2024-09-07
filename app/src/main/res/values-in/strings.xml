@@ -275,4 +275,5 @@
     <string name="you_dont_have_that_volume">Antum tidak mempunyai jilid ini</string>
     <string name="afwan">Afwan</string>
     <string name="allow_notification">Izinkan notifikasi</string>
+    <string name="this_volume_is_locked">Jilid ini terkunci</string>
 </resources>
