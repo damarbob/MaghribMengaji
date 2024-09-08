@@ -22,7 +22,7 @@ class RetrieveQuranPageStudent {
                     val quranPageData = document.data
 
                     Log.d(TAG, "Document found with ID: ${document.id} => $quranPageData")
-                    Log.d(TAG, quranPageData["pageId"].toString())
+//                    Log.d(TAG, quranPageData["pageId"].toString())
 
                     val pageId = (quranPageData["pageId"] as? Long)?.toInt()
                     val ocrscore = (quranPageData["ocrscore"] as? Long)?.toInt()

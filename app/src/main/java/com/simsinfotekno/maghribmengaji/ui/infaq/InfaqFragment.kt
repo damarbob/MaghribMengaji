@@ -1,13 +1,12 @@
-package com.simsinfotekno.maghribmengaji.ui.payment
+package com.simsinfotekno.maghribmengaji.ui.infaq
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
@@ -17,21 +16,22 @@ import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
-import com.simsinfotekno.maghribmengaji.databinding.FragmentDonationBinding
+import com.simsinfotekno.maghribmengaji.databinding.FragmentInfaqBinding
 import com.simsinfotekno.maghribmengaji.model.Infaq
 import com.simsinfotekno.maghribmengaji.ui.adapter.InfaqAdapter
 
-class PaymentFragment : Fragment() {
+// TODO: Test functionality
+class InfaqFragment : DialogFragment() {
 
-    private lateinit var binding: FragmentDonationBinding
+    private lateinit var binding: FragmentInfaqBinding
 
     companion object {
-        fun newInstance() = PaymentFragment()
-        private val TAG = "PaymentFragment"
+        fun newInstance() = InfaqFragment()
+        private val TAG = InfaqFragment::class.simpleName
     }
 
     /* View models */
-    private val viewModel: PaymentViewModel by viewModels()
+    private val viewModel: InfaqViewModel by viewModels()
 
     /* Variables */
     private lateinit var billingClient: BillingClient
@@ -40,12 +40,25 @@ class PaymentFragment : Fragment() {
     private lateinit var infaqAdapter: InfaqAdapter
     private val infaqList = mutableListOf<Infaq>() // List to hold the in-app products
 
+    override fun onStart() {
+        super.onStart()
+
+        // Fullscreen
+        val dialog = dialog
+        if (dialog != null) {
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
+            dialog.window!!.setLayout(width, height)
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentDonationBinding.inflate(inflater, container, false)
+        binding = FragmentInfaqBinding.inflate(inflater, container, false)
 
         // Sama seperti di atas, inisialisasi BillingClient dan query produk
         BillingClient.newBuilder(requireContext())
@@ -67,7 +80,8 @@ class PaymentFragment : Fragment() {
 
         /* Listeners */
         binding.donationToolbar.setNavigationOnClickListener {
-            findNavController().popBackStack()
+//            findNavController().popBackStack()
+            dismiss()
         }
 
         return binding.root
@@ -96,7 +110,9 @@ class PaymentFragment : Fragment() {
             }
 
             override fun onBillingServiceDisconnected() {
-                // Retry connection
+                // Retry connection or handle the error
+                Log.e(TAG, "Billing Service Disconnected")
+                binding.donationProgressIndicator.visibility = View.GONE // Hide progress indicator on error
             }
         })
     }

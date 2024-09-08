@@ -26,6 +26,7 @@ import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStude
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPages
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.transactionRepository
 import com.simsinfotekno.maghribmengaji.databinding.ActivityMainBinding
 import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.enums.UserDataEvent
@@ -33,10 +34,12 @@ import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.ui.infaq.InfaqFragment
 import com.simsinfotekno.maghribmengaji.usecase.CancelDailyNotificationUseCase
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
+import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserTransactions
 import com.simsinfotekno.maghribmengaji.usecase.ScheduleDailyNotificationUseCase
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -61,6 +64,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     /* Use cases */
     private val retrieveUserProfile = RetrieveUserProfile()
     private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
+    private val retrieveUserTransactions = RetrieveUserTransactions()
     private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
     /* Notification */
     private val scheduleDailyNotificationUseCase = ScheduleDailyNotificationUseCase()
@@ -220,10 +224,14 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                         .show()
                 }
                 R.id.menu_donation -> {
-                    navController.navigate(R.id.action_global_paymentFragment)
+//                    navController.navigate(R.id.action_global_paymentFragment)
+                    InfaqFragment().show(supportFragmentManager, InfaqFragment::class.java.simpleName)
                 }
                 R.id.menu_edit_profile -> {
                     navController.navigate(R.id.action_global_editProfileFragment)
+                }
+                R.id.menu_balance -> {
+                    navController.navigate(R.id.action_global_withdrawalFragment)
                 }
                 R.id.menu_setting -> {
                     navController.navigate(R.id.action_global_settingFragment)
@@ -425,7 +433,8 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
                         // Start retrieving user data
                         student.ustadhId?.let { retrieveUstadhProfile(it) }
-                        retrieveQuranPageStudent(student.id!!)
+                        retrieveQuranPageStudent(student.id!!) // Retrieve student's pages
+                        retrieveUserTransactions(student.id!!) // Retrieve user's transactions
 
                         student.role?.let { // If role is not null
                             // Adjust nav graph based on the user's role
@@ -475,6 +484,17 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             Log.d(TAG, "Page students imported")
         }
 
+    }
+
+    private fun retrieveUserTransactions(uid: String) {
+        retrieveUserTransactions(uid) {
+            it.onSuccess { transactions ->
+                transactionRepository.setRecords(transactions, true)
+            }.onFailure { exception ->
+                Toast.makeText(this,
+                    getString(R.string.error_retrieving_user_transactions, exception.localizedMessage), Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun resendVerificationEmail() {

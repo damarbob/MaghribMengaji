@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.recyclerview)
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.androidx.ui.text.android)
 //    implementation(libs.firebase.storage.ktx)
     annotationProcessor(libs.compiler)
 

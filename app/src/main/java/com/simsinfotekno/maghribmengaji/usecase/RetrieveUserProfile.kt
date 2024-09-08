@@ -34,7 +34,7 @@ class RetrieveUserProfile {
                         address = data["address"] as String?,
                         school = data["school"] as String?,
                         referralCode = data["referralCode"] as String?,
-                        balance = data["balance"] as Int?,
+                        balance = (data["balance"] as Long?)?.toInt(),
                         bank = data["bank"] as String?,
                         bankAccount = data["bankAccount"] as String?,
                         ownedVolumeId = data["ownedVolumeId"] as? List<Int>?,

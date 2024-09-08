@@ -16,7 +16,7 @@ data class MaghribMengajiUser(
     var balance: Int? = null, // For teacher and influencer
     var bank: String? = null, // For teacher and influencer
     var bankAccount: String? = null, // For teacher and influencer
-    var ownedVolumeId: List<Int>? = null, // Owned volume. Either by privilege or purchase.
+    var ownedVolumeId: List<Int>? = null, // Owned volume. Either by privilege or purchase. TODO: Create a new model
     var createdAt: Timestamp? = null,
     var updatedAt: Timestamp? = null
 ) {

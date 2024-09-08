@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:transitionGroup="true"
-    tools:context=".ui.payment.PaymentFragment">
+    tools:context=".ui.infaq.InfaqFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/volumeListAppBarLayout"
