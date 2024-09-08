@@ -16,7 +16,7 @@
         android:id="@+id/menu_juz_list"
         android:icon="@drawable/book_24px"
         android:title="@string/juz_list"
-        android:visible="false"/>
+        android:visible="false" />
 
     <item
         android:id="@+id/menu_profile"
@@ -24,6 +24,20 @@
         android:title="@string/main_menu_profile"
         android:visible="false" />
 
+    <item android:title="@string/main_menu_profile">
+        <menu>
+            <item
+                android:id="@+id/menu_edit_profile"
+                android:icon="@drawable/person_24px"
+                android:title="@string/edit_profile"
+                android:visible="true" />
+            <item
+                android:id="@+id/menu_balance"
+                android:icon="@drawable/outline_payments_24"
+                android:title="@string/balance"
+                android:visible="true" />
+        </menu>
+    </item>
 
     <item android:title="@string/about">
         <menu>
@@ -54,15 +68,10 @@
     <item android:title="@string/other">
         <menu>
             <item
-                android:id="@+id/menu_edit_profile"
-                android:icon="@drawable/person_24px"
-                android:title="@string/edit_profile"
-                android:visible="true"/>
-            <item
                 android:id="@+id/menu_setting"
                 android:icon="@drawable/settings_24dp"
                 android:title="@string/settings"
-                android:visible="true"/>
+                android:visible="true" />
             <item
                 android:id="@+id/menu_sign_out"
                 android:icon="@drawable/logout_24px"

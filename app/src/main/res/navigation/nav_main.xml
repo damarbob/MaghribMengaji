@@ -212,13 +212,13 @@
         android:id="@+id/action_global_settingFragment"
         app:destination="@id/settingFragment" />
     <fragment
-        android:id="@+id/paymentFragment"
-        android:name="com.simsinfotekno.maghribmengaji.ui.payment.PaymentFragment"
-        android:label="fragment_payment"
-        tools:layout="@layout/fragment_payment" />
+        android:id="@+id/infaqFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.infaq.InfaqFragment"
+        android:label="fragment_infaq"
+        tools:layout="@layout/fragment_infaq" />
     <action
-        android:id="@+id/action_global_paymentFragment"
-        app:destination="@id/paymentFragment" />
+        android:id="@+id/action_global_infaqFragment"
+        app:destination="@id/infaqFragment" />
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.simsinfotekno.maghribmengaji.ui.editprofile.EditProfileFragment"
@@ -227,5 +227,13 @@
     <action
         android:id="@+id/action_global_editProfileFragment"
         app:destination="@id/editProfileFragment" />
+    <fragment
+        android:id="@+id/withdrawalFragment"
+        android:name="com.simsinfotekno.maghribmengaji.ui.withdrawal.WithdrawalFragment"
+        android:label="fragment_balance"
+        tools:layout="@layout/fragment_balance" />
+    <action
+        android:id="@+id/action_global_withdrawalFragment"
+        app:destination="@id/withdrawalFragment" />
 
 </navigation>

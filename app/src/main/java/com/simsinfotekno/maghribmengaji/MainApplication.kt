@@ -10,6 +10,8 @@ import android.view.View
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import com.google.firebase.Timestamp
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiTransaction
 import com.simsinfotekno.maghribmengaji.model.QuranChapter
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.model.QuranPageBookmarkStudent
@@ -21,6 +23,7 @@ import com.simsinfotekno.maghribmengaji.repository.QuranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.repository.QuranRecordingStudentRepository
 import com.simsinfotekno.maghribmengaji.repository.QuranVolumeRepository
 import com.simsinfotekno.maghribmengaji.repository.StudentRepository
+import com.simsinfotekno.maghribmengaji.repository.TransactionRepository
 
 
 class MainApplication : Application() {
@@ -38,6 +41,7 @@ class MainApplication : Application() {
         val quranPageStudentRepository = QuranPageStudentRepository()
         val studentRepository = StudentRepository()
         val quranRecordingStudentRepository = QuranRecordingStudentRepository()
+        val transactionRepository = TransactionRepository()
 
         // Ustadh repos
         val ustadhStudentRepository = StudentRepository()
@@ -458,6 +462,9 @@ class MainApplication : Application() {
         }
         quranPageRepository.setRecords(quranPages, false)
         quranPageBookmarkStudentRepository.setRecords(quranPageBookmarksStudent, false)
+
+        // Initial balance
+        transactionRepository.addRecord(MaghribMengajiTransaction(type = MaghribMengajiTransaction.TYPE_DEPOSIT, balance = 100000000, createdAt = Timestamp.now(), updatedAt = Timestamp.now()))
 
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
