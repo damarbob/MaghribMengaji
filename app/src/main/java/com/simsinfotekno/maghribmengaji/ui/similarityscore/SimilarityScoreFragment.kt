@@ -2,8 +2,10 @@ package com.simsinfotekno.maghribmengaji.ui.similarityscore
 
 import android.animation.ValueAnimator
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,6 +26,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
@@ -33,14 +36,19 @@ import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentSimilarityScoreBinding
 import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
+import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
 import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromOCRApiJSON
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
 import com.simsinfotekno.maghribmengaji.usecase.FetchQuranPageUseCase
 import com.simsinfotekno.maghribmengaji.usecase.JaccardSimilarityIndex
+import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
+import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LoadBitmapFromUri
 import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
+import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -69,6 +77,11 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
     /* Variables */
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
+    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
+    private lateinit var requestCameraPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var requestGalleryPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var bottomSheetBehaviorCheckResult: BottomSheetBehavior<View>
     private var pageId: Int? = null
     private var bitmap: Bitmap? = null
     private lateinit var imageUri: Uri
@@ -83,6 +96,9 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private val extractTextFromQuranApiJson = ExtractTextFromQuranAPIJSON()
     private val extractTextFromOCRApiJson = ExtractTextFromOCRApiJSON()
     private val bitmapToBase64 = BitmapToBase64()
+    private val launchScannerUseCase = LaunchScannerUseCase()
+    private val launchCameraUseCase = LaunchCameraUseCase()
+    private val launchGalleryUseCase = LaunchGalleryUseCase()
 
     // TODO: KKM decided by ustadh
     private val kkm = 60
@@ -98,6 +114,89 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             ActivityResultContracts.StartIntentSenderForResult(),
             this
         )
+
+        cameraLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    val imageBitmap = it.data?.extras?.get("data") as Bitmap
+                    val imageUri = BitmapToUriUtil.saveBitmapToFile(requireContext(), imageBitmap)
+
+                    // Submit image to similarity fragment
+                    submitImage(imageUri)
+
+                } else if (it.resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_scanner_cancelled),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_default_message),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+        requestCameraPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    launchCameraUseCase(
+                        requireContext(),
+                        cameraLauncher,
+                        requestCameraPermissionLauncher
+                    )
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Camera permission is required to take a photo",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+        galleryLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    val imageUri = it.data?.data
+
+                    // Submit image to similarity fragment
+                    submitImage(imageUri)
+
+                } else if (it.resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_scanner_cancelled),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_default_message),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+        requestGalleryPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    launchGalleryUseCase(
+                        requireContext(),
+                        galleryLauncher,
+                        requestGalleryPermissionLauncher
+                    )
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Camera permission is required to take a photo",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
 
         // Set the transition for this fragment
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, /* forward= */ true)
@@ -289,8 +388,39 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                 .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
                     dialog.dismiss()
                 }
-                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    LaunchScannerUseCase().invoke(this, scannerLauncher)
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+//                    if (Build.VERSION.SDK_INT >= 30) {
+                    if (MaghribMengajiPref.readBoolean(
+                            requireActivity(),
+                            MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY,
+                            true
+                        )
+                    ) {
+                        launchScannerUseCase(this, scannerLauncher)
+                    } else {
+                        val bottomSheet = ImagePickerBottomSheetDialog().apply {
+                            onCameraClick = {
+                                launchCameraUseCase(
+                                    requireContext(),
+                                    cameraLauncher,
+                                    requestCameraPermissionLauncher
+                                )
+                            }
+                            onGalleryClick = {
+                                launchGalleryUseCase(
+                                    requireContext(),
+                                    galleryLauncher,
+                                    requestGalleryPermissionLauncher
+                                )
+                            }
+                        }
+                        activity?.let { it1 ->
+                            bottomSheet.show(
+                                it1.supportFragmentManager,
+                                ImagePickerBottomSheetDialog.TAG
+                            )
+                        }
+                    }
                 }
                 .show()
         }
@@ -302,7 +432,32 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                     dialog.dismiss()
                 }
                 .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    LaunchScannerUseCase().invoke(this, scannerLauncher)
+                    if (MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true)) {
+                        launchScannerUseCase(this, scannerLauncher)
+                    } else {
+                        val bottomSheet = ImagePickerBottomSheetDialog().apply {
+                            onCameraClick = {
+                                launchCameraUseCase(
+                                    requireContext(),
+                                    cameraLauncher,
+                                    requestCameraPermissionLauncher
+                                )
+                            }
+                            onGalleryClick = {
+                                launchGalleryUseCase(
+                                    requireContext(),
+                                    galleryLauncher,
+                                    requestGalleryPermissionLauncher
+                                )
+                            }
+                        }
+                        activity?.let { it1 ->
+                            bottomSheet.show(
+                                it1.supportFragmentManager,
+                                ImagePickerBottomSheetDialog.TAG
+                            )
+                        }
+                    }
                 }
                 .show()
         }
@@ -508,5 +663,23 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun submitImage(imageUri: Uri?) {
+        // Bundle to pass the data
+        val bundle = Bundle().apply {
+            putString(
+                "imageUriString",
+                imageUri
+                    .toString()
+            )
+            putInt("pageId", pageId!!)
+        }
+
+        // Navigate to the ResultFragment with the Bundle
+        findNavController().navigate(
+            R.id.action_global_similarityScoreFragment,
+            bundle
+        )
     }
 }

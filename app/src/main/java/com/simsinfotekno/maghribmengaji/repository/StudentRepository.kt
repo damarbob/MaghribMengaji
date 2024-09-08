@@ -2,7 +2,10 @@ package com.simsinfotekno.maghribmengaji.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 
 class StudentRepository() : Repository<MaghribMengajiUser>() {
 
@@ -10,6 +13,11 @@ class StudentRepository() : Repository<MaghribMengajiUser>() {
 //    var ustadh: MaghribMengajiUser? = null // Will be filled by retrieveUserProfile(ustadhId) invocation in MainActivity
     private val _ustadhLiveData = MutableLiveData<MaghribMengajiUser>(null)
     val ustadhLiveData: LiveData<MaghribMengajiUser> = _ustadhLiveData
+
+    private val _studentLiveData = MutableLiveData<MaghribMengajiUser>()
+    val studentLiveData: LiveData<MaghribMengajiUser> get() = _studentLiveData
+
+    private val retrieveUserProfile = RetrieveUserProfile()
 
     override fun onStart() {
 //        TODO("Not yet implemented")
@@ -44,10 +52,19 @@ class StudentRepository() : Repository<MaghribMengajiUser>() {
                 false
             )
         }
+
+        _studentLiveData.postValue(student)
     }
 
     fun getStudent(): MaghribMengajiUser? {
         return getRecordByIndex(0)
+//        return _studentLiveData.value
+    }
+
+    fun fetchStudent() {
+        retrieveUserProfile(Firebase.auth.currentUser!!.uid){
+            setStudent(it)
+        }
     }
 
     fun getStudentById(studentId: String): MaghribMengajiUser? {
