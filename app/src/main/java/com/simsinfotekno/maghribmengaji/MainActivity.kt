@@ -233,6 +233,9 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                 R.id.menu_balance -> {
                     navController.navigate(R.id.action_global_withdrawalFragment)
                 }
+                R.id.menu_referral_code -> {
+                    navController.navigate(R.id.action_global_refferalCodeFragment)
+                }
                 R.id.menu_setting -> {
                     navController.navigate(R.id.action_global_settingFragment)
 

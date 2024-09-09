@@ -286,4 +286,7 @@
     <string name="do_you_wish_to_withdraw_all_your_money">Apakah Anda ingin menarik semua uang Anda? Harap diperhatikan bahwa proses penarikan mungkin memerlukan waktu hingga satu minggu.</string>
     <string name="error_retrieving_user_transactions">Galat dalam menenerima transaksi pengguna %1$s</string>
     <string name="withdrawal_request_successfully_sent">Permintaan penarikan berhasil dikirim</string>
+    <string name="copy_code">Salin Kode</string>
+    <string name="referral_code_successfully_created">Kode referral berhasil dibuat</string>
+    <string name="referral_code_copied_successfully">Kode referral berhasil disalin</string>
 </resources>

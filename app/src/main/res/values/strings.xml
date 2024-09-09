@@ -295,18 +295,10 @@
     <string name="this_volume_is_locked">This volume is locked</string>
     <string name="balance">Balance</string>
     <string name="withdraw">Withdraw</string>
-    <string name="title_activity_main2">MainActivity2</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
     <string name="do_you_wish_to_withdraw_all_your_money">Do you wish to withdraw all your money? Please note that the withdrawal may take up to a week to process.</string>
     <string name="error_retrieving_user_transactions">Error retrieving user transactions %1$s</string>
     <string name="withdrawal_request_successfully_sent">Withdrawal request successfully sent</string>
+    <string name="copy_code">Copy Code</string>
+    <string name="referral_code_successfully_created">Referral code successfully created</string>
+    <string name="referral_code_copied_successfully">Referral code copied successfully</string>
 </resources>

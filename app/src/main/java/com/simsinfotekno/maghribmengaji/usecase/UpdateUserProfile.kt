@@ -14,8 +14,7 @@ class UpdateUserProfile {
      suspend operator fun invoke(
          userId: String,
          updateData: Map<String, Any>,
-         onSuccess: (String) -> Unit,
-         onFailure: (Exception) -> Unit
+         onUserProfileUpdated: (Result<Map<String, Any>>) -> Unit
     ) {
         val db = FirebaseFirestore.getInstance()  // Instantiate Firestore inside the function
         try {
@@ -32,15 +31,15 @@ class UpdateUserProfile {
 
                     collection.document(document.id).update(updateData).await()
                     Log.d(TAG, "User profile successfully updated!")
-                    onSuccess(userId)
+                    onUserProfileUpdated(Result.success(updateData))
                 }
             } else {
                 Log.w(TAG, "No matching user found")
-                onFailure(Exception("No matching user found"))
+                onUserProfileUpdated(Result.failure(Exception("No matching user found")))
             }
         } catch (e: Exception) {
             Log.w(TAG, "Error updating user profile", e)
-            onFailure(Exception("Error updating user profile. ${e.localizedMessage}"))
+            onUserProfileUpdated(Result.failure(Exception("Error updating user profile. ${e.localizedMessage}")))
         }
     }
 }

@@ -12,10 +12,10 @@ import kotlinx.coroutines.launch
 class EditProfileViewModel : ViewModel() {
 
     /* Observables */
-    private val _editProfileResult = MutableLiveData<Result<String>?>(null)
-    val editProfileResult: MutableLiveData<Result<String>?> get() = _editProfileResult
-    private val _authUpdateProfileResult = MutableLiveData<Result<String>?>(null)
-    val authUpdateProfileResult: MutableLiveData<Result<String>?> get() = _authUpdateProfileResult
+    private val _editProfileResult = MutableLiveData<Result<Map<String, Any>>?>(null)
+    val editProfileResult: MutableLiveData<Result<Map<String, Any>>?> get() = _editProfileResult
+    private val _authUpdateProfileResult = MutableLiveData<Result<Map<String, Any>>?>(null)
+    val authUpdateProfileResult: MutableLiveData<Result<Map<String, Any>>?> get() = _authUpdateProfileResult
 
     /* Use cases */
     private val updateUserProfile = UpdateUserProfile()
@@ -30,10 +30,8 @@ class EditProfileViewModel : ViewModel() {
         updateData: Map<String, Any>,
     ) {
         viewModelScope.launch {
-            updateUserProfile(
-                userId,
-                updateData,
-                onSuccess = { studentId ->
+            updateUserProfile(userId, updateData) { result ->
+                result.onSuccess { updatedData ->
 
                     // Update display name
                     val profileUpdates = UserProfileChangeRequest.Builder()
@@ -42,7 +40,7 @@ class EditProfileViewModel : ViewModel() {
                     Firebase.auth.currentUser?.updateProfile(profileUpdates)
                         ?.addOnCompleteListener { profileUpdateTask ->
                             if (profileUpdateTask.isSuccessful) {
-                                _authUpdateProfileResult.value = Result.success(studentId)
+                                _authUpdateProfileResult.value = Result.success(updatedData)
                             } else {
                                 _authUpdateProfileResult.value = profileUpdateTask.exception?.let {
                                     Result.failure(
@@ -52,12 +50,11 @@ class EditProfileViewModel : ViewModel() {
                             }
                         }
 
-                    _editProfileResult.value = Result.success(studentId)
-                },
-                onFailure = { exception ->
+                    _editProfileResult.value = Result.success(updatedData)
+                }.onFailure { exception ->
                     _editProfileResult.value = Result.failure(exception)
                 }
-            )
+            }
         }
     }
 

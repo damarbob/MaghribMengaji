@@ -56,14 +56,16 @@ class EditProfileFragment : Fragment() {
 
         /* Observers */
         viewModel.authUpdateProfileResult.observe(viewLifecycleOwner) { result ->
-            result?.onSuccess {
+            result?.onSuccess { updatedData ->
 
-                Log.d(TAG, "authUpdateProfileResult: Updated user profile $it")
+                val userId = updatedData["id"] as String
+
+                Log.d(TAG, "authUpdateProfileResult: Updated user profile $userId")
                 ProcessPhoenix.triggerRebirth(requireContext())
 
             }?.onFailure { exception ->
                 // Show error message
-                Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), exception.localizedMessage, Toast.LENGTH_SHORT).show()
                 Log.e(TAG, "authUpdateProfileResult: ${exception.message}")
             }
         }
@@ -79,7 +81,7 @@ class EditProfileFragment : Fragment() {
 
             }?.onFailure { exception ->
                 // Show error message
-                Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), exception.localizedMessage, Toast.LENGTH_SHORT).show()
             }
         }
 

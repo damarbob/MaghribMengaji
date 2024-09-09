@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.referralcode.RefferalCode">
+    tools:context=".ui.referralcode.RefferalCodeFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -58,33 +58,32 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="300dp"
+            android:layout_marginBottom="96dp"
             android:animationCache="true"
-            android:background="@drawable/card_gradient_background"
+            android:background="?attr/colorSecondaryContainer"
             android:orientation="vertical"
             android:padding="16dp"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toStartOf="parent">
 
             <TextView
-                android:id="@+id/tv_code_refferal"
+                android:id="@+id/referralTextCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="@string/referral_code"
                 android:textAlignment="center"
                 android:textSize="34sp"
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/referralButtonCopy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Salin Code"
+                android:text="@string/copy_code"
                 app:icon="@drawable/content_copy_24dp" />
         </LinearLayout>
 

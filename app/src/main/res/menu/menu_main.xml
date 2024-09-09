@@ -36,6 +36,11 @@
                 android:icon="@drawable/outline_payments_24"
                 android:title="@string/balance"
                 android:visible="true" />
+            <item
+                android:id="@+id/menu_referral_code"
+                android:icon="@drawable/round_emoji_people_24"
+                android:title="@string/referral_code"
+                android:visible="true" />
         </menu>
     </item>
 
