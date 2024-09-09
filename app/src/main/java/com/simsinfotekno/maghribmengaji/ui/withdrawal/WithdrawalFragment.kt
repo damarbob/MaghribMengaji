@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.simsinfotekno.maghribmengaji.MainApplication
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.transactionRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentBalanceBinding
@@ -57,6 +58,7 @@ class WithdrawalFragment : Fragment() {
     ): View {
         binding = FragmentBalanceBinding.inflate(inflater, container, false)
 
+        val user = MainApplication.studentRepository.getStudent() // Get current user
         balance = transactionRepository.getBalance() // Get user's balance
 
         /* Views */
@@ -80,20 +82,27 @@ class WithdrawalFragment : Fragment() {
                 .setMessage(getString(R.string.do_you_wish_to_withdraw_all_your_money))
                 .setPositiveButton(resources.getString(R.string.okay)) { dialog, _ ->
                     // Process withdrawal
-                    balance?.let { it1 ->
-                        transactionService.withdraw(it1) {
+                    balance?.let { balance ->
+                        transactionService.withdraw(balance) {
                             it.onSuccess {
 
-                                Toast.makeText(requireContext(),
-                                    getString(R.string.withdrawal_request_successfully_sent), Toast.LENGTH_LONG)
+                                Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.withdrawal_request_successfully_sent),
+                                    Toast.LENGTH_LONG
+                                )
                                     .show()
 
                                 adapter.notifyDataSetChanged()
 
-//                                findNavController().popBackStack()
+                                //                                findNavController().popBackStack()
 
                             }.onFailure { exception ->
-                                Toast.makeText(requireContext(), exception.localizedMessage, Toast.LENGTH_LONG)
+                                Toast.makeText(
+                                    requireContext(),
+                                    exception.localizedMessage,
+                                    Toast.LENGTH_LONG
+                                )
                                     .show()
                             }
                         }
@@ -104,18 +113,25 @@ class WithdrawalFragment : Fragment() {
                 .setNeutralButton(getString(R.string.cancel), null)
                 .show()
         }
-        binding.balanceDepositButton.setOnClickListener{
+        binding.balanceDepositButton.setOnClickListener {
             transactionService.deposit(1000000000) {
                 it.onSuccess { transaction ->
 
-                    Toast.makeText(requireContext(),
-                        "Deposited ${formatToIndonesianCurrencyUseCase(transaction.amount)} successfully", Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        requireContext(),
+                        "Deposited ${formatToIndonesianCurrencyUseCase(transaction.amount)} successfully",
+                        Toast.LENGTH_LONG
+                    )
                         .show()
 
                     adapter.notifyDataSetChanged()
 
                 }.onFailure { exception ->
-                    Toast.makeText(requireContext(), exception.localizedMessage, Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        requireContext(),
+                        exception.localizedMessage,
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 }
             }

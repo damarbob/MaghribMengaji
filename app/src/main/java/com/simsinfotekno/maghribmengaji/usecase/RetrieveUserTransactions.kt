@@ -15,9 +15,9 @@ class RetrieveUserTransactions {
 
     // Method to retrieve the user profile
     operator fun invoke(userId: String, onResult: (Result<List<MaghribMengajiTransaction>>) -> Unit) {
-        val dbPage = Firebase.firestore.collection(MaghribMengajiTransaction.COLLECTION)
+        val db = Firebase.firestore.collection(MaghribMengajiTransaction.COLLECTION)
 
-        dbPage
+        db
             .whereEqualTo("userId", userId)
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .get()
@@ -37,6 +37,8 @@ class RetrieveUserTransactions {
                         (transactionData["type"] as String),
                         (transactionData["amount"] as? Long)?.toInt(),
                         (transactionData["balance"] as? Long)?.toInt(),
+                        (transactionData["goods"] as? List<String>?),
+                        (transactionData["approvedAt"] as? Timestamp),
                         (transactionData["createdAt"] as? Timestamp),
                         (transactionData["updatedAt"] as? Timestamp),
                     )

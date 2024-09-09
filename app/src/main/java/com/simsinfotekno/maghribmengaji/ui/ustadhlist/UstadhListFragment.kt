@@ -14,7 +14,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.simsinfotekno.maghribmengaji.ActivityRestartable
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentUstadhListBinding
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.ui.adapter.UstadhAdapter
+import com.simsinfotekno.maghribmengaji.usecase.TransactionService
 
 
 class UstadhListFragment : Fragment() {
@@ -29,6 +31,9 @@ class UstadhListFragment : Fragment() {
 
     // Variables
     private lateinit var ustadhAdapter: UstadhAdapter
+
+    /* Use cases */
+    private val transactionService = TransactionService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,19 +82,33 @@ class UstadhListFragment : Fragment() {
 
         }
         viewModel.updateUstadhIdResult.observe(viewLifecycleOwner) { result ->
-            result?.onSuccess {
+            result?.onSuccess { ustadhId ->
 
-                // Show success message
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.ustadh_updated_successfully),
-                    Toast.LENGTH_SHORT
-                ).show()
+                // Deposit reward to teacher for having a new student
+                transactionService.depositTo(ustadhId, MaghribMengajiUser.TEACHER_REWARD) {
+                    it.onSuccess {
 
-                (activity as? ActivityRestartable)?.restartActivity() // Restart activity
+                        // Show success message
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.ustadh_updated_successfully),
+                            Toast.LENGTH_SHORT
+                        ).show()
 
-                // Navigate to home
-                findNavController().navigate(R.id.action_ustadhListFragment_to_homeFragment)
+                        (activity as? ActivityRestartable)?.restartActivity() // Restart activity
+
+                        // Navigate to home
+                        findNavController().navigate(R.id.action_ustadhListFragment_to_homeFragment)
+
+                    }
+                    it.onFailure { e ->
+                        Toast.makeText(
+                            requireContext(),
+                            e.localizedMessage,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
 
             }?.onFailure { exception ->
                 // Show error message

@@ -24,7 +24,10 @@ data class MaghribMengajiUser(
         val COLLECTION = "users"
         val ROLE_STUDENT = "student"
         val ROLE_TEACHER = "teacher"
-        val ROLE_INFLUENCER = "influencer"
+        val ROLE_AFFILIATE = "affiliate"
         val ROLE_ADMIN = "admin"
+        val TEACHER_DEPOSIT = 25000 // Initial deposit to replace the application cost
+        val TEACHER_REWARD = 5000 // IDR 5000 is given to teacher for each new student choosing him
+        val AFFILIATE_REWARD = 5000 // IDR 5000 is given to affiliate for each new student referring him
     }
 }

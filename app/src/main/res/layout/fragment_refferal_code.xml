@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.referralcode.RefferalCodeFragment">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
@@ -55,37 +54,43 @@
             android:src="@drawable/ic_maghrib_mengaji_vertical"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Material3.CardView.Filled"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="96dp"
-            android:animationCache="true"
-            android:background="?attr/colorSecondaryContainer"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <TextView
-                android:id="@+id/referralTextCode"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/referral_code"
-                android:textAlignment="center"
-                android:textSize="34sp"
-                android:textStyle="bold" />
+                android:animationCache="true"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp">
 
-            <Button
-                android:id="@+id/referralButtonCopy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/copy_code"
-                app:icon="@drawable/content_copy_24dp" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/referralTextCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/referral_code"
+                    android:textAlignment="center"
+                    android:textSize="34sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/referralButtonCopy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/copy_code"
+                    app:icon="@drawable/content_copy_24dp" />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -51,6 +51,7 @@ import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
 import com.simsinfotekno.maghribmengaji.usecase.OpenWhatsApp
 import com.simsinfotekno.maghribmengaji.usecase.QuranVolumeStatusCheck
 import com.simsinfotekno.maghribmengaji.usecase.ShowPopupMenu
+import com.simsinfotekno.maghribmengaji.usecase.ValidateReferralCodeUseCase
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -85,6 +86,7 @@ class HomeFragment : Fragment() {
     private val openWhatsApp = OpenWhatsApp()
     private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
     private val getColorFromAttrUseCase = GetColorFromAttrUseCase()
+    private val validateReferralCodeUseCase = ValidateReferralCodeUseCase()
 
     // Handlers
     private lateinit var autoScrollHandler: Handler
@@ -482,6 +484,16 @@ class HomeFragment : Fragment() {
         }
         binding.homeFabVolumeList.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_volumeListFragment)
+        }
+        // Test referral code
+        binding.homeButtonCheckReferralCode.setOnClickListener {
+            validateReferralCodeUseCase(binding.homeInputReferralCode.text.toString()) { result ->
+                result.onSuccess { referredUser ->
+                    Toast.makeText(requireContext(), getString(R.string.referral_code) + ": ${referredUser.fullName}", Toast.LENGTH_LONG).show()
+                }.onFailure { e ->
+                    Toast.makeText(requireContext(), e.localizedMessage, Toast.LENGTH_LONG).show()
+                }
+            }
         }
 
         return binding.root

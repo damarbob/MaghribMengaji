@@ -11,6 +11,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.usecase.TransactionService
+import com.simsinfotekno.maghribmengaji.usecase.ValidateReferralCodeUseCase
 
 
 class SignUpViewModel : ViewModel() {
@@ -20,12 +22,25 @@ class SignUpViewModel : ViewModel() {
     private val _progressVisibility = MutableLiveData<Boolean>(false)
     val progressVisibility: LiveData<Boolean> get() = _progressVisibility
 
-    fun signUpWithEmailPassword(displayName: String, email: String, phone: String, password: String, address: String, school: String, referral: String) {
+    /* Use cases */
+    private val validateReferralCodeUseCase = ValidateReferralCodeUseCase()
+    private val transactionService = TransactionService()
+
+    fun signUpWithEmailPassword(
+        displayName: String,
+        email: String,
+        phone: String,
+        password: String,
+        address: String,
+        school: String,
+        referral: String
+    ) {
 
         _progressVisibility.value = true
 
         val db = Firebase.firestore.collection(MaghribMengajiUser.COLLECTION)
         val auth = FirebaseAuth.getInstance()
+        var isReferralValid = false
 
         // Create a new user
         auth.createUserWithEmailAndPassword(email, password)
@@ -40,46 +55,83 @@ class SignUpViewModel : ViewModel() {
                         val profileUpdates = UserProfileChangeRequest.Builder()
                             .setDisplayName(displayName)
                             .build()
-                        user.updateProfile(profileUpdates)
-                            .addOnCompleteListener { profileUpdateTask ->
-                                if (profileUpdateTask.isSuccessful) {
 
-                                    // TODO: Move to use case
-                                    // Create new student instance
-                                    val newStudent = MaghribMengajiUser(
-                                        id = user.uid,
-                                        fullName = displayName,
-                                        email = user.email,
-                                        phone = phone,
-                                        lastPageId = null,
-                                        ustadhId = null,
-                                        createdAt = Timestamp.now(),
-                                        updatedAt = Timestamp.now(),
-                                        referralCode = referral,
-                                        address = address,
-                                        school = school,
-                                        ownedVolumeId = listOf(10)
-                                    )
+                        // Validate referral code
+                        validateReferralCodeUseCase(referral) {
+                            it.onSuccess { referredUser ->
 
-                                    db.add(newStudent).addOnCompleteListener{
-                                        if (it.isSuccessful) {
+                                isReferralValid = true // Referral code is VALID
 
-                                            studentRepository.setStudent(newStudent) // Set newStudent to repository
-                                            _authResult.value = Result.success(user) // Return user
+                                // Update user data
+                                user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener { profileUpdateTask ->
+                                        if (profileUpdateTask.isSuccessful) {
 
-                                            _progressVisibility.value = false
-                                        }
-                                        else {
-                                            _authResult.value = Result.failure(it.exception ?: Exception("Failed to create newStudent data"))
+                                            // TODO: Move to use case
+                                            // Create new student instance
+                                            val newStudent = MaghribMengajiUser(
+                                                id = user.uid,
+                                                fullName = displayName,
+                                                email = user.email,
+                                                phone = phone,
+                                                lastPageId = null,
+                                                ustadhId = null,
+                                                createdAt = Timestamp.now(),
+                                                updatedAt = Timestamp.now(),
+                                                referralCode = referral,
+                                                address = address,
+                                                school = school,
+                                                ownedVolumeId = listOf(10)
+                                            )
+
+                                            db.add(newStudent).addOnCompleteListener {
+                                                if (it.isSuccessful) {
+
+                                                    referredUser.id?.let { referredUserId ->
+                                                        transactionService.depositTo(
+                                                            referredUserId,
+                                                            MaghribMengajiUser.AFFILIATE_REWARD
+                                                        ) { transactionResult ->
+                                                            transactionResult.onSuccess { transaction ->
+
+                                                                studentRepository.setStudent(
+                                                                    newStudent
+                                                                ) // Set newStudent to repository
+                                                                _authResult.value =
+                                                                    Result.success(user) // Return user
+
+                                                            }.onFailure { e ->
+                                                                _authResult.value =
+                                                                    Result.failure(e)
+                                                            }
+                                                        }
+                                                        _progressVisibility.value = false
+                                                    }
+                                                } else {
+                                                    _authResult.value = Result.failure(
+                                                        it.exception
+                                                            ?: Exception("Failed to create newStudent data")
+                                                    )
+                                                    _progressVisibility.value = false
+                                                }
+                                            }
+
+                                        } else {
+                                            _authResult.value = Result.failure(
+                                                profileUpdateTask.exception
+                                                    ?: Exception("Failed to update profile")
+                                            )
                                             _progressVisibility.value = false
                                         }
                                     }
 
-                                } else {
-                                    _authResult.value = Result.failure(profileUpdateTask.exception ?: Exception("Failed to update profile"))
-                                    _progressVisibility.value = false
-                                }
+
+                            }.onFailure { e ->
+                                // If referral check fails, display a message to the user.
+                                _authResult.value = Result.failure(e)
+                                _progressVisibility.value = false
                             }
+                        }
 
                     } else {
                         _authResult.value = Result.failure(Exception("User is null"))
@@ -87,9 +139,12 @@ class SignUpViewModel : ViewModel() {
                     }
                 } else {
                     // If sign up fails, display a message to the user.
-                    _authResult.value = Result.failure(task.exception ?: Exception("Sign up failed"))
+                    _authResult.value =
+                        Result.failure(task.exception ?: Exception("Sign up failed"))
                     _progressVisibility.value = false
                 }
             }
+
+
     }
 }

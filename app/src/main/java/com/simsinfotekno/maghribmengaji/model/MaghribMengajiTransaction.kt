@@ -8,8 +8,10 @@ data class MaghribMengajiTransaction (
     var type: String? = null,
     var amount: Int? = null,
     var balance: Int? = null,
+    var goods: List<String>? = null,
+    var approvedAt: Timestamp? = null,
     var createdAt: Timestamp? = null,
-    var updatedAt: Timestamp? = null
+    var updatedAt: Timestamp? = null,
 ) {
     companion object {
         val COLLECTION = "transactions"
