@@ -289,4 +289,8 @@
     <string name="copy_code">Salin Kode</string>
     <string name="referral_code_successfully_created">Kode referral berhasil dibuat</string>
     <string name="referral_code_copied_successfully">Kode referral berhasil disalin</string>
+    <string name="use_ml_kit_scanner">Gunakan ML Kit scanner</string>
+    <string name="recommended_android_version_11_or_higher_if_the_app_crashes_turn_off_this_setting">Direkomendasikan pada versi Android 11 atau lebih tinggi. Jika aplikasi mengalami crash, matikan pengaturan ini</string>
+    <string name="gallery_permission_is_required_to_select_a_photo">Izin galeri diperlukan untuk memilih foto</string>
+    <string name="camera_permission_is_required_to_take_a_photo">Izin kamera diperlukan untuk mengambil foto</string>
 </resources>

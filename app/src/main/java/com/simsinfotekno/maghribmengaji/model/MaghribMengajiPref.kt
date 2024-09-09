@@ -9,6 +9,7 @@ class MaghribMengajiPref {
 
         val USER_NAME_KEY = "UserNameKey"
         val NOTIF_ENABLED_KEY = "NotificationsEnabled"
+        val ML_KIT_SCANNER_ENABLED_KEY = "MLKitScannerEnabled"
 
         fun readString(activity: Activity, key: String?): String? {
             return activity.getPreferences(Context.MODE_PRIVATE).getString(key, null)
@@ -24,8 +25,10 @@ class MaghribMengajiPref {
             editor.putString(key, value)
             editor.apply()
         }
-        fun readBoolean(activity: Activity, key: String): Boolean {
-            return activity.getPreferences(Context.MODE_PRIVATE).getBoolean(key, false)
+        fun readBoolean(activity: Activity, key: String, defaultValue: Boolean?): Boolean {
+            return activity.getPreferences(Context.MODE_PRIVATE).getBoolean(key,
+                defaultValue ?: false
+            )
         }
 
         fun saveBoolean(activity: Activity, key: String?, value: Boolean) {

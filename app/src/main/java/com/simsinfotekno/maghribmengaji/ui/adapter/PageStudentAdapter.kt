@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.MainApplication
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
@@ -39,6 +40,7 @@ class PageStudentAdapter(
         val textViewChapter: TextView
         val cardViewPage: CardView
         val imageStatus: ImageView
+        val textViewScore: TextView
 
         init {
             // Define click listener for the ViewHolder's View
@@ -46,6 +48,7 @@ class PageStudentAdapter(
             textViewChapter = view.findViewById(R.id.itemPageTextTitleChapter)
             cardViewPage = view.findViewById(R.id.itemPageCardView)
             imageStatus = view.findViewById(R.id.itemPageImageStatus)
+            textViewScore = view.findViewById(R.id.itemPageTextScore)
         }
     }
 
@@ -83,26 +86,36 @@ class PageStudentAdapter(
 
         // Set the icon based on the completion status
         val status = quranPageStudentStatusCheck(page)
+        val quranPageStudent = quranPageStudentRepository.getRecordByPageId(page.pageId)
         when (status) {
             QuranItemStatus.FINISHED -> {
-                viewHolder.imageStatus.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        viewHolder.imageStatus.context,
-                        R.drawable.check_circle_24px
-                    )
-                )
+                viewHolder.imageStatus.visibility = View.GONE
+                viewHolder.textViewScore.visibility = View.VISIBLE
+                if (quranPageStudent?.oCRScore != null) viewHolder.textViewScore.text = quranPageStudent.oCRScore.toString() else viewHolder.textViewScore.text = "0"
+//                viewHolder.textViewScore.text = quranPageStudent?.oCRScore.toString()
+//                viewHolder.imageStatus.setImageDrawable(
+//                    AppCompatResources.getDrawable(
+//                        viewHolder.imageStatus.context,
+//                        R.drawable.check_circle_24px
+//                    )
+//                )
             }
 
             QuranItemStatus.ON_PROGRESS -> {
-                viewHolder.imageStatus.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        viewHolder.imageStatus.context,
-                        R.drawable.hourglass_empty_24px
-                    )
-                )
+//                viewHolder.imageStatus.setImageDrawable(
+//                    AppCompatResources.getDrawable(
+//                        viewHolder.imageStatus.context,
+//                        R.drawable.hourglass_empty_24px
+//                    )
+//                )
+                viewHolder.imageStatus.visibility = View.GONE
+                viewHolder.textViewScore.visibility = View.VISIBLE
+                if (quranPageStudent?.oCRScore != null) viewHolder.textViewScore.text = quranPageStudent.oCRScore.toString() else viewHolder.textViewScore.text = "0"
             }
 
             QuranItemStatus.NONE -> {
+                viewHolder.imageStatus.visibility = View.VISIBLE
+                viewHolder.textViewScore.visibility = View.GONE
                 viewHolder.imageStatus.setImageDrawable(
                     AppCompatResources.getDrawable(
                         viewHolder.imageStatus.context,
@@ -110,7 +123,6 @@ class PageStudentAdapter(
                     )
                 )
             }
-
         }
 
         // Listener

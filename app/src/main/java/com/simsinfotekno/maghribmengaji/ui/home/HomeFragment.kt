@@ -226,48 +226,48 @@ class HomeFragment : Fragment() {
             if (it == null) return@observe
         }
         viewModel.lastPageId.observe(viewLifecycleOwner) { lastPageId ->
-            if (lastPageId == null) {
-                binding.homeTextLastWritten.text = getString(R.string.no_data)
-                binding.homeTextLastWrittenVolume.text = getString(R.string.no_data)
-            } else {
-                val lastVolume =
-                    quranVolumeRepository.getRecordByPageId(lastPageId) // Get last volume based on lastPageId
-
-                binding.homeTextLastWritten.text = String.format(
-                    requireContext().getString(R.string.page_x),
-                    lastPageId.toString()
-                )
-                binding.homeTextLastWrittenVolume.text = String.format(
-                    requireContext().getString(R.string.volume_x),
-                    lastVolume?.name
-                )
-                binding.homeTextLastWritten.setOnClickListener {
-
-                    // Bundle for the page fragment
-                    val bundle = Bundle().apply {
-                        putInt("pageId", lastPageId)
-                    }
-
-                    // Navigate to PageFragment
-                    findNavController().navigate(R.id.action_global_pageFragment, bundle)
-                }
-                binding.homeTextLastWrittenVolume.setOnClickListener {
-
-
-                    // Bundle for page list fragment
-                    val bundle = Bundle().apply {
-                        lastVolume?.id?.let { volumeId ->
-                            putInt("volumeId", volumeId)
-                            putIntArray("pageIds", lastVolume.pageIds.toIntArray())
-                        }
-
-                    }
-
-                    // Navigate to PageFragment
-                    findNavController().navigate(R.id.action_global_pageListFragment, bundle)
-
-                }
-            }
+//            if (lastPageId == null) {
+//                binding.homeTextLastWritten.text = getString(R.string.no_data)
+//                binding.homeTextLastWrittenVolume.text = getString(R.string.no_data)
+//            } else {
+//                val lastVolume =
+//                    quranVolumeRepository.getRecordByPageId(lastPageId) // Get last volume based on lastPageId
+//
+//                binding.homeTextLastWritten.text = String.format(
+//                    requireContext().getString(R.string.page_x),
+//                    lastPageId.toString()
+//                )
+//                binding.homeTextLastWrittenVolume.text = String.format(
+//                    requireContext().getString(R.string.volume_x),
+//                    lastVolume?.name
+//                )
+//                binding.homeTextLastWritten.setOnClickListener {
+//
+//                    // Bundle for the page fragment
+//                    val bundle = Bundle().apply {
+//                        putInt("pageId", lastPageId)
+//                    }
+//
+//                    // Navigate to PageFragment
+//                    findNavController().navigate(R.id.action_global_pageFragment, bundle)
+//                }
+//                binding.homeTextLastWrittenVolume.setOnClickListener {
+//
+//
+//                    // Bundle for page list fragment
+//                    val bundle = Bundle().apply {
+//                        lastVolume?.id?.let { volumeId ->
+//                            putInt("volumeId", volumeId)
+//                            putIntArray("pageIds", lastVolume.pageIds.toIntArray())
+//                        }
+//
+//                    }
+//
+//                    // Navigate to PageFragment
+//                    findNavController().navigate(R.id.action_global_pageListFragment, bundle)
+//
+//                }
+//            }
         }
         viewModel.volumeInProgressDataSet.observe(viewLifecycleOwner) { data ->
             volumeInProgress = data
@@ -350,6 +350,52 @@ class HomeFragment : Fragment() {
             }
         }
 
+        mainViewModel.studentLiveData.observe(viewLifecycleOwner) { student ->
+            val lastPageId = student.lastPageId
+            if (lastPageId == null) {
+                binding.homeTextLastWritten.text = getString(R.string.no_data)
+                binding.homeTextLastWrittenVolume.text = getString(R.string.no_data)
+            } else {
+                val lastVolume =
+                    quranVolumeRepository.getRecordByPageId(lastPageId) // Get last volume based on lastPageId
+
+                binding.homeTextLastWritten.text = String.format(
+                    requireContext().getString(R.string.page_x),
+                    lastPageId.toString()
+                )
+                binding.homeTextLastWrittenVolume.text = String.format(
+                    requireContext().getString(R.string.volume_x),
+                    lastVolume?.name
+                )
+                binding.homeTextLastWritten.setOnClickListener {
+
+                    // Bundle for the page fragment
+                    val bundle = Bundle().apply {
+                        putInt("pageId", lastPageId)
+                    }
+
+                    // Navigate to PageFragment
+                    findNavController().navigate(R.id.action_global_pageFragment, bundle)
+                }
+                binding.homeTextLastWrittenVolume.setOnClickListener {
+
+
+                    // Bundle for page list fragment
+                    val bundle = Bundle().apply {
+                        lastVolume?.id?.let { volumeId ->
+                            putInt("volumeId", volumeId)
+                            putIntArray("pageIds", lastVolume.pageIds.toIntArray())
+                        }
+
+                    }
+
+                    // Navigate to PageFragment
+                    findNavController().navigate(R.id.action_global_pageListFragment, bundle)
+
+                }
+            }
+        }
+
         /* Listeners */
         binding.homeToolbar.setNavigationOnClickListener {
             EventBus.getDefault().post(
@@ -390,7 +436,9 @@ class HomeFragment : Fragment() {
         }
         binding.homeSwipeRefreshLayout.setOnRefreshListener {
             // Restart the current activity
-            ProcessPhoenix.triggerRebirth(requireContext())
+//            ProcessPhoenix.triggerRebirth(requireContext())
+            mainViewModel.refreshData()
+            binding.homeSwipeRefreshLayout.isRefreshing = false
         }
         binding.homeTextUstadhName.setOnClickListener {
             if (ustadhName != null) { // Check if user has Ustadh

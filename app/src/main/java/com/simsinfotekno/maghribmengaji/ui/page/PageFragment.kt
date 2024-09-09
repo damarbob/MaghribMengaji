@@ -45,6 +45,7 @@ import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.RecordingActivity
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageBinding
 import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
 import com.simsinfotekno.maghribmengaji.usecase.CheckOwnedQuranVolumeUseCase
@@ -133,7 +134,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 } else {
                     Toast.makeText(
                         context,
-                        "Camera permission is required to take a photo",
+                        getString(R.string.camera_permission_is_required_to_take_a_photo),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -174,7 +175,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 } else {
                     Toast.makeText(
                         context,
-                        "Camera permission is required to take a photo",
+                        getString(R.string.gallery_permission_is_required_to_select_a_photo),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -209,6 +210,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         pageStudent =
             quranPageStudentRepository.getRecordByPageId(pageId) // Get student's page instance if any
         val ownedVolume = MainApplication.studentRepository.getStudent()?.ownedVolumeId
+
+        viewModel.setQuranPageStudent(pageStudent) // Set QuranPageStudent to viewModel
 
         /* Check owned volume ID */
         checkOwnedQuranVolumeUseCase(ownedVolume,
@@ -332,36 +335,21 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //            }
 //        }
 //        viewModel.setToPageViewMode()
-        setCheckResult()
-
-        // Get the document from Firestore and load the image to ImageView
-        val pageImage = binding.pageImageViewPage
-
-        /*quranPageRepository.getFirebaseRecordById(pageId!!,
-            { imageUrl ->
-                // Load image to ImageView
-                if (isAdded) {
-//                    pageImage.visibility = View.VISIBLE
-                    pageImage.setBackgroundColor(resources.getColor(R.color.md_theme_background))
-//                    pageImage.setPadding(0, 16, 0, 0)
-                    pageImageUrl = imageUrl
-                    loadImageIntoImageView(imageUrl, pageImage, isBottomSheet = false)
-                }
-            },
-            { exception ->
-                if (isAdded) {
-                    Toast.makeText(
-                        requireContext(),
-                        "${getString(R.string.failed_to_load_image)} ${exception.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    loadImageIntoImageView(imageView =  pageImage, isBottomSheet = false)
-                    pageImage.scaleType = ImageView.ScaleType.CENTER
-                    binding.pageProgressBar.visibility = View.GONE // Hide progress bar
-                }
-            })*/
+//        setCheckResult()
 
         /* Observers */
+        viewModel.quranPageStudent.observe(viewLifecycleOwner) {
+            Log.d(TAG, "ViewModel's QuranPageStudent: $it")
+            val ocrScore = it?.oCRScore ?: 0
+
+            binding.pageCheckResultTextViewOverallScore.text = ocrScore.toString()
+            binding.pageCheckResultCircularProgressScore.progress = ocrScore
+
+            it?.pictureUriString?.let {
+                loadImageIntoImageView(it, binding.pageCheckResultImageViewStudentPageImage, false)
+                binding.pageCheckResultLinearProgress.visibility = View.GONE
+            }
+        }
         mainViewModel.connectionStatus.observe(viewLifecycleOwner) {
             binding.pageButtonSubmit.isEnabled = it == ConnectivityObserver.Status.Available
         }
@@ -419,7 +407,8 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         // Submit button
         binding.pageButtonSubmit.setOnClickListener {
             if (isAdded) {
-                if (Build.VERSION.SDK_INT >= 30) {
+//                if (Build.VERSION.SDK_INT >= 30) {
+                if (MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true)) {
                     binding.pageButtonSubmit.isEnabled = false
                     launchScannerUseCase(this, scannerLauncher)
                 } else {
@@ -430,6 +419,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                                 cameraLauncher,
                                 requestCameraPermissionLauncher
                             )
+                            Log.d(TAG, "Camera should be launched")
                         }
                         onGalleryClick = {
                             launchGalleryUseCase(
@@ -531,7 +521,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //                container?.let { TransitionManager.beginDelayedTransition(it, materialFade) }
         TransitionManager.beginDelayedTransition(binding.root, materialFade)
         binding.pageButtonCheckResult.visibility = View.GONE
-        binding.pageButtonCheckPage.visibility = View.VISIBLE
+        binding.pageButtonCheckPage.visibility = View.GONE
         binding.pageImageViewPage.visibility = View.GONE
         binding.pageCheckResultHolder.visibility = View.VISIBLE
         binding.pageProgressBar.visibility = View.GONE

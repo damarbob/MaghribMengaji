@@ -49,9 +49,12 @@ class SettingFragment : Fragment() {
         // Initialize the Switch with saved preference
         val sharedPreferences = requireContext().getSharedPreferences("NotificationPrefs", MODE_PRIVATE)
         val isNotificationsEnabled = sharedPreferences.getBoolean("notificationsEnabled", true)
+        val isMLKitScannerEnabled = MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true)
         val calendar = Calendar.getInstance()
         binding.SwitchNotificationButton.isChecked = isNotificationsEnabled
+        binding.settingMLKitScannerSwitch.isChecked = isMLKitScannerEnabled
 
+        /* Listeners */
         // Set listener for the Switch
         binding.SwitchNotificationButton.setOnCheckedChangeListener { _, isChecked ->
             MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.NOTIF_ENABLED_KEY, isChecked)
@@ -66,11 +69,13 @@ class SettingFragment : Fragment() {
                 Toast.makeText(context, "Tabarakallah Notifikasi tidak diaktifkan", Toast.LENGTH_SHORT).show()
             }
         }
+        binding.settingMLKitScannerSwitch.setOnCheckedChangeListener { _, isChecked ->
+            MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, isChecked)
+        }
         binding.btnTestNotification.setOnClickListener {
             triggerTestNotification()
         }
-        /* Listeners */
-        binding.volumeListToolbar.setNavigationOnClickListener {
+        binding.settingToolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
         return binding.root

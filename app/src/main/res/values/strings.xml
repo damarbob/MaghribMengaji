@@ -301,4 +301,8 @@
     <string name="copy_code">Copy Code</string>
     <string name="referral_code_successfully_created">Referral code successfully created</string>
     <string name="referral_code_copied_successfully">Referral code copied successfully</string>
+    <string name="use_ml_kit_scanner">Use ML Kit scanner</string>
+    <string name="recommended_android_version_11_or_higher_if_the_app_crashes_turn_off_this_setting">Recommended Android version 11 or higher. If the app crashes, turn off this setting</string>
+    <string name="gallery_permission_is_required_to_select_a_photo">Gallery permission is required to select a photo</string>
+    <string name="camera_permission_is_required_to_take_a_photo">Camera permission is required to take a photo</string>
 </resources>

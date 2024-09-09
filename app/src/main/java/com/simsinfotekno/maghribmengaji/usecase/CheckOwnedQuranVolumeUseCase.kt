@@ -28,7 +28,7 @@ class CheckOwnedQuranVolumeUseCase {
                 if (ownedVolumeId.toIntArray().contains(volumeId)) onOwnedVolume() // Check the volume Id is contained on owned volume or not
                 else onNotOwnedVolume()
             } else if (pageId != null && pageId > 0 && pageId <= 604) { // Check the page Id for comparison is null or not
-                val pagesVolumeId = MainApplication.quranPages[pageId].volumeId // Get page's volume Id
+                val pagesVolumeId = MainApplication.quranPages[pageId-1].volumeId // Get page's volume Id
                 Log.d(TAG, "Page ID: $pageId")
                 Log.d(TAG, "Page's Volume ID: $pagesVolumeId")
                 if (ownedVolumeId.toIntArray().contains(pagesVolumeId!!)) onOwnedVolume() // Check the volume Id is contained on owned volume or not
