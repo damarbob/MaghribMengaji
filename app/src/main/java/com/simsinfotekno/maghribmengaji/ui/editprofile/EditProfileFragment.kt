@@ -58,7 +58,7 @@ class EditProfileFragment : Fragment() {
         viewModel.authUpdateProfileResult.observe(viewLifecycleOwner) { result ->
             result?.onSuccess { updatedData ->
 
-                val userId = updatedData["id"] as String
+                val userId = updatedData["id"] as? String
 
                 Log.d(TAG, "authUpdateProfileResult: Updated user profile $userId")
                 ProcessPhoenix.triggerRebirth(requireContext())

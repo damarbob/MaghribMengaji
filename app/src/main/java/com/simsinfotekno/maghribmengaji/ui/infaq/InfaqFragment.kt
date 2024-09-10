@@ -13,9 +13,11 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
+import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.SkuDetails
-import com.android.billingclient.api.SkuDetailsParams
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.google.common.collect.ImmutableList
 import com.simsinfotekno.maghribmengaji.databinding.FragmentInfaqBinding
 import com.simsinfotekno.maghribmengaji.model.Infaq
 import com.simsinfotekno.maghribmengaji.ui.adapter.InfaqAdapter
@@ -65,7 +67,11 @@ class InfaqFragment : DialogFragment() {
             .setListener { billingResult, purchases ->
                 handlePurchases(purchases)
             }
-            .enablePendingPurchases()
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder()
+                    .enableOneTimeProducts()
+                    .build()
+            )
             .build().also { billingClient = it }
 
         startBillingConnection()
@@ -88,16 +94,17 @@ class InfaqFragment : DialogFragment() {
     }
 
     private fun setupRecyclerView() {
-        infaqAdapter = InfaqAdapter(infaqList) { skuDetails ->
-            launchPurchaseFlow(skuDetails)
+        infaqAdapter = InfaqAdapter(infaqList) { productDetails ->
+            launchPurchaseFlow(productDetails)
         }
         binding.donationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.donationRecyclerView.adapter = infaqAdapter
 
         // Setup test datasets
-//        infaqList.add(Infaq("infaq_5000", "5000", "Infaq 5000"))
-//        infaqList.add(Infaq("infaq_10000", "10000", "Infaq 10000"))
-//        infaqList.add(Infaq("infaq_15000", "15000", "Infaq 15000"))
+//        infaqList.add(Infaq("infaq_5000", "5000", "Infaq ${formatToIndonesianCurrencyUseCase(5000)}"))
+//        infaqList.add(Infaq("infaq_10000", "10000", "Infaq ${formatToIndonesianCurrencyUseCase(10000)}"))
+//        infaqList.add(Infaq("infaq_15000", "15000", "Infaq ${formatToIndonesianCurrencyUseCase(15000)}"))
+//        infaqList.add(Infaq("infaq_20000", "15000", "Infaq ${formatToIndonesianCurrencyUseCase(20000)}"))
         infaqAdapter.notifyDataSetChanged()
     }
 
@@ -118,56 +125,95 @@ class InfaqFragment : DialogFragment() {
     }
 
     private fun queryAvailableProducts() {
-        val skuList = listOf(
-            "infaq_5000",
-            "infaq_10000",
-            "infaq_15000",
-            "infaq_20000"
+        val productList = ImmutableList.of(
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("infaq_5000")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("infaq_10000")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("infaq_15000")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("infaq_20000")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
         ) // Replace with actual product IDs from the Google Play Console
-        val params = SkuDetailsParams.newBuilder()
-            .setSkusList(skuList)
-            .setType(BillingClient.SkuType.INAPP)
-            .build()
 
-        billingClient.querySkuDetailsAsync(params) { billingResult, skuDetailsList ->
+        val queryProductDetailsParams =
+            QueryProductDetailsParams.newBuilder()
+                .setProductList(productList)
+                .build()
 
-            Log.d(TAG, "Billing result: $billingResult | SKU Details: $skuDetailsList")
+        billingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, productDetailsList ->
 
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
+            Log.d(TAG, "Billing result: $billingResult | Product Details: $productDetailsList")
 
-                binding.donationProgressIndicator.visibility = View.GONE // Hide progress indicator
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
 
-                for (skuDetail in skuDetailsList) {
+                val sortedProductDetailsList = productDetailsList.sortedBy {
+                    it.oneTimePurchaseOfferDetails?.priceAmountMicros ?: Long.MAX_VALUE
+                } // Products sorted by price
+                val infaqList = mutableListOf<Infaq>() // Initialize container for products list
 
+                sortedProductDetailsList.forEachIndexed { index, productDetails ->
                     val infaq = Infaq(
-                        sku = skuDetail.sku,
-                        price = skuDetail.price,
-                        title = skuDetail.title,
-                        skuDetails = skuDetail
+                        sku = productDetails.productId,
+                        price = productDetails.oneTimePurchaseOfferDetails?.formattedPrice,
+                        title = productDetails.name,
+                        productDetails = productDetails
                     )
                     infaqList.add(infaq)
-
-                    infaqAdapter.notifyDataSetChanged()
-
-                    // Old
-                    when (skuDetail.sku) {
-//                        "infaq_5000" -> binding.donationButton5000.setOnClickListener { launchPurchaseFlow(skuDetail) }
-//                        "infaq_10000" -> binding.donationButton10000.setOnClickListener { launchPurchaseFlow(skuDetail) }
-//                        "infaq_15000" -> binding.donationButton15000.setOnClickListener { launchPurchaseFlow(skuDetail) }
-//                        "infaq_20000" -> binding.donationButton20000.setOnClickListener { launchPurchaseFlow(skuDetail) }
-                    }
+                    Log.d(TAG, "Product: $productDetails")
                 }
+
+                Log.d(TAG, "infaqAdapter updated")
+
+                // Now you can use infaqList, which contains all Infaq objects created from productDetailsList
+                Log.d(TAG, "Infaq List: $infaqList")
+
+                requireActivity().runOnUiThread {
+                    infaqAdapter.infaqList = infaqList
+                    infaqAdapter.notifyDataSetChanged()
+                    binding.donationProgressIndicator.visibility =
+                        View.GONE // Hide progress indicator
+                }
+
             }
+
         }
+
     }
 
 
-    private fun launchPurchaseFlow(skuDetails: SkuDetails) {
-        val flowParams = BillingFlowParams.newBuilder()
-            .setSkuDetails(skuDetails)
+    private fun launchPurchaseFlow(productDetails: ProductDetails) {
+//        val flowParams = BillingFlowParams.newBuilder()
+//            .setSkuDetails(productDetails)
+//            .build()
+//
+//        billingClient.launchBillingFlow(requireActivity(), flowParams)
+//////////
+        val productDetailsParamsList = listOf(
+            BillingFlowParams.ProductDetailsParams.newBuilder()
+                // retrieve a value for "productDetails" by calling queryProductDetailsAsync()
+                .setProductDetails(productDetails)
+                // For One-time product, "setOfferToken" method shouldn't be called.
+                // For subscriptions, to get an offer token, call ProductDetails.subscriptionOfferDetails()
+                // for a list of offers that are available to the user
+//                .setOfferToken(selectedOfferToken)
+                .build()
+        )
+
+        val billingFlowParams = BillingFlowParams.newBuilder()
+            .setProductDetailsParamsList(productDetailsParamsList)
             .build()
 
-        billingClient.launchBillingFlow(requireActivity(), flowParams)
+        // Launch the billing flow
+        billingClient.launchBillingFlow(requireActivity(), billingFlowParams)
     }
 
     private fun handlePurchases(purchases: MutableList<Purchase>?) {

@@ -1,10 +1,10 @@
 package com.simsinfotekno.maghribmengaji.model
 
-import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.ProductDetails
 
 data class Infaq(
     val sku: String,
-    val price: String,
+    val price: String? = null,
     val title: String,
-    val skuDetails: SkuDetails? = null // Optional, will be set after querying SKU details
+    val productDetails: ProductDetails? = null // Optional, will be set after querying SKU details
 )
