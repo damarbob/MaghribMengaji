@@ -276,6 +276,17 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         finish() // Finish MainActivity to prevent the user from coming back to it
     }
 
+    private fun updateMenuItemVisibility() {
+        val user = studentRepository.getStudent()
+        if (user != null) {
+            binding.mainNavigationView.menu.findItem(R.id.menu_balance).isVisible =
+                (user.role != MaghribMengajiUser.ROLE_STUDENT)
+            binding.mainNavigationView.menu.findItem(R.id.menu_referral_code).isVisible =
+                (user.role == MaghribMengajiUser.ROLE_AFFILIATE)
+
+        }
+    }
+
     // Check connection
     private fun checkConnection() {
         networkConnectivityUseCase(this, onAvailableNetwork = {
@@ -433,6 +444,9 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+
+                        // Update menu UI
+                        updateMenuItemVisibility()
 
                         // Start retrieving user data
                         student.ustadhId?.let { retrieveUstadhProfile(it) }
