@@ -100,7 +100,7 @@
             app:startIconContentDescription="@string/address"
             app:startIconDrawable="@drawable/home_24px"
             app:helperTextEnabled="true"
-            app:helperText="@string/address_purpose">
+            app:helperText="@string/optional">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/signUpInputAddress"
