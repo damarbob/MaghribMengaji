@@ -45,6 +45,7 @@
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <TextView
+            android:id="@+id/settingMLKitScannerHelperText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/activity_horizontal_margin"

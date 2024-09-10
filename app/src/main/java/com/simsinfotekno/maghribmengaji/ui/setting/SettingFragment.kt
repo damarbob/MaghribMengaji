@@ -52,7 +52,10 @@ class SettingFragment : Fragment() {
         val isMLKitScannerEnabled = MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true)
         val calendar = Calendar.getInstance()
         binding.SwitchNotificationButton.isChecked = isNotificationsEnabled
-        binding.settingMLKitScannerSwitch.isChecked = isMLKitScannerEnabled
+        binding.settingMLKitScannerSwitch.isChecked = if (Build.VERSION.SDK_INT < 30) isMLKitScannerEnabled else true
+
+        binding.settingMLKitScannerSwitch.visibility = if (Build.VERSION.SDK_INT < 30) View.VISIBLE else View.GONE
+        binding.settingMLKitScannerHelperText.visibility = if (Build.VERSION.SDK_INT < 30) View.VISIBLE else View.GONE
 
         /* Listeners */
         // Set listener for the Switch

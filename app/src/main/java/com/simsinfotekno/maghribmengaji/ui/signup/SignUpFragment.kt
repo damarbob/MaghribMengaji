@@ -153,7 +153,7 @@ class SignUpFragment : Fragment() {
         binding.signUpInputFullName.addTextChangedListener { validateFullName() }
         binding.signUpInputEmailAddress.addTextChangedListener { validateEmail() }
         binding.signUpInputPhoneNumber.addTextChangedListener { validatePhoneNumber() }
-        binding.signUpInputAddress.addTextChangedListener { validateAddress() }
+//        binding.signUpInputAddress.addTextChangedListener { validateAddress() }
         binding.signUpInputSchool.addTextChangedListener { validateSchool() }
         binding.signUpInputPassword.addTextChangedListener { validatePassword() }
     }
@@ -163,12 +163,12 @@ class SignUpFragment : Fragment() {
         val isFullNameValid = validateFullName()
         val isEmailValid = validateEmail()
         val isPhoneNumberValid = validatePhoneNumber()
-        val isAddressValid = validateAddress()
+//        val isAddressValid = validateAddress()
         val isSchoolValid = validateSchool()
         val isPasswordValid = validatePassword()
 
         // Return true only if all fields are valid
-        return isFullNameValid && isEmailValid && isPhoneNumberValid && isAddressValid && isSchoolValid && isPasswordValid
+        return isFullNameValid && isEmailValid && isPhoneNumberValid /*&& isAddressValid*/ && isSchoolValid && isPasswordValid
     }
 
     private fun validateFullName(): Boolean {
@@ -215,7 +215,7 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    private fun validateAddress(): Boolean {
+    /*private fun validateAddress(): Boolean {
         return if (binding.signUpInputAddress.text.isNullOrBlank()) {
             binding.signUpTextInputLayoutAddress.error =
                 resources.getString(R.string.address_is_required)
@@ -224,7 +224,7 @@ class SignUpFragment : Fragment() {
             binding.signUpTextInputLayoutAddress.isErrorEnabled = false
             true
         }
-    }
+    }*/
 
     private fun validateSchool(): Boolean {
         val school = binding.signUpInputSchool.text
