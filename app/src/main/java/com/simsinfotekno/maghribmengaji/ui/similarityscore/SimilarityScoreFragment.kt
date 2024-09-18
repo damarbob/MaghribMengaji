@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
@@ -39,6 +41,7 @@ import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
 import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
+import com.simsinfotekno.maghribmengaji.usecase.ExtractQRCodeToPageIdUseCase
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromOCRApiJSON
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
 import com.simsinfotekno.maghribmengaji.usecase.FetchQuranPageUseCase
@@ -48,6 +51,8 @@ import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LoadBitmapFromUri
 import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
+import com.simsinfotekno.maghribmengaji.usecase.QRCodeScannerUseCase
+import com.simsinfotekno.maghribmengaji.usecase.RequestPermissionsUseCase
 import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -55,8 +60,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 // TODO: set timeout, fix when no connection on upload page (maybe page document created but image not uploaded? however it fixed on relaunch app)
-class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
-    OCRAsyncTask.IOCRCallBack, ActivityResultCallback<ActivityResult> {
+class SimilarityScoreFragment : Fragment(),
+//    FetchQuranPageUseCase.ResultHandler,
+//    OCRAsyncTask.IOCRCallBack,
+    ActivityResultCallback<ActivityResult> {
 
     companion object {
         private val TAG = SimilarityScoreFragment::class.java.simpleName
@@ -87,11 +94,39 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
     private lateinit var imageUri: Uri
     private lateinit var container: ViewGroup
     private var similarityIndex: Int = 0
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach { (permission, isGranted) ->
+                when {
+                    !isGranted -> {
+                        // Handle the case where the user denied the permission
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.permission_is_not_granted, permission),
+                            Toast.LENGTH_LONG
+                        )
+                    }
+
+                    shouldShowRequestPermissionRationale(permission) -> {
+                        // Permission denied without "Don't ask again" - Show rationale
+                        showPermissionRationale(permission)
+                    }
+
+                    else -> {
+                        // Permission denied with "Don't ask again" - Guide user to settings
+                        showPermissionSettingsDialog()
+                    }
+                }
+            }
+        }
+    private lateinit var pickMediaModernLauncher: ActivityResultLauncher<PickVisualMediaRequest>
+//    private lateinit var cameraModernLauncher: ActivityResultLauncher<Camera>
 
     /* Use cases */
+    private val requestPermissionsUseCase = RequestPermissionsUseCase()
     private val loadBitmapFromUri = LoadBitmapFromUri()
     private val oCRAsyncTask = OCRAsyncTask()
-    private val fetchQuranPageTask = FetchQuranPageUseCase(this)
+    private val fetchQuranPageTask = FetchQuranPageUseCase()
     private val jaccardSimilarityIndex = JaccardSimilarityIndex()
     private val extractTextFromQuranApiJson = ExtractTextFromQuranAPIJSON()
     private val extractTextFromOCRApiJson = ExtractTextFromOCRApiJSON()
@@ -146,7 +181,6 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                     launchCameraUseCase(
                         requireContext(),
                         cameraLauncher,
-                        requestCameraPermissionLauncher
                     )
                 } else {
                     Toast.makeText(
@@ -186,8 +220,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                 if (isGranted) {
                     launchGalleryUseCase(
                         requireContext(),
-                        galleryLauncher,
-                        requestGalleryPermissionLauncher
+                        galleryLauncher
                     )
                 } else {
                     Toast.makeText(
@@ -195,6 +228,14 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                         "Camera permission is required to take a photo",
                         Toast.LENGTH_SHORT
                     ).show()
+                }
+            }
+
+        // For Android 14+ (modern picker)
+        pickMediaModernLauncher =
+            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+                uri?.let {
+                    submitImage(it)
                 }
             }
 
@@ -233,6 +274,9 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
         this.container = container!!
 
+        binding.similarityScoreTextViewPage.text =
+            resources.getString(R.string.page_x, arguments?.getInt("pageId").toString())
+
         /* Observers */
 
         // Listening to remote db result whether success or failed
@@ -258,25 +302,80 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             }
         }
 
-        /* Variables and arguments */
+        viewModel.errorMessage.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.totalScore.observe(viewLifecycleOwner) { totalScore ->
+            if (totalScore != null) {
+                // Maximize view and show score if similarityIndex is already defined
+//                maximizeView(maximized = true, scorePassed = it > kkm, onCreateView = false)
+//                binding.similarityScoreTextViewScore.text = it.toString()
+//                binding.similarityScoreCircularProgressScore.progress = it.toInt()
+//                binding.similarityScoreCircularProgress.visibility = View.GONE
+
+                // Maximize view and show score
+                if (totalScore > kkm) {
+                    binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
+                        getString(R.string.your_score_is_great_press_upload_to_send_your_score),
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                    binding.similarityScoreCircularProgress.visibility = View.GONE
+                    maximizeView(maximized = true, scorePassed = true, onCreateView = false)
+                } else {
+                    binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
+                        getString(R.string.your_score_is_low),
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                    binding.similarityScoreCircularProgress.visibility = View.GONE
+                    maximizeView(maximized = true, scorePassed = false, onCreateView = false)
+                }
+
+                // Add animation
+                ValueAnimator.ofInt(totalScore.toInt()).apply {
+                    duration = 1000
+                    addUpdateListener {
+                        val animationValue = it.animatedValue as Int
+                        binding.similarityScoreTextViewScore.text = animationValue.toString()
+                        binding.similarityScoreCircularProgressScore.progress = animationValue
+                    }
+                }.start()
+            }
+//            else maximizeView(maximized = false, scorePassed = false, onCreateView = false)
+        }
+        viewModel.maghribBonus.observe(viewLifecycleOwner) { maghribBonus ->
+            binding.similarityScoreTextViewMaghribBonus.text = "+$maghribBonus"
+        }
+        viewModel.submitStreakBonus.observe(viewLifecycleOwner) { submitStreakBonus ->
+            binding.similarityScoreTextViewStreak.text =
+                getString(
+                    R.string.submit_streak_bonus_x_day_s,
+                    submitStreakBonus[0].toInt().toString()
+                )
+            binding.similarityScoreTextViewStreakBonus.text =
+                "+${((submitStreakBonus[1] - 1) * 100).toInt()}%"
+        }
+        viewModel.similarityScore.observe(viewLifecycleOwner) { similarityScore ->
+            binding.similarityScoreTextViewInitialScore.text = similarityScore.toString()
+        }
 
         // Get image uri from view model if any, if not, get from arguments
         // Check if similarityIndex is already defined in ViewModel
-        viewModel.similarityIndex.observe(viewLifecycleOwner) { index ->
-            index?.let {
-                // Maximize view and show score if similarityIndex is already defined
-                maximizeView(maximized = true, scorePassed = it > kkm, onCreateView = false)
-                binding.similarityScoreTextViewScore.text = it.toString()
-                binding.similarityScoreCircularProgressScore.progress = it
-                binding.similarityScoreCircularProgress.visibility = View.GONE
-                similarityIndex = it
-            }
-        }
+//        viewModel.similarityIndex.observe(viewLifecycleOwner) { index ->
+//            index?.let {
+//                // Maximize view and show score if similarityIndex is already defined
+//                maximizeView(maximized = true, scorePassed = it > kkm, onCreateView = false)
+//                binding.similarityScoreTextViewScore.text = it.toString()
+//                binding.similarityScoreCircularProgressScore.progress = it
+//                binding.similarityScoreCircularProgress.visibility = View.GONE
+//                similarityIndex = it
+//            }
+//        }
         viewModel.progressVisibility.observe(viewLifecycleOwner) { isVisible ->
+            Log.d(TAG, "Progress visibility: $isVisible")
             binding.similarityScoreCircularProgress.visibility =
                 if (isVisible) View.VISIBLE else View.GONE
             binding.similarityScoreCircularProgressScore.visibility =
-                if (isVisible) View.GONE else View.VISIBLE
+                if (isVisible) View.INVISIBLE else View.VISIBLE
         }
         mainViewModel.connectionStatus.observe(viewLifecycleOwner) {
             if (it != ConnectivityObserver.Status.Available) {
@@ -292,75 +391,44 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
             }
         }
 
-
-        // Define image Uri
-        val imageUriString: String
-        if (viewModel.imageUriString != null) {
-            imageUriString = viewModel.imageUriString!!
-        } else {
-            imageUriString = arguments?.getString("imageUriString")!!
-            viewModel.imageUriString = imageUriString
+        /* Variables and arguments */
+        if (viewModel.imageUriString == null) {
+            viewModel.imageUriString = arguments?.getString("imageUriString")
         }
-        imageUri = Uri.parse(imageUriString)
-
-        // Get page id from view model if any, if not, get from arguments
-        if (viewModel.pageId != null) {
-            pageId = viewModel.pageId
-        } else {
-            pageId = arguments?.getInt("pageId") ?: -1
+        if (viewModel.pageId == null) {
             viewModel.pageId = arguments?.getInt("pageId")
         }
-
-        // Get bitmap from view model if any, if not, get from arguments
-        if (viewModel.bitmap != null) {
-            bitmap =
-                viewModel.bitmap // Get bitmap from view model (if it exists, it the fragment might had restarted)
-        } else {
-
-            // Load new bitmap from uri (local)
-            bitmap = loadBitmapFromUri(requireContext(), imageUri)
-
-            // Apply image filter
-            applyImageFilter2 {
-                viewModel.bitmap = it // Assign bitmap to view model to survive fragment reload
-                bitmap = it // Reassign bitmap with the new ones (with filter)
-
-                // Start OCR API
-                oCRAsyncTask(
-                    bitmapToBase64(it!!),
-                    "ara",
-                    this@SimilarityScoreFragment,
-                    binding.similarityScoreCircularProgress,
-                    lifecycleScope
-                )
-            }
+        if (viewModel.bitmap == null) {
+            viewModel.bitmap = loadBitmapFromUri(
+                requireContext(),
+                Uri.parse(arguments?.getString("imageUriString"))
+            )
         }
+
+        startScoring()
 
         /* View */
-        maximizeView(
-            maximized = false,
-            scorePassed = false,
-            onCreateView = true
-        ) // Show only progress indicator and close button
-
-        if (pageId != -1) {
-            fetchQuranPageTask(pageId!!)
-        }
+//        maximizeView(
+//            maximized = false,
+//            scorePassed = false,
+//            onCreateView = true
+//        ) // Show only progress indicator and close button
 
         /* Listeners */
         binding.similarityScoreButtonUpload.setOnClickListener {
             materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.are_you_sure))
-                .setMessage(getString(R.string.your_similarity_score, similarityIndex.toString()))
+                .setMessage(
+                    getString(
+                        R.string.your_similarity_score,
+                        viewModel.totalScore.value.toString()
+                    )
+                )
                 .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
                     dialog.dismiss()
                 }
                 .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    viewModel.uploadPageStudent()
-                    binding.similarityScoreButtonUpload.isEnabled = false
-                    binding.similarityScoreButtonUploadLow.isEnabled = false
-                    binding.similarityScoreButtonRetry.isEnabled = false
-                    binding.similarityScoreButtonRetryLow.isEnabled = false
+                    uploadPage()
                 }
                 .show()
         }
@@ -368,16 +436,17 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
         binding.similarityScoreButtonUploadLow.setOnClickListener {
             materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.are_you_sure))
-                .setMessage(getString(R.string.your_similarity_score, similarityIndex.toString()))
+                .setMessage(
+                    getString(
+                        R.string.your_similarity_score,
+                        viewModel.totalScore.value.toString()
+                    )
+                )
                 .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
                     dialog.dismiss()
                 }
                 .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    viewModel.uploadPageStudent()
-                    binding.similarityScoreButtonUpload.isEnabled = false
-                    binding.similarityScoreButtonUploadLow.isEnabled = false
-                    binding.similarityScoreButtonRetry.isEnabled = false
-                    binding.similarityScoreButtonRetryLow.isEnabled = false
+                    uploadPage()
                 }
                 .show()
         }
@@ -390,37 +459,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                 }
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
 //                    if (Build.VERSION.SDK_INT >= 30) {
-                    if (MaghribMengajiPref.readBoolean(
-                            requireActivity(),
-                            MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY,
-                            true
-                        )
-                    ) {
-                        launchScannerUseCase(this, scannerLauncher)
-                    } else {
-                        val bottomSheet = ImagePickerBottomSheetDialog().apply {
-                            onCameraClick = {
-                                launchCameraUseCase(
-                                    requireContext(),
-                                    cameraLauncher,
-                                    requestCameraPermissionLauncher
-                                )
-                            }
-                            onGalleryClick = {
-                                launchGalleryUseCase(
-                                    requireContext(),
-                                    galleryLauncher,
-                                    requestGalleryPermissionLauncher
-                                )
-                            }
-                        }
-                        activity?.let { it1 ->
-                            bottomSheet.show(
-                                it1.supportFragmentManager,
-                                ImagePickerBottomSheetDialog.TAG
-                            )
-                        }
-                    }
+                    retryScan()
                 }
                 .show()
         }
@@ -432,47 +471,235 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                     dialog.dismiss()
                 }
                 .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    if (MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true)) {
-                        launchScannerUseCase(this, scannerLauncher)
-                    } else {
-                        val bottomSheet = ImagePickerBottomSheetDialog().apply {
-                            onCameraClick = {
-                                launchCameraUseCase(
-                                    requireContext(),
-                                    cameraLauncher,
-                                    requestCameraPermissionLauncher
-                                )
-                            }
-                            onGalleryClick = {
-                                launchGalleryUseCase(
-                                    requireContext(),
-                                    galleryLauncher,
-                                    requestGalleryPermissionLauncher
-                                )
-                            }
-                        }
-                        activity?.let { it1 ->
-                            bottomSheet.show(
-                                it1.supportFragmentManager,
-                                ImagePickerBottomSheetDialog.TAG
-                            )
-                        }
-                    }
+                    retryScan()
                 }
                 .show()
         }
 
         binding.similarityScoreButtonClose.setOnClickListener {
 //            if (binding.similarityScoreButtonUpload.visibility == View.GONE || binding.similarityScoreButtonUploadLow.visibility == View.GONE || binding.similarityScoreCircularProgress.visibility == View.VISIBLE) {
-            if (binding.similarityScoreTextViewScore.visibility == View.GONE || binding.similarityScoreCircularProgress.visibility == View.VISIBLE) {
-                backPressedCallback.handleOnBackPressed()
-            } else findNavController().popBackStack()
+//            if (binding.similarityScoreTextViewScore.visibility == View.GONE || binding.similarityScoreCircularProgress.visibility == View.VISIBLE) {
+//                backPressedCallback.handleOnBackPressed()
+//            } else findNavController().popBackStack()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.are_you_sure))
+                .setMessage(getString(R.string.your_result_will_be_gone))
+                .setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    findNavController().popBackStack()
+                }
+                .show()
         }
 
         return binding.root
     }
 
+    private fun startScoring() {
+        if (MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, true)) {
+            viewModel.checkQRCode(onSuccess = {
+                viewModel.processOCR("ara", lifecycleScope)
+            }, onError = { error ->
+                when (error) {
+                    QRCodeScannerUseCase.QR_CODE_NOT_FOUND -> showQRCodeError(
+                        getString(R.string.qr_code_not_detected),
+                        getString(
+                            R.string.make_sure_the_qr_code_is_in_the_photo_frame
+                        )
+                    )
+
+                    ExtractQRCodeToPageIdUseCase.PAGE_ID_NOT_FOUND -> showQRCodeError(
+                        getString(R.string.qr_code_not_detected),
+                        getString(
+                            R.string.make_sure_the_qr_code_is_clearly_visible_in_the_photo
+                        )
+                    )
+
+                    1..604 -> showQRCodeError(
+                        getString(R.string.the_page_does_not_match),
+                        getString(
+                            R.string.the_page_you_selected_is_but_the_page_detected_is,
+                            viewModel.pageId.toString(),
+                            error
+                        )
+                    )
+
+                    else -> showQRCodeError(
+                        error.toString(),
+                        getString(R.string.make_sure_the_qr_code_is_in_the_photo_frame)
+                    )
+                }
+            })
+        } else viewModel.processOCR("ara", lifecycleScope)
+    }
+
+    private fun uploadPage() {
+        viewModel.uploadPageStudent()
+        viewModel.updateSubmitStreak()
+        binding.similarityScoreButtonUpload.isEnabled = false
+        binding.similarityScoreButtonUploadLow.isEnabled = false
+        binding.similarityScoreButtonRetry.isEnabled = false
+        binding.similarityScoreButtonRetryLow.isEnabled = false
+    }
+
+    private fun retryScan() {
+        if (MaghribMengajiPref.readBoolean(
+                requireActivity(),
+                MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY,
+                true
+            )
+        ) {
+            launchScannerUseCase(this, scannerLauncher)
+        } else {
+            val bottomSheet = ImagePickerBottomSheetDialog().apply {
+                onCameraClick = {
+                    openCamera()
+                }
+                onGalleryClick = {
+                    openGallery()
+                }
+            }
+            activity?.let { it1 ->
+                bottomSheet.show(
+                    it1.supportFragmentManager,
+                    ImagePickerBottomSheetDialog.TAG
+                )
+            }
+        }
+    }
+
+    private fun showQRCodeError(title: String, message: String, pageId: Int = 0) {
+        // Get failure counter
+        val failureCounter = MaghribMengajiPref.readInt(
+            requireActivity(),
+            MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+            0
+        )
+
+        // If failure counter not more than 3x and no detected page ID
+        if (failureCounter < 3 && pageId == 0) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(resources.getString(R.string.retry)) { _, _ ->
+                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, failureCounter + 1)
+                    retryScan()
+                }
+                .setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, failureCounter + 1)
+                    dialog.dismiss()
+                }
+                .setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
+                    MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false)
+                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0)
+                    Toast.makeText(requireContext(),
+                        getString(R.string.qr_code_check_successfully_disabled), Toast.LENGTH_LONG).show()
+                }
+        }
+
+        else if (failureCounter < 3 && pageId > 0 && pageId < 605) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.go_to, pageId.toString())) { _, _ ->
+                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, failureCounter + 1)
+                    viewModel.pageId = pageId
+                    startScoring()
+                }
+                .setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, failureCounter + 1)
+                    dialog.dismiss()
+                }
+                .setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
+                    MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false)
+                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0)
+                    Toast.makeText(requireContext(), getString(R.string.qr_code_check_successfully_disabled), Toast.LENGTH_LONG).show()
+                }
+
+        }
+
+        else if (failureCounter >= 3) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(title)
+                .setMessage(getString(R.string.the_qr_code_has_not_been_detected_3_times_or_more_do_you_want_to_turn_off_qr_code_checking))
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false)
+                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0)
+                    startScoring()
+                }
+                .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+        }
+    }
+
+    private fun showPermissionRationale(permission: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.allow_notification))
+            .setMessage(getString(R.string.you_will_not_receive_a_notification_if_the_permission_is_not_granted))
+            .setPositiveButton(resources.getString(R.string.okay)) { _, _ ->
+                requestPermissionsUseCase(
+                    requestPermissionsLauncher,
+                    requireContext(),
+                    arrayOf(permission)
+                )
+            }
+            .setNegativeButton(resources.getString(R.string.cancel), null)
+            .create()
+            .show()
+    }
+
+    private fun showPermissionSettingsDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.permission_disabled))
+            .setMessage(getString(R.string.this_permission_is_disabled_please_enable_it_in_the_app_settings))
+            .setPositiveButton(getString(R.string.go_to_settings)) { _, _ ->
+                openAppSettings()
+            }
+            .setNegativeButton(resources.getString(R.string.cancel), null)
+            .create()
+            .show()
+    }
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri: Uri = Uri.fromParts("package", requireActivity().packageName, null)
+        intent.data = uri
+        startActivity(intent)
+    }
+
+    private fun openCamera() {
+        if (requestPermissionsUseCase.hasCameraPermission(requireContext())) {
+            // Proceed with camera access
+            launchCameraUseCase(requireContext(), cameraLauncher)
+        } else {
+            showPermissionSettingsDialog()
+        }
+    }
+
+    private fun openGallery() {
+        if (requestPermissionsUseCase.hasReadMediaImagesPermission(requireContext())) {
+            // Proceed with gallery access
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                showModernImagePicker()
+            } else {
+                launchGalleryUseCase(requireContext(), galleryLauncher)
+            }
+        } else {
+            showPermissionSettingsDialog()
+        }
+    }
+
+    // For Android 14+ (modern photo picker)
+    private fun showModernImagePicker() {
+        pickMediaModernLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+    }
+
     private fun maximizeView(maximized: Boolean, scorePassed: Boolean, onCreateView: Boolean) {
+        Log.d(TAG, "similarityScore: ${viewModel.similarityScore.value}")
         if (!onCreateView) { // When onCreateView not animated
             val materialFade = MaterialFade().apply {
                 duration = 150L
@@ -501,132 +728,16 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 //            if (maximized && !scorePassed) View.VISIBLE else View.GONE
             if (!scorePassed) View.VISIBLE else View.GONE
         binding.similarityScoreCircularProgressScore.visibility =
-            if (maximized) View.VISIBLE else View.GONE
-    }
-
-    /**
-     * Get OCR Callback result
-     */
-    override fun getOCRCallBackResult(response: String?) {
-        lifecycleScope.launch {
-            ocrResult = withContext(Dispatchers.IO) {
-                response?.let { extractTextFromOCRApiJson(it) }.toString()
-            }
-
-            // Wait until quranApiResult is ready
-            quranApiResult = quranApiResultDeferred.await()
-
-            // Ensure quranApiResult is ready before calculating similarity index
-            calculateSimilarityIndex()
-
-        }
-    }
-
-    override fun onOCRFailure(exception: Exception) {
-        // Check if binding is null before using it
-        if (_binding != null) {
-            activity?.runOnUiThread {
-                Toast.makeText(requireContext(), exception.toString(), Toast.LENGTH_LONG).show()
-            }
-            maximizeView(true, scorePassed = false, onCreateView = false)
-            Log.d(TAG, exception.toString())
-        } else {
-            Log.e(TAG, "Binding is null in onOCRFailure: $exception")
-        }
-    }
-
-    /**
-     * Get Quran API result
-     */
-    override fun onSuccess(result: String) {
-        // Handle success, e.g., update UI
-        lifecycleScope.launch {
-            val extractedQuranResult = withContext(Dispatchers.IO) {
-                extractTextFromQuranApiJson(result)
-            }
-//            quranApiResult = extractedQuranResult
-            quranApiResultDeferred.complete(extractedQuranResult)
-
-            // If ocrResult is already ready, calculate similarity index
-//            if (::ocrResult.isInitialized) {
-            if (::ocrResult != null) {
-                calculateSimilarityIndex()
-            }
-        }
-    }
-
-    // Fetch Quran API Result Handler on failure
-    override fun onFailure(message: String) {
-        // Check if binding is null before using it
-        if (_binding != null) {
-            activity?.runOnUiThread {
-                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-            }
-            maximizeView(true, scorePassed = false, onCreateView = false)
-            Log.d(TAG, message)
-        } else {
-            Log.e(TAG, "Binding is null in onQuranAPIResultFailure: $message")
-        }
-    }
-
-    /*
-    * Calculate similarity index and update UI
-    */
-    private suspend fun calculateSimilarityIndex() {
-        withContext(Dispatchers.Main) {
-            val similarityIndex = quranApiResult?.let { ocrResult?.let { it1 ->
-                jaccardSimilarityIndex(it,
-                    it1
-                )
-            } }
-
-            viewModel.oCRScore = similarityIndex // Set OCR score in view model
-
-            // Save similarityIndex to ViewModel
-            viewModel.similarityIndex.value = similarityIndex?.toInt()
-
-            // Maximize view and show score
-            if (similarityIndex != null) {
-                if (similarityIndex > kkm) {
-                    binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
-                        getString(R.string.your_score_is_great_press_upload_to_send_your_score),
-                        HtmlCompat.FROM_HTML_MODE_LEGACY
-                    )
-                    maximizeView(maximized = true, scorePassed = true, onCreateView = false)
-                } else {
-                    binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
-                        getString(R.string.your_score_is_low),
-                        HtmlCompat.FROM_HTML_MODE_LEGACY
-                    )
-                    maximizeView(maximized = true, scorePassed = false, onCreateView = false)
-                }
-            }
-
-            // Add animation
-            if (similarityIndex != null) {
-                ValueAnimator.ofInt(similarityIndex.toInt()).apply {
-                    duration = 1000
-                    addUpdateListener {
-                        val animationValue = it.animatedValue as Int
-                        binding.similarityScoreTextViewScore.text = animationValue.toString()
-                        binding.similarityScoreCircularProgressScore.progress = animationValue
-                    }
-                }.start()
-            }
-        }
-    }
-
-    private fun applyImageFilter2(documentFilterCallback: DocumentFilter.CallBack<Bitmap>) {
-        val documentFilter = DocumentFilter()
-        documentFilter.getGreyScaleFilter(bitmap, documentFilterCallback)
-
+            if (maximized) View.VISIBLE else View.INVISIBLE
+        binding.similarityScoreLinearLayoutDetail.visibility =
+            if (maximized) View.VISIBLE else View.INVISIBLE
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         materialAlertDialog?.dismiss()
         _binding = null
-        quranApiResultDeferred.cancel()
+//        quranApiResultDeferred.cancel()
     }
 
     override fun onActivityResult(result: ActivityResult) {
@@ -639,7 +750,7 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
                 // Bundle to pass the data
                 val bundle = Bundle().apply {
                     putString("imageUriString", pages[0].imageUri.toString())
-                    putInt("pageId", pageId!!)
+                    putInt("pageId", viewModel.pageId!!)
                 }
 
                 // Navigate to the ResultFragment with the Bundle
@@ -667,13 +778,14 @@ class SimilarityScoreFragment : Fragment(), FetchQuranPageUseCase.ResultHandler,
 
     private fun submitImage(imageUri: Uri?) {
         // Bundle to pass the data
+        Log.d(TAG, "imageuri: $imageUri")
         val bundle = Bundle().apply {
             putString(
                 "imageUriString",
                 imageUri
                     .toString()
             )
-            putInt("pageId", pageId!!)
+            putInt("pageId", viewModel.pageId!!)
         }
 
         // Navigate to the ResultFragment with the Bundle

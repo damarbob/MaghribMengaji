@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.androidx.ui.text.android)
+    implementation(libs.barcode.scanning)
 //    implementation(libs.firebase.storage.ktx)
     annotationProcessor(libs.compiler)
 

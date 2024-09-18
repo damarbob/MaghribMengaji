@@ -50,16 +50,15 @@ class SettingFragment : Fragment() {
         val sharedPreferences = requireContext().getSharedPreferences("NotificationPrefs", MODE_PRIVATE)
         val isNotificationsEnabled = sharedPreferences.getBoolean("notificationsEnabled", true)
         val isMLKitScannerEnabled = MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true)
+        val isQRCodeCheckEnabled = MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, true)
         val calendar = Calendar.getInstance()
-        binding.SwitchNotificationButton.isChecked = isNotificationsEnabled
-        binding.settingMLKitScannerSwitch.isChecked = if (Build.VERSION.SDK_INT < 30) isMLKitScannerEnabled else true
-
-        binding.settingMLKitScannerSwitch.visibility = if (Build.VERSION.SDK_INT < 30) View.VISIBLE else View.GONE
-        binding.settingMLKitScannerHelperText.visibility = if (Build.VERSION.SDK_INT < 30) View.VISIBLE else View.GONE
+        binding.settingSwitchNotification.isChecked = isNotificationsEnabled
+        binding.settingSwitchMLKitScanner.isChecked = isMLKitScannerEnabled
+        binding.settingSwitchQRCodeCheck.isChecked = isQRCodeCheckEnabled
 
         /* Listeners */
         // Set listener for the Switch
-        binding.SwitchNotificationButton.setOnCheckedChangeListener { _, isChecked ->
+        binding.settingSwitchNotification.setOnCheckedChangeListener { _, isChecked ->
             MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.NOTIF_ENABLED_KEY, isChecked)
 
             createNotificationChannel()
@@ -72,8 +71,11 @@ class SettingFragment : Fragment() {
                 Toast.makeText(context, "Tabarakallah Notifikasi tidak diaktifkan", Toast.LENGTH_SHORT).show()
             }
         }
-        binding.settingMLKitScannerSwitch.setOnCheckedChangeListener { _, isChecked ->
+        binding.settingSwitchMLKitScanner.setOnCheckedChangeListener { _, isChecked ->
             MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, isChecked)
+        }
+        binding.settingSwitchQRCodeCheck.setOnCheckedChangeListener { _, isChecked ->
+            MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, isChecked)
         }
         binding.btnTestNotification.setOnClickListener {
             triggerTestNotification()

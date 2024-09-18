@@ -17,6 +17,8 @@ data class MaghribMengajiUser(
     var bank: String? = null, // For teacher and influencer
     var bankAccount: String? = null, // For teacher and influencer
     var ownedVolumeId: List<Int>? = null, // Owned volume. Either by privilege or purchase. TODO: Create a new model
+    var lastDailySubmit: Timestamp? = null,
+    var currentSubmitStreak: Int? = null,
     var createdAt: Timestamp? = null,
     var updatedAt: Timestamp? = null
 ) {

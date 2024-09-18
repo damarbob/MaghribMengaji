@@ -1,15 +1,14 @@
 package com.simsinfotekno.maghribmengaji.usecase
 
-import android.util.Log
 import kotlin.math.round
-
-class JaccardSimilarityIndex {
 
     /**
      * Calculate similarity index of 2 strings
      * with Jaccard method and normalize to a scale
      * of 0 to 100 where 70 is scaled to 100.
      */
+class JaccardSimilarityIndex {
+
     operator fun invoke(str1: String, str2: String): Double {
         val removeDiacritics = RemoveDiacritics()
 
@@ -30,11 +29,11 @@ class JaccardSimilarityIndex {
 
     /**
      * Normalize the Jaccard index to a scale of 0 to 100
-     * where 70 is scaled to 100.
+     * where 90 is scaled to 100.
      */
     private fun normalizeScore(rawScore: Double): Double {
-        // Normalize to a 0-100 scale where 70 maps to 100
-        val normalizedScore = (rawScore / (80.0 / 100.0))
+        // Normalize to a 0-100 scale where 90 maps to 100
+        val normalizedScore = ((rawScore) / (90.0 / 100.0))
 
         // Round and return the normalized score
         return if (round(normalizedScore * 100) <= 100) round(normalizedScore * 100) else 100.0

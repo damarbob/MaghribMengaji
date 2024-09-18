@@ -1,5 +1,6 @@
 package com.simsinfotekno.maghribmengaji.ui.page
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,9 +23,11 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
@@ -52,8 +56,11 @@ import com.simsinfotekno.maghribmengaji.usecase.CheckOwnedQuranVolumeUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
+import com.simsinfotekno.maghribmengaji.usecase.QueryGalleryUseCase
+import com.simsinfotekno.maghribmengaji.usecase.RequestPermissionsUseCase
 import com.simsinfotekno.maghribmengaji.usecase.UploadImageUseCase
 import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
+import kotlinx.coroutines.launch
 
 class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
@@ -77,12 +84,37 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
     private lateinit var bottomSheetBehaviorCheckResult: BottomSheetBehavior<View>
     private var pageImageUrl: String? = null
     private var isPageViewMode: Boolean = true
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach { (permission, isGranted) ->
+                when {
+                    !isGranted -> {
+                        // Handle the case where the user denied the permission
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.permission_is_not_granted, permission),
+                            Toast.LENGTH_LONG
+                        )
+                    }
+                    shouldShowRequestPermissionRationale(permission) -> {
+                        // Permission denied without "Don't ask again" - Show rationale
+                        showPermissionRationale(permission)
+                    }
+                    else -> {
+                        // Permission denied with "Don't ask again" - Guide user to settings
+                        showPermissionSettingsDialog()
+                    }
+                }
+            }
+        }
+    private lateinit var pickMediaModernLauncher: ActivityResultLauncher<PickVisualMediaRequest>
 
     // Use case
-    private val uploadImageUseCase = UploadImageUseCase()
+    private val requestPermissionsUseCase = RequestPermissionsUseCase()
     private val launchScannerUseCase = LaunchScannerUseCase()
     private val launchCameraUseCase = LaunchCameraUseCase()
     private val launchGalleryUseCase = LaunchGalleryUseCase()
+    private val queryGalleryUseCase = QueryGalleryUseCase()
     private val checkOwnedQuranVolumeUseCase = CheckOwnedQuranVolumeUseCase()
 //    private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
 
@@ -129,7 +161,6 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     launchCameraUseCase(
                         requireContext(),
                         cameraLauncher,
-                        requestCameraPermissionLauncher
                     )
                 } else {
                     Toast.makeText(
@@ -169,8 +200,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                 if (isGranted) {
                     launchGalleryUseCase(
                         requireContext(),
-                        galleryLauncher,
-                        requestGalleryPermissionLauncher
+                        galleryLauncher
                     )
                 } else {
                     Toast.makeText(
@@ -180,6 +210,13 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     ).show()
                 }
             }
+
+        // For Android 14+ (modern picker)
+        pickMediaModernLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            uri?.let {
+                submitImage(it)
+            }
+        }
 
         // Set the transition for this fragment
         enterTransition = if (arguments?.getBoolean("previous") == true) {
@@ -231,7 +268,9 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         val displayMetrics = DisplayMetrics()
         activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
         val params = binding.pageImageViewPage.layoutParams
-        params.height = displayMetrics.heightPixels - resources.getDimension(com.google.android.material.R.dimen.abc_action_bar_default_height_material).toInt() - 176
+        params.height =
+            displayMetrics.heightPixels - resources.getDimension(com.google.android.material.R.dimen.abc_action_bar_default_height_material)
+                .toInt() - 176
         binding.pageImageViewPage.layoutParams = params
 
 
@@ -408,25 +447,21 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         binding.pageButtonSubmit.setOnClickListener {
             if (isAdded) {
 //                if (Build.VERSION.SDK_INT >= 30) {
-                if (MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true)) {
+                if (MaghribMengajiPref.readBoolean(
+                        requireActivity(),
+                        MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY,
+                        true
+                    )
+                ) {
                     binding.pageButtonSubmit.isEnabled = false
                     launchScannerUseCase(this, scannerLauncher)
                 } else {
                     val bottomSheet = ImagePickerBottomSheetDialog().apply {
                         onCameraClick = {
-                            launchCameraUseCase(
-                                requireContext(),
-                                cameraLauncher,
-                                requestCameraPermissionLauncher
-                            )
-                            Log.d(TAG, "Camera should be launched")
+                            openCamera()
                         }
                         onGalleryClick = {
-                            launchGalleryUseCase(
-                                requireContext(),
-                                galleryLauncher,
-                                requestGalleryPermissionLauncher
-                            )
+                            openGallery()
                         }
                     }
                     activity?.let { it1 ->
@@ -462,6 +497,79 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         }
 
         return binding.root
+    }
+
+    private fun showPermissionRationale(permission: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.permission_required))
+            .setMessage(
+                getString(
+                    R.string.this_feature_requires_the_permission_please_grant_it,
+                    permission
+                ))
+            .setPositiveButton(resources.getString(R.string.okay)) { _, _ ->
+                requestPermissionsUseCase(
+                    requestPermissionsLauncher,
+                    requireContext(),
+                    arrayOf(permission)
+                )
+            }
+            .setNegativeButton(resources.getString(R.string.cancel), null)
+            .create()
+            .show()
+    }
+
+    private fun showPermissionSettingsDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.permission_disabled))
+            .setMessage(getString(R.string.this_permission_is_disabled_please_enable_it_in_the_app_settings))
+            .setPositiveButton(getString(R.string.go_to_settings)) { _, _ ->
+                openAppSettings()
+            }
+            .setNegativeButton(resources.getString(R.string.cancel), null)
+            .create()
+            .show()
+    }
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri: Uri = Uri.fromParts("package", requireActivity().packageName, null)
+        intent.data = uri
+        startActivity(intent)
+    }
+
+    private fun openCamera() {
+        if (requestPermissionsUseCase.hasCameraPermission(requireContext())) {
+            // Proceed with camera access
+            launchCameraUseCase(requireContext(), cameraLauncher)
+            Log.d(TAG, "camera granted")
+        } else {
+            showPermissionSettingsDialog()
+        }
+    }
+
+    private fun openGallery() {
+        if (requestPermissionsUseCase.hasReadMediaImagesPermission(requireContext())) {
+            // Proceed with gallery access
+//            launchGalleryUseCase(requireContext(), galleryLauncher)
+//            lifecycleScope.launch {
+//                queryGalleryUseCase(requireContext().contentResolver)
+//            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                showModernImagePicker()
+            } else {
+                launchGalleryUseCase(requireContext(), galleryLauncher)
+            }
+        } else {
+            showPermissionSettingsDialog()
+        }
+    }
+
+    // For Android 14+ (modern photo picker)
+    private fun showModernImagePicker() {
+        pickMediaModernLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
     }
 
     private fun notOwnedVolume() {

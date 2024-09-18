@@ -34,6 +34,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/similarityScoreTextViewPage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/similarityScoreTextView" />
+
+    <TextView
         android:id="@+id/similarityScoreTextViewScore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,11 +52,11 @@
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
         android:textStyle="bold"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/similarityScoreCircularProgressScore"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/similarityScoreCircularProgressScore" />
+        app:layout_constraintTop_toTopOf="@id/similarityScoreCircularProgressScore" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/similarityScoreCircularProgressScore"
@@ -54,12 +65,13 @@
         android:layout_height="wrap_content"
         android:indeterminate="false"
         android:progress="0"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:indicatorSize="128dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
         app:showAnimationBehavior="outward"
         app:trackCornerRadius="8dp"
         app:trackThickness="16dp" />
@@ -74,9 +86,87 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
         app:showAnimationBehavior="outward"
         app:trackCornerRadius="8dp"
         app:trackThickness="16dp" />
+
+    <LinearLayout
+        android:id="@+id/similarityScoreLinearLayoutDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/similarityScoreCircularProgressScore"
+        app:layout_constraintVertical_bias="0.2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:text="@string/initial_score" />
+
+            <TextView
+                android:id="@+id/similarityScoreTextViewInitialScore"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="60"
+                android:textAlignment="textEnd" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:text="@string/maghrib_bonus" />
+
+            <TextView
+                android:id="@+id/similarityScoreTextViewMaghribBonus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="60"
+                android:textAlignment="textEnd" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/similarityScoreTextViewStreak"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:text="Streak bonus %1$s" />
+
+            <TextView
+                android:id="@+id/similarityScoreTextViewStreakBonus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="60"
+                android:textAlignment="textEnd" />
+        </LinearLayout>
+    </LinearLayout>
 
     <!-- Old view -->
 

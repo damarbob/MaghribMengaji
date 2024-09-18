@@ -17,31 +17,37 @@ import javax.net.ssl.HttpsURLConnection
 
 class OCRAsyncTask {
 
-    interface IOCRCallBack {
-        fun getOCRCallBackResult(response: String?)
-        fun onOCRFailure(exception: Exception)
-    }
+//    interface IOCRCallBack {
+//        fun getOCRCallBackResult(response: String?)
+//        fun onOCRFailure(exception: Exception)
+//    }
 
+    private lateinit var onOCRFailure: (Exception) -> Unit
+    private lateinit var onOCRCallbackResult: (String?) -> Unit
     private lateinit var imageBase64: String
     private lateinit var language: String
-    private lateinit var iOCRCallBack: IOCRCallBack
-    private lateinit var progressBar: CircularProgressIndicator
+//    private lateinit var iOCRCallBack: IOCRCallBack
+//    private lateinit var progressBar: CircularProgressIndicator
     private val mApiKey = "K88528569888957"
     private val isOverlayRequired = false
     private val url = "https://api.ocr.space/parse/image" // OCR API Endpoints
-    private lateinit var mProgressBar: CircularProgressIndicator
+//    private lateinit var mProgressBar: CircularProgressIndicator
 
     operator fun invoke(
         imageBase64: String,
         language: String,
-        iOCRCallBack: IOCRCallBack,
-        progressBar: CircularProgressIndicator,
-        lifecycleScope: LifecycleCoroutineScope
+//        iOCRCallBack: IOCRCallBack,
+//        progressBar: CircularProgressIndicator,
+        lifecycleScope: LifecycleCoroutineScope,
+        onOCRCallbackResult: (String?) -> Unit,
+        onOCRFailure: (Exception) -> Unit
     ) {
         this.imageBase64 = imageBase64
         this.language = language
-        this.iOCRCallBack = iOCRCallBack
-        this.progressBar = progressBar
+//        this.iOCRCallBack = iOCRCallBack
+//        this.progressBar = progressBar
+        this.onOCRCallbackResult = onOCRCallbackResult
+        this.onOCRFailure = onOCRFailure
 
         lifecycleScope.launch {
             executeAsyncTask()
@@ -49,29 +55,29 @@ class OCRAsyncTask {
     }
 
     private suspend fun executeAsyncTask() {
-        mProgressBar = progressBar
+//        mProgressBar = progressBar
         try {
-            mProgressBar.visibility = ProgressBar.VISIBLE
+//            mProgressBar.visibility = ProgressBar.VISIBLE
 
             val response = withContext(Dispatchers.IO) {
                 sendPost()
             }
 
-            mProgressBar.visibility = ProgressBar.GONE
+//            mProgressBar.visibility = ProgressBar.GONE
             // Parse the response JSON
             val jsonResponse = JSONObject(response)
             if (jsonResponse.getBoolean("IsErroredOnProcessing")) {
                 val errorMessage = jsonResponse.optJSONArray("ErrorMessage")?.join(", ") ?: "Unknown error"
-                iOCRCallBack.onOCRFailure(Exception(errorMessage))
+                onOCRFailure(Exception(errorMessage))
             } else {
-                iOCRCallBack.getOCRCallBackResult(response)
+                onOCRCallbackResult(response)
             }
 
             Log.d(TAG, response)
         } catch (e: Exception) {
             e.printStackTrace()
-            mProgressBar.visibility = ProgressBar.GONE
-            iOCRCallBack.onOCRFailure(e)
+//            mProgressBar.visibility = ProgressBar.GONE
+            onOCRFailure(e)
         }
     }
 

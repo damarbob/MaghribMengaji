@@ -8,17 +8,19 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
 
-class FetchQuranPageUseCase(private val resultHandler: ResultHandler) {
+class FetchQuranPageUseCase(
+//    private val resultHandler: ResultHandler
+) {
 
     private val myExecutor = Executors.newSingleThreadExecutor()
     private val myHandler = Handler(Looper.getMainLooper())
 
-    interface ResultHandler {
-        fun onSuccess(result: String)
-        fun onFailure(message: String)
-    }
+//    interface ResultHandler {
+//        fun onSuccess(result: String)
+//        fun onFailure(message: String)
+//    }
 
-    operator fun invoke(page: Int) {
+    operator fun invoke(page: Int, onSuccess: (String) -> Unit, onFailure: (String) -> Unit) {
         myExecutor.execute {
             var result = ""
             var urlConnection: HttpURLConnection? = null
@@ -43,9 +45,9 @@ class FetchQuranPageUseCase(private val resultHandler: ResultHandler) {
 
             myHandler.post {
                 if (result.isNotEmpty()) {
-                    resultHandler.onSuccess(result)
+                    onSuccess(result)
                 } else {
-                    resultHandler.onFailure("Failed to fetch data")
+                    onFailure("Failed to fetch data")
                 }
             }
         }

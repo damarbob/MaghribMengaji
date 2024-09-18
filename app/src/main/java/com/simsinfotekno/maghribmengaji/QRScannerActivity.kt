@@ -1,14 +1,18 @@
 package com.simsinfotekno.maghribmengaji
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.google.mlkit.vision.common.InputImage
 
 class QRScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,6 +25,49 @@ class QRScannerActivity : AppCompatActivity() {
             insets
         }
 
+    }
+
+    private fun barcodeScanner(bitmap: Bitmap) {
+        val options = BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(
+                Barcode.FORMAT_QR_CODE)
+            .build()
+
+        val image = InputImage.fromBitmap(bitmap, 0)
+
+        val scanner = BarcodeScanning.getClient(options)
+
+        val result = scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                // Task completed successfully
+                for (barcode in barcodes) {
+                    val bounds = barcode.boundingBox
+                    val corners = barcode.cornerPoints
+
+                    val rawValue = barcode.rawValue
+
+//                    val valueType = barcode.valueType
+                    // See API reference for complete list of supported types
+//                    when (valueType) {
+//                        Barcode.TYPE_WIFI -> {
+//                            val ssid = barcode.wifi!!.ssid
+//                            val password = barcode.wifi!!.password
+//                            val type = barcode.wifi!!.encryptionType
+//                        }
+//                        Barcode.TYPE_URL -> {
+//                            val title = barcode.url!!.title
+//                            val url = barcode.url!!.url
+//                        }
+//                    }
+                }
+            }
+            .addOnFailureListener {
+                // Task failed with an exception
+                // ...
+            }
+    }
+
+    private fun gmsScanner() {
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(
                 Barcode.FORMAT_QR_CODE)

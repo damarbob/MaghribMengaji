@@ -31,6 +31,7 @@ firebaseAuth = "23.0.0"
 recyclerview = "1.3.2"
 firebaseCrashlyticsBuildtools = "3.0.2"
 uiTextAndroid = "1.7.0"
+barcodeScanning = "17.3.0"
 
 [libraries]
 android-document-filter = { module = "com.github.garg-lucifer:AndroidDocumentFilter", version.ref = "androiddocumentfilter" }
@@ -63,6 +64,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 androidx-ui-text-android = { group = "androidx.compose.ui", name = "ui-text-android", version.ref = "uiTextAndroid" }
+barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "barcodeScanning" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

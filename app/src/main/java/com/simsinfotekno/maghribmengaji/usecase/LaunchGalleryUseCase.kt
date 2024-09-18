@@ -11,20 +11,20 @@ import androidx.core.content.PermissionChecker
 class LaunchGalleryUseCase {
 
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
-    private lateinit var requestGalleryPermissionLauncher: ActivityResultLauncher<String>
+//    private lateinit var requestGalleryPermissionLauncher: ActivityResultLauncher<String>
 
     companion object {
         private val TAG = LaunchGalleryUseCase::class.java.simpleName
     }
 
-    operator fun invoke(context: Context, galleryLauncher: ActivityResultLauncher<Intent>, requestGalleryPermissionLauncher: ActivityResultLauncher<String>) {
+    operator fun invoke(context: Context, galleryLauncher: ActivityResultLauncher<Intent>) {
         this.galleryLauncher = galleryLauncher
-        this.requestGalleryPermissionLauncher = requestGalleryPermissionLauncher
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_GRANTED) {
+//        this.requestGalleryPermissionLauncher = requestGalleryPermissionLauncher
+//        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_GRANTED) {
             val pickPhotoIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             galleryLauncher.launch(pickPhotoIntent)
-        } else {
-            requestGalleryPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
+//        } else {
+//            requestGalleryPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+//        }
     }
 }

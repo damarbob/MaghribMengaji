@@ -10,46 +10,70 @@
         android:id="@+id/settingToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@color/md_theme_primary"
+        android:textAlignment="center"
         app:layout_collapseMode="pin"
         app:navigationIcon="@drawable/arrow_left"
-        android:background="@color/md_theme_primary"
         app:title="@string/settings"
         app:titleCentered="true"
-        android:textAlignment="center"
-        app:titleTextColor="@color/cardview_light_background"
-        />
+        app:titleTextColor="@color/cardview_light_background" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="74dp">
+        android:layout_marginTop="74dp"
+        android:orientation="vertical">
 
 
-    <Switch
-        android:id="@+id/SwitchNotificationButton"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/allow_notification"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
-    <Switch
-        android:id="@+id/settingMLKitScannerSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/use_ml_kit_scanner"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
+        <Switch
+            android:id="@+id/settingSwitchNotification"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/plus_jakarta_sans_variable"
+            android:text="@string/allow_notification"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Switch
+            android:id="@+id/settingSwitchMLKitScanner"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/plus_jakarta_sans_variable"
+            android:text="@string/use_ml_kit_scanner"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <TextView
-            android:id="@+id/settingMLKitScannerHelperText"
+            android:id="@+id/settingTextViewMLKitScannerHelper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:paddingHorizontal="@dimen/activity_horizontal_margin"
+            android:text="@string/recommended_android_version_11_or_higher_if_the_app_crashes_turn_off_this_setting" />
+
+        <Switch
+            android:id="@+id/settingSwitchQRCodeCheck"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/qr_code_check"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:fontFamily="@font/plus_jakarta_sans_variable"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <TextView
+            android:id="@+id/settingTextViewQRCodeHelper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/activity_horizontal_margin"
-            android:text="@string/recommended_android_version_11_or_higher_if_the_app_crashes_turn_off_this_setting"/>
+            android:text="@string/check_the_qr_code_in_the_corner_of_the_page_when_scanning_if_the_qr_code_is_difficult_to_read_by_the_scanner_turn_off_this_setting" />
     </LinearLayout>
 
     <Button

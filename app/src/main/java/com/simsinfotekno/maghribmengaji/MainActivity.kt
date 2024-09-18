@@ -3,10 +3,12 @@ package com.simsinfotekno.maghribmengaji
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -37,6 +39,7 @@ import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
 import com.simsinfotekno.maghribmengaji.ui.infaq.InfaqFragment
 import com.simsinfotekno.maghribmengaji.usecase.CancelDailyNotificationUseCase
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
+import com.simsinfotekno.maghribmengaji.usecase.RequestPermissionsUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserTransactions
@@ -60,8 +63,32 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private var connectionStatus: ConnectivityObserver.Status =
         ConnectivityObserver.Status.Unavailable
     private lateinit var alertBuilder: AlertDialog
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach { (permission, isGranted) ->
+                when {
+                    !isGranted -> {
+                        // Handle the case where the user denied the permission
+                        Toast.makeText(
+                            applicationContext,
+                            getString(R.string.permission_is_not_granted, permission),
+                            Toast.LENGTH_LONG
+                        )
+                    }
+                    shouldShowRequestPermissionRationale(permission) -> {
+                        // Permission denied without "Don't ask again" - Show rationale
+                        showPermissionRationale(permission)
+                    }
+                    else -> {
+                        // Permission denied with "Don't ask again" - Guide user to settings
+                        showPermissionSettingsDialog()
+                    }
+                }
+            }
+        }
 
     /* Use cases */
+    private val requestPermissionsUseCase = RequestPermissionsUseCase()
     private val retrieveUserProfile = RetrieveUserProfile()
     private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
     private val retrieveUserTransactions = RetrieveUserTransactions()
@@ -88,6 +115,11 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             scheduleDailyNotificationUseCase // Enable notifications
         } else {
             cancelDailyNotificationUseCase// Disable notifications
+        }
+
+        // Request notification permission
+        if (!requestPermissionsUseCase.hasPostNotificationPermission(this) && !requestPermissionsUseCase.hasScheduleExactAlarmPermission(this)) {
+            requestPermissionsUseCase(requestPermissionsLauncher, this, requestPermissionsUseCase.getNotificationPermissions())
         }
         // setup for IAP
 //        private fun doMyBiller() {
@@ -263,6 +295,41 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             return@setNavigationItemSelectedListener true
         }
 
+    }
+
+    private fun showPermissionRationale(permission: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.allow_notification))
+            .setMessage(getString(R.string.you_will_not_receive_a_notification_if_the_permission_is_not_granted))
+            .setPositiveButton(resources.getString(R.string.okay)) { _, _ ->
+                requestPermissionsUseCase(
+                    requestPermissionsLauncher,
+                    this,
+                    arrayOf(permission)
+                )
+            }
+            .setNegativeButton(resources.getString(R.string.cancel), null)
+            .create()
+            .show()
+    }
+
+    private fun showPermissionSettingsDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.permission_disabled))
+            .setMessage(getString(R.string.this_permission_is_disabled_please_enable_it_in_the_app_settings))
+            .setPositiveButton(getString(R.string.go_to_settings)) { _, _ ->
+                openAppSettings()
+            }
+            .setNegativeButton(resources.getString(R.string.cancel), null)
+            .create()
+            .show()
+    }
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri: Uri = Uri.fromParts("package", packageName, null)
+        intent.data = uri
+        startActivity(intent)
     }
 
     private fun signOut() {

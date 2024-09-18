@@ -293,4 +293,26 @@
     <string name="recommended_android_version_11_or_higher_if_the_app_crashes_turn_off_this_setting">Direkomendasikan pada versi Android 11 atau lebih tinggi. Jika aplikasi mengalami crash, matikan pengaturan ini</string>
     <string name="gallery_permission_is_required_to_select_a_photo">Izin galeri diperlukan untuk memilih foto</string>
     <string name="camera_permission_is_required_to_take_a_photo">Izin kamera diperlukan untuk mengambil foto</string>
+    <string name="permission_is_not_granted">Akses %1$s tidak diizinkan</string>
+    <string name="permission_disabled">Izin ditolak</string>
+    <string name="this_permission_is_disabled_please_enable_it_in_the_app_settings">Izin ditolak. Aktifkan perizinan di aplikasi Pengaturan</string>
+    <string name="go_to_settings">Pergi ke Pengaturan</string>
+    <string name="you_will_not_receive_a_notification_if_the_permission_is_not_granted">Antum tidak akan menerima notifikasi jika perizinan ditolak.</string>
+    <string name="permission_required">Izin Diperlukan</string>
+    <string name="this_feature_requires_the_permission_please_grant_it">Fitur ini memerlukan izin akses %1$s. Mohon berikan izin.</string>
+    <string name="initial_score">Nilai awal</string>
+    <string name="maghrib_bonus">Bonus Maghrib</string>
+    <string name="submit_streak_bonus_x_day_s">Bonus pengumpulan beruntun: %1$s hari</string>
+    <string name="qr_code_not_detected">Kode QR tidak terdeteksi</string>
+    <string name="the_page_does_not_match">Halaman tidak sama</string>
+    <string name="make_sure_the_qr_code_is_in_the_photo_frame">Pastikan kode QR masuk dalam frame/bingkai foto</string>
+    <string name="make_sure_the_qr_code_is_clearly_visible_in_the_photo">Pastikan kode QR terlihat jelas dalam foto</string>
+    <string name="the_page_you_selected_is_but_the_page_detected_is">Halaman yang Antum pilih %1$s tetapi yang terdeteksi adalah halaman %2$s</string>
+    <string name="turn_off_qr_code_check">Matikan pengecekan kode QR</string>
+    <string name="go_to">Pergi ke %1$s</string>
+    <string name="the_qr_code_has_not_been_detected_3_times_or_more_do_you_want_to_turn_off_qr_code_checking">Kode QR gagal mendeteksi halaman sebanyak 3 kali atau lebih. Matikan pengecekan kode QR?</string>
+    <string name="no">Tidak</string>
+    <string name="qr_code_check">Pengecekan kode QR</string>
+    <string name="check_the_qr_code_in_the_corner_of_the_page_when_scanning_if_the_qr_code_is_difficult_to_read_by_the_scanner_turn_off_this_setting">Mengecek kode QR yang ada di pojok halaman ketika melakukan scan. Jika kode QR sulit terbaca oleh scanner, matikan pengaturan ini.</string>
+    <string name="qr_code_check_successfully_disabled">Pengecekan kode QR berhasil dinonaktifkan</string>
 </resources>

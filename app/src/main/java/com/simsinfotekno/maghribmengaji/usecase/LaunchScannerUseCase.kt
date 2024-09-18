@@ -26,12 +26,9 @@ class LaunchScannerUseCase {
         // Get the document scanner client
         val scanner = GmsDocumentScanning.getClient(option)
 
-        Log.d(TAG, "invoke()")
-
         // Start scanner intent
         scanner.getStartScanIntent(fragment.requireActivity())
             .addOnSuccessListener { intentSender ->
-                Log.d(TAG, "launching scanner")
                 scannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
                 Log.d(TAG, "scanner launched")
             }

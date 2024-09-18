@@ -43,14 +43,14 @@ import java.util.concurrent.Executors
 import kotlin.math.round
 
 
-class DocScannerActivity : AppCompatActivity(), OCRAsyncTask.IOCRCallBack {
+class DocScannerActivity : AppCompatActivity(){
 
     private lateinit var binding: ActivityDocscannerBinding
 
     private var isOverlayRequired : Boolean = false
     private var mImageBase64: String = ""
     private lateinit var mLanguage: String
-    private lateinit var mIOCRCallBack: OCRAsyncTask.IOCRCallBack
+//    private lateinit var mIOCRCallBack: OCRAsyncTask.IOCRCallBack
 
     private val myExecutor = Executors.newSingleThreadExecutor()
     private val myHandler = Handler(Looper.getMainLooper())
@@ -63,7 +63,7 @@ class DocScannerActivity : AppCompatActivity(), OCRAsyncTask.IOCRCallBack {
 
         binding = ActivityDocscannerBinding.inflate(layoutInflater)
 
-        mIOCRCallBack = this
+//        mIOCRCallBack = this
         mLanguage = "ara" //Language
         isOverlayRequired = false
 
@@ -307,19 +307,19 @@ class DocScannerActivity : AppCompatActivity(), OCRAsyncTask.IOCRCallBack {
     /**
      * Get OCR Callback result
      */
-    override fun getOCRCallBackResult(response: String?) {
-        binding.textViewOCRResult.visibility = View.VISIBLE
-        binding.textViewOCRResult.text = response?.let { extractTextFromJsonOCRApi(it) }
+//    override fun getOCRCallBackResult(response: String?) {
+//        binding.textViewOCRResult.visibility = View.VISIBLE
+//        binding.textViewOCRResult.text = response?.let { extractTextFromJsonOCRApi(it) }
+//
+//        val quranApiText = binding.textViewQuranApi.text.toString()
+//        val ocrText = binding.textViewOCRResult.text.toString()
+//        binding.textViewResult.visibility = View.VISIBLE
+//        binding.textViewResult.text = calculateSimilarityIndex(quranApiText,ocrText).toString()
+//    }
 
-        val quranApiText = binding.textViewQuranApi.text.toString()
-        val ocrText = binding.textViewOCRResult.text.toString()
-        binding.textViewResult.visibility = View.VISIBLE
-        binding.textViewResult.text = calculateSimilarityIndex(quranApiText,ocrText).toString()
-    }
-
-    override fun onOCRFailure(exception: Exception) {
-        TODO("Not yet implemented")
-    }
+//    override fun onOCRFailure(exception: Exception) {
+//        TODO("Not yet implemented")
+//    }
 
     /**
      * Convert bitmap to Base64
