@@ -52,6 +52,7 @@ import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
+import com.simsinfotekno.maghribmengaji.ui.infaq.InfaqFragment
 import com.simsinfotekno.maghribmengaji.usecase.CheckOwnedQuranVolumeUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
@@ -256,6 +257,14 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
             onNotOwnedVolume = {
                 notOwnedVolume()
             })
+
+        /* Infaq on first volume open */
+        if (volume != null) {
+            if (!MaghribMengajiPref.readBoolean(requireActivity(), "${MaghribMengajiPref.QURAN_VOLUME_INFAQ}_${volume.id}", false)) {
+                InfaqFragment().show(parentFragmentManager, InfaqFragment::class.java.simpleName)
+                MaghribMengajiPref.saveBoolean(requireActivity(), "${MaghribMengajiPref.QURAN_VOLUME_INFAQ}_${volume.id}", true)
+            }
+        }
 
         /* Views */
         binding.pageCollapsingToolbarLayout.title =

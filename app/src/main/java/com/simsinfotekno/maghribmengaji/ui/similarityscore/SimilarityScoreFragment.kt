@@ -21,6 +21,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -33,7 +34,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
-import com.namangarg.androiddocumentscannerandfilter.DocumentFilter
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentSimilarityScoreBinding
@@ -55,9 +56,6 @@ import com.simsinfotekno.maghribmengaji.usecase.QRCodeScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RequestPermissionsUseCase
 import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 // TODO: set timeout, fix when no connection on upload page (maybe page document created but image not uploaded? however it fixed on relaunch app)
 class SimilarityScoreFragment : Fragment(),
@@ -146,8 +144,7 @@ class SimilarityScoreFragment : Fragment(),
 
         // Initialize the scanner launcher
         scannerLauncher = registerForActivityResult(
-            ActivityResultContracts.StartIntentSenderForResult(),
-            this
+            ActivityResultContracts.StartIntentSenderForResult(), this
         )
 
         cameraLauncher =
@@ -184,9 +181,7 @@ class SimilarityScoreFragment : Fragment(),
                     )
                 } else {
                     Toast.makeText(
-                        context,
-                        "Camera permission is required to take a photo",
-                        Toast.LENGTH_SHORT
+                        context, "Camera permission is required to take a photo", Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -219,14 +214,11 @@ class SimilarityScoreFragment : Fragment(),
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
                     launchGalleryUseCase(
-                        requireContext(),
-                        galleryLauncher
+                        requireContext(), galleryLauncher
                     )
                 } else {
                     Toast.makeText(
-                        context,
-                        "Camera permission is required to take a photo",
-                        Toast.LENGTH_SHORT
+                        context, "Camera permission is required to take a photo", Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -250,34 +242,38 @@ class SimilarityScoreFragment : Fragment(),
         // Set up the back button callback
         backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(getString(R.string.are_you_sure))
-                    .setMessage(getString(R.string.your_result_will_be_gone))
-                    .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                        findNavController().popBackStack()
-                    }
-                    .show()
+                if (quranPageStudentRepository.getRecordByPageId(viewModel.getPageId()) == null) {
+                    materialAlertDialog =
+                        MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.are_you_sure))
+                            .setMessage(getString(R.string.your_result_will_be_gone))
+                            .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                                dialog.dismiss()
+                            }.setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                                findNavController().popBackStack()
+                            }.show()
+                } else findNavController().popBackStack()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, backPressedCallback)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
 
         _binding = FragmentSimilarityScoreBinding.inflate(inflater, container, false)
 
         this.container = container!!
 
-        binding.similarityScoreTextViewPage.text =
-            resources.getString(R.string.page_x, arguments?.getInt("pageId").toString())
+//        binding.similarityScoreTextViewPage.text =
+//            resources.getString(R.string.page_x, arguments?.getInt("pageId").toString())
 
         /* Observers */
+
+        viewModel.pageId.observe(viewLifecycleOwner) {
+            binding.similarityScoreTextViewPage.text =
+                resources.getString(R.string.page_x, it.toString())
+        }
 
         // Listening to remote db result whether success or failed
         viewModel.remoteDbResult.observe(viewLifecycleOwner) { uploadResult ->
@@ -285,9 +281,7 @@ class SimilarityScoreFragment : Fragment(),
 
                 // Navigate to the next screen or update UI
                 Toast.makeText(
-                    requireContext(),
-                    getString(R.string.upload_successful),
-                    Toast.LENGTH_SHORT
+                    requireContext(), getString(R.string.upload_successful), Toast.LENGTH_SHORT
                 ).show()
 
                 parentFragmentManager.popBackStack() // Back to page
@@ -323,8 +317,7 @@ class SimilarityScoreFragment : Fragment(),
                     maximizeView(maximized = true, scorePassed = true, onCreateView = false)
                 } else {
                     binding.similarityScoreTextViewDetail.text = HtmlCompat.fromHtml(
-                        getString(R.string.your_score_is_low),
-                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                        getString(R.string.your_score_is_low), HtmlCompat.FROM_HTML_MODE_LEGACY
                     )
                     binding.similarityScoreCircularProgress.visibility = View.GONE
                     maximizeView(maximized = true, scorePassed = false, onCreateView = false)
@@ -346,11 +339,9 @@ class SimilarityScoreFragment : Fragment(),
             binding.similarityScoreTextViewMaghribBonus.text = "+$maghribBonus"
         }
         viewModel.submitStreakBonus.observe(viewLifecycleOwner) { submitStreakBonus ->
-            binding.similarityScoreTextViewStreak.text =
-                getString(
-                    R.string.submit_streak_bonus_x_day_s,
-                    submitStreakBonus[0].toInt().toString()
-                )
+            binding.similarityScoreTextViewStreak.text = getString(
+                R.string.submit_streak_bonus_x_day_s, submitStreakBonus[0].toInt().toString()
+            )
             binding.similarityScoreTextViewStreakBonus.text =
                 "+${((submitStreakBonus[1] - 1) * 100).toInt()}%"
         }
@@ -395,13 +386,12 @@ class SimilarityScoreFragment : Fragment(),
         if (viewModel.imageUriString == null) {
             viewModel.imageUriString = arguments?.getString("imageUriString")
         }
-        if (viewModel.pageId == null) {
-            viewModel.pageId = arguments?.getInt("pageId")
+        if (viewModel.getPageId() == null) {
+            viewModel.setPageId(arguments?.getInt("pageId"))
         }
         if (viewModel.bitmap == null) {
             viewModel.bitmap = loadBitmapFromUri(
-                requireContext(),
-                Uri.parse(arguments?.getString("imageUriString"))
+                requireContext(), Uri.parse(arguments?.getString("imageUriString"))
             )
         }
 
@@ -416,64 +406,52 @@ class SimilarityScoreFragment : Fragment(),
 
         /* Listeners */
         binding.similarityScoreButtonUpload.setOnClickListener {
-            materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.are_you_sure))
-                .setMessage(
-                    getString(
-                        R.string.your_similarity_score,
-                        viewModel.totalScore.value.toString()
-                    )
-                )
-                .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    uploadPage()
-                }
-                .show()
+            materialAlertDialog =
+                MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.are_you_sure))
+                    .setMessage(
+                        getString(
+                            R.string.your_similarity_score, viewModel.totalScore.value.toString()
+                        )
+                    ).setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                        dialog.dismiss()
+                    }.setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                        uploadPage()
+                    }.show()
         }
 
         binding.similarityScoreButtonUploadLow.setOnClickListener {
-            materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.are_you_sure))
-                .setMessage(
-                    getString(
-                        R.string.your_similarity_score,
-                        viewModel.totalScore.value.toString()
-                    )
-                )
-                .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    uploadPage()
-                }
-                .show()
+            materialAlertDialog =
+                MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.are_you_sure))
+                    .setMessage(
+                        getString(
+                            R.string.your_similarity_score, viewModel.totalScore.value.toString()
+                        )
+                    ).setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                        dialog.dismiss()
+                    }.setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                        uploadPage()
+                    }.show()
         }
 
         binding.similarityScoreButtonRetry.setOnClickListener {
-            materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.are_you_sure))
-                .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+            materialAlertDialog =
+                MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.are_you_sure))
+                    .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                        dialog.dismiss()
+                    }.setPositiveButton(getString(R.string.yes)) { _, _ ->
 //                    if (Build.VERSION.SDK_INT >= 30) {
-                    retryScan()
-                }
-                .show()
+                        retryScan()
+                    }.show()
         }
 
         binding.similarityScoreButtonRetryLow.setOnClickListener {
-            materialAlertDialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.are_you_sure))
-                .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton(getString(R.string.yes)) { dialog, which ->
-                    retryScan()
-                }
-                .show()
+            materialAlertDialog =
+                MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.are_you_sure))
+                    .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+                        dialog.dismiss()
+                    }.setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                        retryScan()
+                    }.show()
         }
 
         binding.similarityScoreButtonClose.setOnClickListener {
@@ -481,49 +459,97 @@ class SimilarityScoreFragment : Fragment(),
 //            if (binding.similarityScoreTextViewScore.visibility == View.GONE || binding.similarityScoreCircularProgress.visibility == View.VISIBLE) {
 //                backPressedCallback.handleOnBackPressed()
 //            } else findNavController().popBackStack()
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.are_you_sure))
-                .setMessage(getString(R.string.your_result_will_be_gone))
-                .setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    findNavController().popBackStack()
-                }
-                .show()
+            if (quranPageStudentRepository.getRecordByPageId(viewModel.getPageId()) == null) {
+                MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.are_you_sure))
+                    .setMessage(getString(R.string.your_result_will_be_gone))
+                    .setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+                        dialog.dismiss()
+                    }.setPositiveButton(getString(R.string.yes)) { _, _ ->
+                        findNavController().popBackStack()
+                    }.show()
+            } else findNavController().popBackStack()
         }
 
         return binding.root
     }
 
     private fun startScoring() {
-        if (MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, true)) {
+        val pageStudent = quranPageStudentRepository.getRecordByPageId(viewModel.getPageId())
+
+        if (pageStudent != null) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.you_have_submitted_this_page),
+                Toast.LENGTH_LONG
+            ).show()
+            binding.similarityScoreTextViewScore.visibility = View.VISIBLE
+            binding.similarityScoreCircularProgressScore.visibility = View.VISIBLE
+            binding.similarityScoreCircularProgress.visibility = View.GONE
+            binding.similarityScoreButtonRetry.isEnabled = false
+            binding.similarityScoreButtonRetryLow.isEnabled = false
+            binding.similarityScoreButtonUpload.isEnabled = false
+            binding.similarityScoreButtonUploadLow.isEnabled = false
+            binding.similarityScoreTextViewPage.text =
+                getString(R.string.page_have_been_submitted, viewModel.getPageId().toString())
+            binding.similarityScoreTextViewPage.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.md_theme_primary
+                )
+            )
+            binding.similarityScoreTextViewPage.setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.md_theme_onPrimary
+                )
+            )
+            // Add animation
+            pageStudent.oCRScore?.let {
+                ValueAnimator.ofInt(it).apply {
+                    duration = 1000
+                    addUpdateListener {
+                        val animationValue = it.animatedValue as Int
+                        binding.similarityScoreTextViewScore.text = animationValue.toString()
+                        binding.similarityScoreCircularProgressScore.progress = animationValue
+                    }
+                }.start()
+            }
+            return
+        }
+
+        if (MaghribMengajiPref.readBoolean(
+                requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, true
+            )
+        ) {
             viewModel.checkQRCode(onSuccess = {
                 viewModel.processOCR("ara", lifecycleScope)
             }, onError = { error ->
-                when (error) {
-                    QRCodeScannerUseCase.QR_CODE_NOT_FOUND -> showQRCodeError(
-                        getString(R.string.qr_code_not_detected),
-                        getString(
+                Log.d(TAG, "Barcode Error: $error")
+
+                when {
+                    error == QRCodeScannerUseCase.QR_CODE_NOT_FOUND -> showQRCodeError(
+                        getString(R.string.qr_code_not_detected), getString(
                             R.string.make_sure_the_qr_code_is_in_the_photo_frame
                         )
                     )
 
-                    ExtractQRCodeToPageIdUseCase.PAGE_ID_NOT_FOUND -> showQRCodeError(
-                        getString(R.string.qr_code_not_detected),
-                        getString(
+                    error == ExtractQRCodeToPageIdUseCase.PAGE_ID_NOT_FOUND -> showQRCodeError(
+                        getString(R.string.qr_code_not_detected), getString(
                             R.string.make_sure_the_qr_code_is_clearly_visible_in_the_photo
                         )
                     )
 
-                    1..604 -> showQRCodeError(
-                        getString(R.string.the_page_does_not_match),
-                        getString(
-                            R.string.the_page_you_selected_is_but_the_page_detected_is,
-                            viewModel.pageId.toString(),
-                            error
+//                    error as Int >= 1 && error <= 604 -> {
+                    error as Int in 1..604 -> {
+                        Log.d(TAG, "error: $error")
+                        showQRCodeError(
+                            getString(R.string.the_page_does_not_match), getString(
+                                R.string.the_page_you_selected_is_but_the_page_detected_is,
+                                viewModel.getPageId().toString(),
+                                error
+                            ), error
                         )
-                    )
+                    }
 
                     else -> showQRCodeError(
                         error.toString(),
@@ -545,9 +571,7 @@ class SimilarityScoreFragment : Fragment(),
 
     private fun retryScan() {
         if (MaghribMengajiPref.readBoolean(
-                requireActivity(),
-                MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY,
-                true
+                requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true
             )
         ) {
             launchScannerUseCase(this, scannerLauncher)
@@ -562,8 +586,7 @@ class SimilarityScoreFragment : Fragment(),
             }
             activity?.let { it1 ->
                 bottomSheet.show(
-                    it1.supportFragmentManager,
-                    ImagePickerBottomSheetDialog.TAG
+                    it1.supportFragmentManager, ImagePickerBottomSheetDialog.TAG
                 )
             }
         }
@@ -572,94 +595,106 @@ class SimilarityScoreFragment : Fragment(),
     private fun showQRCodeError(title: String, message: String, pageId: Int = 0) {
         // Get failure counter
         val failureCounter = MaghribMengajiPref.readInt(
-            requireActivity(),
-            MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
-            0
+            requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0
         )
+        Log.d(TAG, "Failure counter: $failureCounter")
+        Log.d(TAG, "pageId: $pageId")
 
         // If failure counter not more than 3x and no detected page ID
         if (failureCounter < 3 && pageId == 0) {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(title)
-                .setMessage(message)
+            MaterialAlertDialogBuilder(requireContext()).setTitle(title).setMessage(message)
                 .setPositiveButton(resources.getString(R.string.retry)) { _, _ ->
-                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, failureCounter + 1)
+                    MaghribMengajiPref.saveInt(
+                        requireActivity(),
+                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+                        failureCounter + 1
+                    )
                     retryScan()
-                }
-                .setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
-                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, failureCounter + 1)
+                }.setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+                    MaghribMengajiPref.saveInt(
+                        requireActivity(),
+                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+                        failureCounter + 1
+                    )
                     dialog.dismiss()
+                }.setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
+                    MaghribMengajiPref.saveBoolean(
+                        requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false
+                    )
+                    MaghribMengajiPref.saveInt(
+                        requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0
+                    )
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.qr_code_check_successfully_disabled),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-                .setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
-                    MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false)
-                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0)
-                    Toast.makeText(requireContext(),
-                        getString(R.string.qr_code_check_successfully_disabled), Toast.LENGTH_LONG).show()
-                }
-        }
-
-        else if (failureCounter < 3 && pageId > 0 && pageId < 605) {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(title)
-                .setMessage(message)
+        } else if (failureCounter < 3 && pageId > 0 && pageId < 605) {
+            Log.d(TAG, "pageId: $pageId true")
+            MaterialAlertDialogBuilder(requireContext()).setTitle(title).setMessage(message)
                 .setPositiveButton(getString(R.string.go_to, pageId.toString())) { _, _ ->
-                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, failureCounter + 1)
-                    viewModel.pageId = pageId
+                    MaghribMengajiPref.saveInt(
+                        requireActivity(),
+                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+                        failureCounter + 1
+                    )
+                    viewModel.setPageId(pageId)
                     startScoring()
-                }
-                .setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
-                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, failureCounter + 1)
+                }.setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+                    MaghribMengajiPref.saveInt(
+                        requireActivity(),
+                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+                        failureCounter + 1
+                    )
                     dialog.dismiss()
-                }
-                .setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
-                    MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false)
-                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0)
-                    Toast.makeText(requireContext(), getString(R.string.qr_code_check_successfully_disabled), Toast.LENGTH_LONG).show()
-                }
+                }.setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
+                    MaghribMengajiPref.saveBoolean(
+                        requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false
+                    )
+                    MaghribMengajiPref.saveInt(
+                        requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0
+                    )
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.qr_code_check_successfully_disabled),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }.show()
 
-        }
-
-        else if (failureCounter >= 3) {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(title)
+        } else if (failureCounter >= 3) {
+            MaterialAlertDialogBuilder(requireContext()).setTitle(title)
                 .setMessage(getString(R.string.the_qr_code_has_not_been_detected_3_times_or_more_do_you_want_to_turn_off_qr_code_checking))
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    MaghribMengajiPref.saveBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false)
-                    MaghribMengajiPref.saveInt(requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0)
+                    MaghribMengajiPref.saveBoolean(
+                        requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false
+                    )
+                    MaghribMengajiPref.saveInt(
+                        requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0
+                    )
                     startScoring()
-                }
-                .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                }.setNegativeButton(getString(R.string.no)) { dialog, _ ->
                     dialog.dismiss()
-                }
+                }.show()
         }
     }
 
     private fun showPermissionRationale(permission: String) {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(resources.getString(R.string.allow_notification))
+        MaterialAlertDialogBuilder(requireContext()).setTitle(resources.getString(R.string.allow_notification))
             .setMessage(getString(R.string.you_will_not_receive_a_notification_if_the_permission_is_not_granted))
             .setPositiveButton(resources.getString(R.string.okay)) { _, _ ->
                 requestPermissionsUseCase(
-                    requestPermissionsLauncher,
-                    requireContext(),
-                    arrayOf(permission)
+                    requestPermissionsLauncher, requireContext(), arrayOf(permission)
                 )
-            }
-            .setNegativeButton(resources.getString(R.string.cancel), null)
-            .create()
-            .show()
+            }.setNegativeButton(resources.getString(R.string.cancel), null).create().show()
     }
 
     private fun showPermissionSettingsDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.permission_disabled))
+        MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.permission_disabled))
             .setMessage(getString(R.string.this_permission_is_disabled_please_enable_it_in_the_app_settings))
             .setPositiveButton(getString(R.string.go_to_settings)) { _, _ ->
                 openAppSettings()
-            }
-            .setNegativeButton(resources.getString(R.string.cancel), null)
-            .create()
-            .show()
+            }.setNegativeButton(resources.getString(R.string.cancel), null).create().show()
     }
 
     private fun openAppSettings() {
@@ -750,28 +785,23 @@ class SimilarityScoreFragment : Fragment(),
                 // Bundle to pass the data
                 val bundle = Bundle().apply {
                     putString("imageUriString", pages[0].imageUri.toString())
-                    putInt("pageId", viewModel.pageId!!)
+                    putInt("pageId", viewModel.getPageId()!!)
                 }
 
                 // Navigate to the ResultFragment with the Bundle
                 findNavController().navigate(
-                    R.id.action_global_similarityScoreFragment,
-                    bundle
+                    R.id.action_global_similarityScoreFragment, bundle
                 )
 
             }
 
         } else if (resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(
-                requireContext(),
-                getString(R.string.error_scanner_cancelled),
-                Toast.LENGTH_LONG
+                requireContext(), getString(R.string.error_scanner_cancelled), Toast.LENGTH_LONG
             ).show()
         } else {
             Toast.makeText(
-                requireContext(),
-                getString(R.string.error_default_message),
-                Toast.LENGTH_LONG
+                requireContext(), getString(R.string.error_default_message), Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -781,17 +811,14 @@ class SimilarityScoreFragment : Fragment(),
         Log.d(TAG, "imageuri: $imageUri")
         val bundle = Bundle().apply {
             putString(
-                "imageUriString",
-                imageUri
-                    .toString()
+                "imageUriString", imageUri.toString()
             )
-            putInt("pageId", viewModel.pageId!!)
+            putInt("pageId", viewModel.getPageId()!!)
         }
 
         // Navigate to the ResultFragment with the Bundle
         findNavController().navigate(
-            R.id.action_global_similarityScoreFragment,
-            bundle
+            R.id.action_global_similarityScoreFragment, bundle
         )
     }
 }
