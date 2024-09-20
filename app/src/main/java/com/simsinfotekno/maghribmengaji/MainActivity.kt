@@ -1,9 +1,13 @@
 package com.simsinfotekno.maghribmengaji
 
+import android.Manifest
+import android.app.AlarmManager
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.util.Log
 import android.view.View
 import android.widget.TextView
@@ -11,6 +15,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -75,10 +81,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                             Toast.LENGTH_LONG
                         )
                     }
+
                     shouldShowRequestPermissionRationale(permission) -> {
                         // Permission denied without "Don't ask again" - Show rationale
                         showPermissionRationale(permission)
                     }
+
                     else -> {
                         // Permission denied with "Don't ask again" - Guide user to settings
                         showPermissionSettingsDialog()
@@ -86,6 +94,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                 }
             }
         }
+    private lateinit var alarmManager: AlarmManager
 
     /* Use cases */
     private val requestPermissionsUseCase = RequestPermissionsUseCase()
@@ -93,9 +102,11 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
     private val retrieveUserTransactions = RetrieveUserTransactions()
     private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
+
     /* Notification */
     private val scheduleDailyNotificationUseCase = ScheduleDailyNotificationUseCase()
-    private val cancelDailyNotificationUseCase= CancelDailyNotificationUseCase()
+    private val cancelDailyNotificationUseCase = CancelDailyNotificationUseCase()
+
     /* Billing */
     private lateinit var myBilled: BillingClient
     private val courseList = listOf("")
@@ -109,17 +120,50 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
         //set schedule notif
         val sharedPreferences = getSharedPreferences("NotificationPrefs", MODE_PRIVATE)
-        val isNotificationsEnabled = sharedPreferences.getBoolean("notificationsEnabled", true)
-
-        if (isNotificationsEnabled) {
-            scheduleDailyNotificationUseCase // Enable notifications
-        } else {
-            cancelDailyNotificationUseCase// Disable notifications
-        }
+        val isNotificationsEnabled = sharedPreferences.getBoolean(MaghribMengajiPref.NOTIF_ENABLED_KEY, true)
 
         // Request notification permission
-        if (!requestPermissionsUseCase.hasPostNotificationPermission(this) && !requestPermissionsUseCase.hasScheduleExactAlarmPermission(this)) {
-            requestPermissionsUseCase(requestPermissionsLauncher, this, requestPermissionsUseCase.getNotificationPermissions())
+//        if (!requestPermissionsUseCase.hasPostNotificationPermission(this) && !requestPermissionsUseCase.hasScheduleExactAlarmPermission(this)) {
+//            requestPermissionsUseCase(requestPermissionsLauncher, this, requestPermissionsUseCase.getNotificationPermissions())
+//        }
+        if (!requestPermissionsUseCase.hasPostNotificationPermission(this)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionsUseCase(
+                    requestPermissionsLauncher,
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+                )
+            }
+        }
+
+        alarmManager = this.getSystemService<AlarmManager>()!!
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            when {
+                alarmManager.canScheduleExactAlarms() -> {
+                    if (isNotificationsEnabled) {
+                        scheduleDailyNotificationUseCase(this) // Enable notifications
+                    } else {
+                        cancelDailyNotificationUseCase(this)// Disable notifications
+                    }
+                }
+
+                else -> {
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.need_permission))
+                        .setMessage(getString(R.string.you_need_to_grant_permission_to_get_maghrib_mengaji_notification))
+                        .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                            startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                        }
+                        .setNegativeButton(getString(R.string.no)) { _, _ ->
+                            cancelDailyNotificationUseCase(this)
+                            sharedPreferences.edit().apply{
+                                putBoolean(MaghribMengajiPref.NOTIF_ENABLED_KEY, false)
+                                apply()
+                            }
+                        }
+                }
+            }
         }
         // setup for IAP
 //        private fun doMyBiller() {
@@ -141,7 +185,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 //            })
 
 
-            // Set the status bar color
+        // Set the status bar color
 //        window.statusBarColor = ContextCompat.getColor(this, R.color.md_theme_primary)
 //        setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
@@ -198,12 +242,15 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                 R.id.menu_volume_list -> {
                     navController.navigate(R.id.action_global_volumeListFragment)
                 }
+
                 R.id.menu_chapter_list -> {
                     navController.navigate(R.id.action_global_chapterListFragment)
                 }
+
                 R.id.menu_juz_list -> {
                     navController.navigate(R.id.action_global_juzListFragment)
                 }
+
                 R.id.menu_tc -> {
 
                     // Show tc confirmation
@@ -255,19 +302,27 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                         }
                         .show()
                 }
+
                 R.id.menu_donation -> {
 //                    navController.navigate(R.id.action_global_paymentFragment)
-                    InfaqFragment().show(supportFragmentManager, InfaqFragment::class.java.simpleName)
+                    InfaqFragment().show(
+                        supportFragmentManager,
+                        InfaqFragment::class.java.simpleName
+                    )
                 }
+
                 R.id.menu_edit_profile -> {
                     navController.navigate(R.id.action_global_editProfileFragment)
                 }
+
                 R.id.menu_balance -> {
                     navController.navigate(R.id.action_global_withdrawalFragment)
                 }
+
                 R.id.menu_referral_code -> {
                     navController.navigate(R.id.action_global_refferalCodeFragment)
                 }
+
                 R.id.menu_setting -> {
                     navController.navigate(R.id.action_global_settingFragment)
 
@@ -388,6 +443,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                 setInternetRequiredMenusVisible(true)
 
             }
+
             else -> {
                 noConnectionAlert()
             }
@@ -575,8 +631,13 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             it.onSuccess { transactions ->
                 transactionRepository.setRecords(transactions, true)
             }.onFailure { exception ->
-                Toast.makeText(this,
-                    getString(R.string.error_retrieving_user_transactions, exception.localizedMessage), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    getString(
+                        R.string.error_retrieving_user_transactions,
+                        exception.localizedMessage
+                    ), Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -729,5 +790,15 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (alarmManager.canScheduleExactAlarms()) {
+                scheduleDailyNotificationUseCase(this)
+            } else {
+                cancelDailyNotificationUseCase(this)
+            }
+        }
+    }
 
 }

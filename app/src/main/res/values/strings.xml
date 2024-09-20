@@ -327,4 +327,8 @@
     <string name="qr_code_check">QR Code check</string>
     <string name="check_the_qr_code_in_the_corner_of_the_page_when_scanning_if_the_qr_code_is_difficult_to_read_by_the_scanner_turn_off_this_setting">Check the QR code in the corner of the page when scanning. If the QR code is difficult to read by the scanner, turn off this setting.</string>
     <string name="qr_code_check_successfully_disabled">QR code check successfully disabled</string>
+    <string name="you_have_submitted_this_page">You have submitted this page</string>
+    <string name="page_have_been_submitted">Page %1$s have been submitted</string>
+    <string name="need_permission">Need permission</string>
+    <string name="you_need_to_grant_permission_to_get_maghrib_mengaji_notification">You need to grant permission to get Maghrib Mengaji notification. (If yes, select this app and then turn on access)</string>
 </resources>

@@ -1,10 +1,8 @@
 package com.simsinfotekno.maghribmengaji.ui.similarityscore
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
-import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -51,11 +49,14 @@ class SimilarityScoreViewModel : ViewModel() {
         private const val TIMEOUT_DURATION = 30000L // 30 seconds
     }
 
-    var pageId: Int? = null
+//    var pageId: Int? = null
     var bitmap: Bitmap? = null
     var imageUriString: String? = null
 
     /* Live data */
+    private val _pageId = MutableLiveData<Int?>()
+    val pageId: LiveData<Int?> get() = _pageId
+
     private val _remoteDbResult = MutableLiveData<Result<QuranPageStudent>?>()
     val remoteDbResult: LiveData<Result<QuranPageStudent>?> get() = _remoteDbResult
 
@@ -96,6 +97,14 @@ class SimilarityScoreViewModel : ViewModel() {
     private val bruteForceSimilarityIndex= BruteForceSimilarityIndex()
     private val jaroWinklerSimilarityIndex= JaroWinklerSimilarityIndex()
 
+    fun setPageId(pageId: Int?){
+        _pageId.value = pageId
+    }
+
+    fun getPageId():Int? {
+        return _pageId.value
+    }
+
     fun checkQRCode(onSuccess: () -> Unit, onError: (Any) -> Unit) {
         Log.d(TAG, "QR code scanning...")
         qrCodeScannerUseCase(bitmap!!, onBarcodeSuccess = { result ->
@@ -103,8 +112,8 @@ class SimilarityScoreViewModel : ViewModel() {
             if (result != null) {
                 val pageId = extractQRCodeToPageIdUseCase(result)
 
-                if (pageId != null && this.pageId == pageId) onSuccess() // If pageId is found, call onSuccess
-                else if (pageId != null && pageId != this.pageId) {
+                if (pageId != null && this.pageId.value == pageId) onSuccess() // If pageId is found, call onSuccess
+                else if (pageId != null && pageId != this.pageId.value) {
                     onError(pageId)
                     _progressVisibility.value = false
                 } else {
@@ -159,7 +168,8 @@ class SimilarityScoreViewModel : ViewModel() {
     // Placeholder for Quran API call
     private fun callQuranApi() {
         _progressVisibility.value = true
-        fetchQuranPageTask(pageId!!,
+        fetchQuranPageTask(
+            pageId.value!!,
             onSuccess = { result ->
                 // Handle success, e.g., update UI
                 viewModelScope.launch {
@@ -283,7 +293,7 @@ class SimilarityScoreViewModel : ViewModel() {
                     _progressVisibility.postValue(true)
 
                     // Only add record if page student with specified id is not found, if not, update the picture uri instead
-                    val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId)
+                    val pageStudent = quranPageStudentRepository.getRecordByPageId(pageId.value)
 
                     if (pageStudent != null) {
                         pageStudent.pictureUriString = imageUriString
@@ -291,7 +301,7 @@ class SimilarityScoreViewModel : ViewModel() {
                     } else {
                         quranPageStudentRepository.addRecord(
                             QuranPageStudent(
-                                pageId!!,
+                                pageId.value,
                                 studentRepository.getStudent()?.id,
                                 studentRepository.getStudent()?.ustadhId,
                                 pictureUriString = imageUriString,
@@ -302,7 +312,7 @@ class SimilarityScoreViewModel : ViewModel() {
 
                         // Update last page id in the db
                         updateLastPageId(
-                            pageId!!,
+                            pageId.value!!,
                             { Log.d(TAG, "Successfully updated last page id") }) {
                             Log.e(TAG, "Failed to update last page id: $it")
                         }

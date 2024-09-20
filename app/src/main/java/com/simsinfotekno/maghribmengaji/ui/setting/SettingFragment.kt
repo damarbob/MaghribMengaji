@@ -48,7 +48,7 @@ class SettingFragment : Fragment() {
 
         // Initialize the Switch with saved preference
         val sharedPreferences = requireContext().getSharedPreferences("NotificationPrefs", MODE_PRIVATE)
-        val isNotificationsEnabled = sharedPreferences.getBoolean("notificationsEnabled", true)
+        val isNotificationsEnabled = sharedPreferences.getBoolean(MaghribMengajiPref.NOTIF_ENABLED_KEY, true)
         val isMLKitScannerEnabled = MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true)
         val isQRCodeCheckEnabled = MaghribMengajiPref.readBoolean(requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, true)
         val calendar = Calendar.getInstance()

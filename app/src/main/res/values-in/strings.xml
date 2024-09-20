@@ -315,4 +315,8 @@
     <string name="qr_code_check">Pengecekan kode QR</string>
     <string name="check_the_qr_code_in_the_corner_of_the_page_when_scanning_if_the_qr_code_is_difficult_to_read_by_the_scanner_turn_off_this_setting">Mengecek kode QR yang ada di pojok halaman ketika melakukan scan. Jika kode QR sulit terbaca oleh scanner, matikan pengaturan ini.</string>
     <string name="qr_code_check_successfully_disabled">Pengecekan kode QR berhasil dinonaktifkan</string>
+    <string name="you_have_submitted_this_page">Antum sudah mengumpulkan halaman ini</string>
+    <string name="page_have_been_submitted">Halaman %1$s sudah dikumpulkan</string>
+    <string name="need_permission">Butuh perizinan</string>
+    <string name="you_need_to_grant_permission_to_get_maghrib_mengaji_notification">Antum harus memberikan perizinan ini untuk memperoleh notifikasi Maghrib Mengaji. (Jika iya, pilih aplikasi ini pada pengaturan lalu berikan akses)</string>
 </resources>

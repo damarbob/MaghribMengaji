@@ -22,8 +22,10 @@ import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentPageListBinding
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
+import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.QuranPage
 import com.simsinfotekno.maghribmengaji.ui.adapter.PageAdapter
+import com.simsinfotekno.maghribmengaji.ui.infaq.InfaqFragment
 import com.simsinfotekno.maghribmengaji.ui.page.PageViewModel
 import com.simsinfotekno.maghribmengaji.ui.volumelist.VolumeListFragment
 import com.simsinfotekno.maghribmengaji.usecase.CheckOwnedQuranVolumeUseCase
@@ -84,6 +86,21 @@ class PageListFragment : Fragment() {
                 notOwnedVolume()
             })
 
+        /* Infaq on first volume open */
+        if (!MaghribMengajiPref.readBoolean(
+                requireActivity(),
+                "${MaghribMengajiPref.QURAN_VOLUME_INFAQ}_${volumeId}",
+                false
+            )
+        ) {
+            InfaqFragment().show(parentFragmentManager, InfaqFragment::class.java.simpleName)
+            MaghribMengajiPref.saveBoolean(
+                requireActivity(),
+                "${MaghribMengajiPref.QURAN_VOLUME_INFAQ}_${volumeId}",
+                true
+            )
+        }
+
         /* Variables */
         val pages = quranPageRepository.getRecordByIds(pageIds)
         val pagesFinished = pages.filter { quranPageStatusCheck(it) == QuranItemStatus.FINISHED }
@@ -112,14 +129,15 @@ class PageListFragment : Fragment() {
         if (volumeId != -1) {
             binding.pageListTextViewVolume.text = String.format(
                 binding.pageListTextViewVolume.context.getString(R.string.volume_x),
-                volumeId
+                volumeId.toString()
             )
         } else binding.pageListTextViewVolume.text = String.format(
             binding.pageListTextViewVolume.context.getString(
-                R.string.chapter_x,
-                chapterName
-            )
+                R.string.chapter_x
+            ),
+            chapterName.toString()
         )
+
         binding.pageListTextPageRange.text =
             volumeId?.let { getQuranPageRangeString(pageIds.toList(), getString(R.string.page)) }
         binding.pageListTextPageCompleted.text =

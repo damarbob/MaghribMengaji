@@ -12,6 +12,7 @@ class MaghribMengajiPref {
         const val ML_KIT_SCANNER_ENABLED_KEY = "MLKitScannerEnabled"
         const val QR_CODE_ENABLED_KEY = "QRCodeEnabled"
         const val QR_CODE_FAILURE_COUNTER = "QRCodeFailureCounter"
+        const val QURAN_VOLUME_INFAQ = "QuranVolumeInfaq"
 
         fun readString(activity: Activity, key: String?): String? {
             return activity.getPreferences(Context.MODE_PRIVATE).getString(key, null)
