@@ -20,11 +20,14 @@ import com.simsinfotekno.maghribmengaji.event.OnPageStudentRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.event.OnRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
+import com.simsinfotekno.maghribmengaji.usecase.BruteForceSimilarityIndex
+import com.simsinfotekno.maghribmengaji.usecase.EditDistanceSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.ExtractQRCodeToPageIdUseCase
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromOCRApiJSON
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
 import com.simsinfotekno.maghribmengaji.usecase.FetchQuranPageUseCase
 import com.simsinfotekno.maghribmengaji.usecase.JaccardSimilarityIndex
+import com.simsinfotekno.maghribmengaji.usecase.JaroWinklerSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.MaghribBonusUseCase
 import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
 import com.simsinfotekno.maghribmengaji.usecase.QRCodeScannerUseCase
@@ -79,7 +82,6 @@ class SimilarityScoreViewModel : ViewModel() {
     private val updateLastPageId = UpdateLastPageId()
     private val ocrAsyncTask = OCRAsyncTask()
     private val fetchQuranPageTask = FetchQuranPageUseCase()
-    private val jaccardSimilarityIndex = JaccardSimilarityIndex()
     private val extractTextFromQuranApiJson = ExtractTextFromQuranAPIJSON()
     private val extractTextFromOCRApiJson = ExtractTextFromOCRApiJSON()
     private val bitmapToBase64 = BitmapToBase64()
@@ -88,6 +90,11 @@ class SimilarityScoreViewModel : ViewModel() {
     private val extractQRCodeToPageIdUseCase = ExtractQRCodeToPageIdUseCase()
     private val maghribBonusUseCase = MaghribBonusUseCase()
     private val submitStreakBonusUseCase = SubmitStreakBonusUseCase()
+    /*Algorithm*/
+    private val jaccardSimilarityIndex = JaccardSimilarityIndex()
+    private val editDistanceSimilarityIndex= EditDistanceSimilarityIndex()
+    private val bruteForceSimilarityIndex= BruteForceSimilarityIndex()
+    private val jaroWinklerSimilarityIndex= JaroWinklerSimilarityIndex()
 
     fun checkQRCode(onSuccess: () -> Unit, onError: (Any) -> Unit) {
         Log.d(TAG, "QR code scanning...")
@@ -163,6 +170,7 @@ class SimilarityScoreViewModel : ViewModel() {
 
                     // If ocrResult is already ready, calculate similarity index
                     calculateSimilarityIndex()
+
                 }
             }, onFailure = { exception ->
                 _errorMessage.value = exception
@@ -182,7 +190,8 @@ class SimilarityScoreViewModel : ViewModel() {
         withContext(Dispatchers.Main) {
             _similarityScore.value = ocrResult?.let {
                 quranAPIResult?.let { it1 ->
-                    jaccardSimilarityIndex(it, it1).toInt()
+                    editDistanceSimilarityIndex(it, it1).toInt()
+                //Replace with actual similarity index calculation logic based on your algorithm
                 }
             }
 

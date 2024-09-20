@@ -42,6 +42,7 @@ import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
 import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
 import com.simsinfotekno.maghribmengaji.usecase.ExtractQRCodeToPageIdUseCase
+import com.simsinfotekno.maghribmengaji.usecase.EditDistanceSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromOCRApiJSON
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
 import com.simsinfotekno.maghribmengaji.usecase.FetchQuranPageUseCase
@@ -128,6 +129,7 @@ class SimilarityScoreFragment : Fragment(),
     private val oCRAsyncTask = OCRAsyncTask()
     private val fetchQuranPageTask = FetchQuranPageUseCase()
     private val jaccardSimilarityIndex = JaccardSimilarityIndex()
+    private val editDistanceSimilarityIndex= EditDistanceSimilarityIndex()
     private val extractTextFromQuranApiJson = ExtractTextFromQuranAPIJSON()
     private val extractTextFromOCRApiJson = ExtractTextFromOCRApiJSON()
     private val bitmapToBase64 = BitmapToBase64()
