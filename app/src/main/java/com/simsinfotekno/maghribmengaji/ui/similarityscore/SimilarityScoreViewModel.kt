@@ -18,17 +18,18 @@ import com.simsinfotekno.maghribmengaji.event.OnPageStudentRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.event.OnRepositoryUpdate
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.BitmapToBase64
-import com.simsinfotekno.maghribmengaji.usecase.BruteForceSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.EditDistanceSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.ExtractQRCodeToPageIdUseCase
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromOCRApiJSON
 import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
 import com.simsinfotekno.maghribmengaji.usecase.FetchQuranPageUseCase
 import com.simsinfotekno.maghribmengaji.usecase.JaccardSimilarityIndex
+import com.simsinfotekno.maghribmengaji.usecase.JaroSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.JaroWinklerSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.MaghribBonusUseCase
 import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
 import com.simsinfotekno.maghribmengaji.usecase.QRCodeScannerUseCase
+import com.simsinfotekno.maghribmengaji.usecase.RabinKarpSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.SubmitStreakBonusUseCase
 import com.simsinfotekno.maghribmengaji.usecase.UpdateLastPageId
 import com.simsinfotekno.maghribmengaji.usecase.UpdateSubmitStreakUseCase
@@ -94,8 +95,9 @@ class SimilarityScoreViewModel : ViewModel() {
     /*Algorithm*/
     private val jaccardSimilarityIndex = JaccardSimilarityIndex()
     private val editDistanceSimilarityIndex= EditDistanceSimilarityIndex()
-    private val bruteForceSimilarityIndex= BruteForceSimilarityIndex()
     private val jaroWinklerSimilarityIndex= JaroWinklerSimilarityIndex()
+    private val jaroSimilarityIndex= JaroSimilarityIndex()
+    private val rabinKarpSimilarityIndex= RabinKarpSimilarityIndex()
 
     fun setPageId(pageId: Int?){
         _pageId.value = pageId
@@ -200,7 +202,7 @@ class SimilarityScoreViewModel : ViewModel() {
         withContext(Dispatchers.Main) {
             _similarityScore.value = ocrResult?.let {
                 quranAPIResult?.let { it1 ->
-                    editDistanceSimilarityIndex(it, it1).toInt()
+                    rabinKarpSimilarityIndex(it, it1).toInt()
                 //Replace with actual similarity index calculation logic based on your algorithm
                 }
             }

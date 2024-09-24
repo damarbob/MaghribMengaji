@@ -20,7 +20,9 @@ class EditDistanceSimilarityIndex {
         val rawScore = levenshteinDistance(cleanStr1, cleanStr2)
 
         // Normalize the raw score to 0-100
-        return normalizeScore(rawScore, cleanStr1.length, cleanStr2.length)
+        //return normalizeScore(rawScore, cleanStr1.length, cleanStr2.length)
+        return rawScore.toDouble()
+
     }
 
     /**
@@ -61,6 +63,7 @@ class EditDistanceSimilarityIndex {
      * Normalize the Edit Distance to a scale of 0 to 100
      * where 70 is scaled to 100.
      */
+
     private fun normalizeScore(editDistance: Int, length1: Int, length2: Int): Double {
         val maxLength = maxOf(length1, length2)
 

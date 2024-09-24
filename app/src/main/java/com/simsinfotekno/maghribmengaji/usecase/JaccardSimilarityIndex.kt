@@ -24,7 +24,8 @@ class JaccardSimilarityIndex {
         val rawScore = intersectionSize / unionSize
 
         // Normalize the raw score
-        return normalizeScore(rawScore)
+        //return normalizeScore(rawScore)
+        return rawScore
     }
 
     /**
