@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.firestore.ktx.firestore
@@ -246,5 +247,12 @@ class VolumeListFragment : Fragment() {
             .addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
             }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val bottomNavigationView = activity?.findViewById<BottomNavigationView>(R.id.mainBottomNavigationView)
+        bottomNavigationView?.menu?.findItem(R.id.menu_bottom_nav_volume)?.isChecked = true
     }
 }

@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.simsinfotekno.maghribmengaji.MainApplication
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.ustadhQuranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.enums.QuranItemStatus
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
@@ -77,7 +78,7 @@ class PageStudentAdapter(
         // contents of the view with that element
         viewHolder.textView.text = String.format(
             viewHolder.textView.context.getString(R.string.page_x),
-            page.pageId
+            page.pageId.toString()
         )
         viewHolder.textViewChapter.text = String.format(
             viewHolder.textView.context.getString(R.string.chapter_x),
@@ -86,7 +87,7 @@ class PageStudentAdapter(
 
         // Set the icon based on the completion status
         val status = quranPageStudentStatusCheck(page)
-        val quranPageStudent = quranPageStudentRepository.getRecordByPageId(page.pageId)
+        val quranPageStudent = ustadhQuranPageStudentRepository.getRecordByPageId(page.pageId)
         when (status) {
             QuranItemStatus.FINISHED -> {
                 viewHolder.imageStatus.visibility = View.GONE

@@ -5,16 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.enums.ConnectivityObserver
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
-import com.simsinfotekno.maghribmengaji.repository.StudentRepository
 
 class MainViewModel : ViewModel() {
 
     private val _connectionStatus = MutableLiveData<ConnectivityObserver.Status>()
     val connectionStatus: LiveData<ConnectivityObserver.Status> get() = _connectionStatus
 
-    private val studentRepository = StudentRepository()
     val studentLiveData: LiveData<MaghribMengajiUser> = studentRepository.studentLiveData
 
     fun refreshData() {

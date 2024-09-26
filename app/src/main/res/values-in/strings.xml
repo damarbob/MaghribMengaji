@@ -319,4 +319,11 @@
     <string name="page_have_been_submitted">Halaman %1$s sudah dikumpulkan</string>
     <string name="need_permission">Butuh perizinan</string>
     <string name="you_need_to_grant_permission_to_get_maghrib_mengaji_notification">Antum harus memberikan perizinan ini untuk memperoleh notifikasi Maghrib Mengaji. (Jika iya, pilih aplikasi ini pada pengaturan lalu berikan akses)</string>
+    <string name="submitted_at_x">Dikumpulkan pada: \n%1$s</string>
+    <string name="you_don_t_have_this_volume_yet_please_finish_the_existing_volume_first">Antum belum punya jilid ini. Tolong selesaikan jilid yang ada terlebih dahulu yaa.</string>
+    <string name="back">Kembali</string>
+    <string name="the_detected_page_is_which_you_don_t_have_yet_please_finish_the_existing_volume_first">Halaman yang terdeteksi adalah %1$s yang mana belum Antum miliki. Selesaikan jilid yang ada terlebih dahulu yaa.</string>
+    <string name="scan">Scan</string>
+    <string name="please_make_sure_you_enter_the_referral_code_correctly_because_it_cannot_be_changed">Tolong pastikan Antum memasukkan kode referal dengan benar karena tidak dapat diubah.</string>
+    <string name="scanned_result_is_null_or_empty">Hasil scan gagal diperoleh</string>
 </resources>

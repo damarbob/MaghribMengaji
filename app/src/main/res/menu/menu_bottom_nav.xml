@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_bottom_nav_home"
+        android:icon="@drawable/home_24px"
+        android:title="@string/main_menu_home"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/menu_bottom_nav_scan"
+        android:icon="@drawable/document_scanner_24px"
+        android:title="@string/scan"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/menu_bottom_nav_volume"
+        android:icon="@drawable/menu_book_24px"
+        android:title="@string/volume"
+        android:enabled="true"/>
+</menu>

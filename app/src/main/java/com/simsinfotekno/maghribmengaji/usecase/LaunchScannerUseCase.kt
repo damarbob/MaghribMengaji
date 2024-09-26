@@ -1,5 +1,6 @@
 package com.simsinfotekno.maghribmengaji.usecase
 
+import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -14,7 +15,7 @@ class LaunchScannerUseCase {
         private val TAG = LaunchScannerUseCase::class.java.simpleName
     }
 
-    operator fun invoke(fragment: Fragment, scannerLauncher: ActivityResultLauncher<IntentSenderRequest>) {
+    operator fun invoke(activity: Activity, scannerLauncher: ActivityResultLauncher<IntentSenderRequest>) {
         // Option for document scanning
         val option = GmsDocumentScannerOptions.Builder()
             .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_BASE_WITH_FILTER)
@@ -27,14 +28,14 @@ class LaunchScannerUseCase {
         val scanner = GmsDocumentScanning.getClient(option)
 
         // Start scanner intent
-        scanner.getStartScanIntent(fragment.requireActivity())
+        scanner.getStartScanIntent(activity)
             .addOnSuccessListener { intentSender ->
                 scannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
                 Log.d(TAG, "scanner launched")
             }
             .addOnFailureListener { exception ->
                 Log.d(TAG, "failed to launch scanner")
-                Toast.makeText(fragment.context, exception.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, exception.message, Toast.LENGTH_LONG).show()
             }
     }
 }

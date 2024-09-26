@@ -1,6 +1,7 @@
 package com.simsinfotekno.maghribmengaji.usecase
 
 import android.util.Log
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.simsinfotekno.maghribmengaji.model.QuranPageStudent
@@ -38,7 +39,8 @@ class RetrieveQuranPageStudent {
                         ocrscore,
                         tidinessScore,
                         accuracyScore,
-                        consistencyScore
+                        consistencyScore,
+                        createdAt = quranPageData["createdAt"] as Timestamp?,
                     )
 
                     pageStudents.add(pageStudent)

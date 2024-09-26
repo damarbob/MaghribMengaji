@@ -331,4 +331,11 @@
     <string name="page_have_been_submitted">Page %1$s have been submitted</string>
     <string name="need_permission">Need permission</string>
     <string name="you_need_to_grant_permission_to_get_maghrib_mengaji_notification">You need to grant permission to get Maghrib Mengaji notification. (If yes, select this app and then turn on access)</string>
+    <string name="submitted_at_x">Submitted at: \n%1$s</string>
+    <string name="you_don_t_have_this_volume_yet_please_finish_the_existing_volume_first">You don\'t have this volume yet. Please finish the existing volume first.</string>
+    <string name="back">Back</string>
+    <string name="the_detected_page_is_which_you_don_t_have_yet_please_finish_the_existing_volume_first">The detected page is %1$s which you don\'t have yet. Please finish the existing volume first.</string>
+    <string name="scan">Scan</string>
+    <string name="please_make_sure_you_enter_the_referral_code_correctly_because_it_cannot_be_changed">Please make sure you enter the referral code correctly because it cannot be changed.</string>
+    <string name="scanned_result_is_null_or_empty">Scanned result is null or empty</string>
 </resources>

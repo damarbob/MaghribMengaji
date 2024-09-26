@@ -42,7 +42,7 @@ class SubmitStreakBonusUseCase {
                 4 -> 1.07f
                 5 -> 1.1f
                 6 -> 1.15f
-                else -> 2f
+                else -> 1.2f
             }
 
             return listOf(newStreak.toFloat(), bonusMultiplier)

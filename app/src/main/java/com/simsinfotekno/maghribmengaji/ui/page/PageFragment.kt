@@ -1,6 +1,5 @@
 package com.simsinfotekno.maghribmengaji.ui.page
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
@@ -27,7 +26,6 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
@@ -59,9 +57,10 @@ import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.QueryGalleryUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RequestPermissionsUseCase
-import com.simsinfotekno.maghribmengaji.usecase.UploadImageUseCase
 import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
-import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 
@@ -386,14 +385,23 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //        setCheckResult()
 
         /* Observers */
-        viewModel.quranPageStudent.observe(viewLifecycleOwner) {
-            Log.d(TAG, "ViewModel's QuranPageStudent: $it")
-            val ocrScore = it?.oCRScore ?: 0
+        viewModel.quranPageStudent.observe(viewLifecycleOwner) { quranPageStudent ->
+            Log.d(TAG, "ViewModel's QuranPageStudent: $quranPageStudent")
+            val ocrScore = quranPageStudent?.oCRScore ?: 0
 
             binding.pageCheckResultTextViewOverallScore.text = ocrScore.toString()
             binding.pageCheckResultCircularProgressScore.progress = ocrScore
+//            binding.pageCheckResultTextViewUploadedAt.text =
+//                getString(R.string.submitted_at_x, Calendar.getInstance().apply {
+//                    timeInMillis = quranPageStudent?.createdAt!!.seconds*1000
+//                }.time)
+            val sfd = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.FULL, SimpleDateFormat.DEFAULT, Locale.UK)
+            binding.pageCheckResultTextViewUploadedAt.text =
+                getString(R.string.submitted_at_x,
+//                    quranPageStudent?.createdAt?.seconds?.let { sfd.format(Date(it*1000)) })
+                    quranPageStudent?.createdAt?.toDate()?.let { sfd.format(it) })
 
-            it?.pictureUriString?.let {
+            quranPageStudent?.pictureUriString?.let {
                 loadImageIntoImageView(it, binding.pageCheckResultImageViewStudentPageImage, false)
                 binding.pageCheckResultLinearProgress.visibility = View.GONE
             }
@@ -463,7 +471,7 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
                     )
                 ) {
                     binding.pageButtonSubmit.isEnabled = false
-                    launchScannerUseCase(this, scannerLauncher)
+                    launchScannerUseCase(requireActivity(), scannerLauncher)
                 } else {
                     val bottomSheet = ImagePickerBottomSheetDialog().apply {
                         onCameraClick = {

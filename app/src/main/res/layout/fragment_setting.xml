@@ -63,6 +63,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="0dp"
             android:layout_marginEnd="16dp"
+            android:visibility="gone"
             android:text="@string/qr_code_check"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:fontFamily="@font/plus_jakarta_sans_variable"
@@ -72,6 +73,7 @@
             android:id="@+id/settingTextViewQRCodeHelper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:paddingHorizontal="@dimen/activity_horizontal_margin"
             android:text="@string/check_the_qr_code_in_the_corner_of_the_page_when_scanning_if_the_qr_code_is_difficult_to_read_by_the_scanner_turn_off_this_setting" />
     </LinearLayout>

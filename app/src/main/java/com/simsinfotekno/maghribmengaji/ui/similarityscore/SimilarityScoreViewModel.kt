@@ -202,7 +202,7 @@ class SimilarityScoreViewModel : ViewModel() {
         withContext(Dispatchers.Main) {
             _similarityScore.value = ocrResult?.let {
                 quranAPIResult?.let { it1 ->
-                    rabinKarpSimilarityIndex(it, it1).toInt()
+                    jaccardSimilarityIndex(it, it1).toInt()
                 //Replace with actual similarity index calculation logic based on your algorithm
                 }
             }

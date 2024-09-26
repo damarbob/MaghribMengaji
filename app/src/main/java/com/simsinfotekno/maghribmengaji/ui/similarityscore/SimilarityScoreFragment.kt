@@ -35,6 +35,9 @@ import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.MainViewModel
 import com.simsinfotekno.maghribmengaji.R
 import com.simsinfotekno.maghribmengaji.databinding.FragmentSimilarityScoreBinding
@@ -76,23 +79,16 @@ class SimilarityScoreFragment : Fragment(),
     private var _binding: FragmentSimilarityScoreBinding? = null
     private val binding get() = _binding!!
 
-    // OCR and Quran API
-    private var quranApiResult: String? = null
-    private var ocrResult: String? = null
-    private val quranApiResultDeferred = CompletableDeferred<String>()
-
     /* Variables */
+    private var ownedVolume: List<Int>? = null
+    private var isOwnedVolume: Boolean = false
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
     private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private lateinit var requestCameraPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var requestGalleryPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var bottomSheetBehaviorCheckResult: BottomSheetBehavior<View>
-    private var pageId: Int? = null
-    private var bitmap: Bitmap? = null
-    private lateinit var imageUri: Uri
     private lateinit var container: ViewGroup
-    private var similarityIndex: Int = 0
     private val requestPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             permissions.entries.forEach { (permission, isGranted) ->
@@ -124,13 +120,6 @@ class SimilarityScoreFragment : Fragment(),
     /* Use cases */
     private val requestPermissionsUseCase = RequestPermissionsUseCase()
     private val loadBitmapFromUri = LoadBitmapFromUri()
-    private val oCRAsyncTask = OCRAsyncTask()
-    private val fetchQuranPageTask = FetchQuranPageUseCase()
-    private val jaccardSimilarityIndex = JaccardSimilarityIndex()
-    private val editDistanceSimilarityIndex= EditDistanceSimilarityIndex()
-    private val extractTextFromQuranApiJson = ExtractTextFromQuranAPIJSON()
-    private val extractTextFromOCRApiJson = ExtractTextFromOCRApiJSON()
-    private val bitmapToBase64 = BitmapToBase64()
     private val launchScannerUseCase = LaunchScannerUseCase()
     private val launchCameraUseCase = LaunchCameraUseCase()
     private val launchGalleryUseCase = LaunchGalleryUseCase()
@@ -267,14 +256,31 @@ class SimilarityScoreFragment : Fragment(),
 
         this.container = container!!
 
+//        val layoutParams = binding.root.layoutParams as ViewGroup.MarginLayoutParams
+//        layoutParams.setMargins(0, 0, 0, -80)
+//        binding.root.layoutParams = layoutParams
+
 //        binding.similarityScoreTextViewPage.text =
 //            resources.getString(R.string.page_x, arguments?.getInt("pageId").toString())
+
+        ownedVolume = studentRepository.getStudent()?.ownedVolumeId
+        isOwnedVolume = ownedVolume.orEmpty().toIntArray().contains(quranVolumeRepository.getRecordByPageId(arguments?.getInt("pageId")!!)!!.id)
+        Log.d(TAG, "ownedVolume: $ownedVolume")
+        Log.d(TAG, "pageId from arg: ${arguments?.getInt("pageId")}")
+        Log.d(TAG, "isDetectedOwned: $isOwnedVolume")
 
         /* Observers */
 
         viewModel.pageId.observe(viewLifecycleOwner) {
             binding.similarityScoreTextViewPage.text =
                 resources.getString(R.string.page_x, it.toString())
+            isOwnedVolume = ownedVolume.orEmpty().toIntArray().contains(it?.let { it1 ->
+                quranVolumeRepository.getRecordByPageId(
+                    it1
+                )
+            }!!.id)
+            Log.d(TAG, "ownedVolume: $ownedVolume")
+            Log.d(TAG, "isOwnedVolume: $isOwnedVolume")
         }
 
         // Listening to remote db result whether success or failed
@@ -476,7 +482,21 @@ class SimilarityScoreFragment : Fragment(),
     }
 
     private fun startScoring() {
+        // Check if page student is already submitted
         val pageStudent = quranPageStudentRepository.getRecordByPageId(viewModel.getPageId())
+
+        if (!isOwnedVolume) {
+            binding.similarityScoreCircularProgress.visibility = View.GONE
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.afwan))
+                .setMessage(getString(R.string.you_don_t_have_this_volume_yet_please_finish_the_existing_volume_first))
+                .setPositiveButton(getString(R.string.back)) { _, _ ->
+                    findNavController().popBackStack()
+                }
+                .setCancelable(false)
+                .show()
+            return
+        }
 
         if (pageStudent != null) {
             Toast.makeText(
@@ -576,7 +596,7 @@ class SimilarityScoreFragment : Fragment(),
                 requireActivity(), MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true
             )
         ) {
-            launchScannerUseCase(this, scannerLauncher)
+            launchScannerUseCase(requireActivity(), scannerLauncher)
         } else {
             val bottomSheet = ImagePickerBottomSheetDialog().apply {
                 onCameraClick = {
@@ -596,30 +616,31 @@ class SimilarityScoreFragment : Fragment(),
 
     private fun showQRCodeError(title: String, message: String, pageId: Int = 0) {
         // Get failure counter
-        val failureCounter = MaghribMengajiPref.readInt(
-            requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0
-        )
-        Log.d(TAG, "Failure counter: $failureCounter")
+//        val failureCounter = MaghribMengajiPref.readInt(
+//            requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0
+//        )
+//        Log.d(TAG, "Failure counter: $failureCounter")
         Log.d(TAG, "pageId: $pageId")
 
         // If failure counter not more than 3x and no detected page ID
-        if (failureCounter < 3 && pageId == 0) {
+//        if (failureCounter < 3 && pageId == 0) {
+        if (pageId == 0) {
             MaterialAlertDialogBuilder(requireContext()).setTitle(title).setMessage(message)
                 .setPositiveButton(resources.getString(R.string.retry)) { _, _ ->
-                    MaghribMengajiPref.saveInt(
-                        requireActivity(),
-                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
-                        failureCounter + 1
-                    )
+//                    MaghribMengajiPref.saveInt(
+//                        requireActivity(),
+//                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+//                        failureCounter + 1
+//                    )
                     retryScan()
                 }.setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
-                    MaghribMengajiPref.saveInt(
-                        requireActivity(),
-                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
-                        failureCounter + 1
-                    )
+//                    MaghribMengajiPref.saveInt(
+//                        requireActivity(),
+//                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+//                        failureCounter + 1
+//                    )
                     dialog.dismiss()
-                }.setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
+                }/*.setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
                     MaghribMengajiPref.saveBoolean(
                         requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false
                     )
@@ -631,40 +652,67 @@ class SimilarityScoreFragment : Fragment(),
                         getString(R.string.qr_code_check_successfully_disabled),
                         Toast.LENGTH_LONG
                     ).show()
-                }
-        } else if (failureCounter < 3 && pageId > 0 && pageId < 605) {
+                }*/.show()
+//        } else if (failureCounter < 3 && pageId > 0 && pageId < 605) {
+        } else if (pageId in 1..604) {
             Log.d(TAG, "pageId: $pageId true")
-            MaterialAlertDialogBuilder(requireContext()).setTitle(title).setMessage(message)
-                .setPositiveButton(getString(R.string.go_to, pageId.toString())) { _, _ ->
-                    MaghribMengajiPref.saveInt(
-                        requireActivity(),
-                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
-                        failureCounter + 1
+            val isOwnedDetectedVolume =
+                quranVolumeRepository.getRecordByPageId(pageId)?.id?.let {
+                    ownedVolume?.toIntArray()?.contains(
+                        it
                     )
-                    viewModel.setPageId(pageId)
-                    startScoring()
-                }.setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
-                    MaghribMengajiPref.saveInt(
-                        requireActivity(),
-                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
-                        failureCounter + 1
-                    )
-                    dialog.dismiss()
-                }.setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
-                    MaghribMengajiPref.saveBoolean(
-                        requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false
-                    )
-                    MaghribMengajiPref.saveInt(
-                        requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0
-                    )
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.qr_code_check_successfully_disabled),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }.show()
+                }
 
-        } else if (failureCounter >= 3) {
+            if (isOwnedDetectedVolume == null || isOwnedDetectedVolume == false) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.afwan))
+                    .setMessage(
+                        getString(
+                            R.string.the_detected_page_is_which_you_don_t_have_yet_please_finish_the_existing_volume_first,
+                            pageId.toString()
+                        )
+                    )
+                    .setPositiveButton(getString(R.string.okay)) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(getString(R.string.retry)) { _, _ ->
+                        retryScan()
+                    }
+                    .setCancelable(false)
+                    .show()
+            } else {
+                MaterialAlertDialogBuilder(requireContext()).setTitle(title).setMessage(message)
+                    .setPositiveButton(getString(R.string.go_to, pageId.toString())) { _, _ ->
+//                    MaghribMengajiPref.saveInt(
+//                        requireActivity(),
+//                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+//                        failureCounter + 1
+//                    )
+                        viewModel.setPageId(pageId)
+                        startScoring()
+                    }.setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+//                    MaghribMengajiPref.saveInt(
+//                        requireActivity(),
+//                        MaghribMengajiPref.QR_CODE_FAILURE_COUNTER,
+//                        failureCounter + 1
+//                    )
+                        dialog.dismiss()
+                    }/*.setNegativeButton(getString(R.string.turn_off_qr_code_check)) { _, _ ->
+                        MaghribMengajiPref.saveBoolean(
+                            requireActivity(), MaghribMengajiPref.QR_CODE_ENABLED_KEY, false
+                        )
+                        MaghribMengajiPref.saveInt(
+                            requireActivity(), MaghribMengajiPref.QR_CODE_FAILURE_COUNTER, 0
+                        )
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.qr_code_check_successfully_disabled),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }*/.show()
+            }
+
+        } /*else if (failureCounter >= 3) {
             MaterialAlertDialogBuilder(requireContext()).setTitle(title)
                 .setMessage(getString(R.string.the_qr_code_has_not_been_detected_3_times_or_more_do_you_want_to_turn_off_qr_code_checking))
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
@@ -678,12 +726,20 @@ class SimilarityScoreFragment : Fragment(),
                 }.setNegativeButton(getString(R.string.no)) { dialog, _ ->
                     dialog.dismiss()
                 }.show()
+        }*/
+        else {
+            MaterialAlertDialogBuilder(requireContext()).setTitle(title).setMessage(message)
+                .setPositiveButton(resources.getString(R.string.retry)) { _, _ ->
+                    retryScan()
+                }.setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+                    dialog.dismiss()
+                }.show()
         }
     }
 
     private fun showPermissionRationale(permission: String) {
-        MaterialAlertDialogBuilder(requireContext()).setTitle(resources.getString(R.string.allow_notification))
-            .setMessage(getString(R.string.you_will_not_receive_a_notification_if_the_permission_is_not_granted))
+        MaterialAlertDialogBuilder(requireContext()).setTitle(resources.getString(R.string.permission_required))
+            .setMessage(getString(R.string.this_feature_requires_the_permission_please_grant_it, permission))
             .setPositiveButton(resources.getString(R.string.okay)) { _, _ ->
                 requestPermissionsUseCase(
                     requestPermissionsLauncher, requireContext(), arrayOf(permission)
@@ -795,7 +851,8 @@ class SimilarityScoreFragment : Fragment(),
                     R.id.action_global_similarityScoreFragment, bundle
                 )
 
-            }
+            } else showQRCodeError(getString(R.string.error),
+                getString(R.string.scanned_result_is_null_or_empty))
 
         } else if (resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(

@@ -41,6 +41,8 @@ class RetrieveUserProfile {
                         role = data["role"] as String?,
                         lastPageId = (data["lastPageId"] as Long?)?.toInt(),
                         ustadhId = data["ustadhId"] as String?,
+                        lastDailySubmit = data["lastDailySubmit"] as Timestamp?,
+                        currentSubmitStreak = (data["currentSubmitStreak"] as Long?)?.toInt(),
                     )
 
                     // Call the lambda function with the retrieved student

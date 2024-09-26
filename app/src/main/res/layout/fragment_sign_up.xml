@@ -159,7 +159,7 @@
             android:enabled="true"
             android:hint="@string/referral_optional"
             app:endIconMode="clear_text"
-            app:helperText="@string/optional"
+            app:helperText="@string/please_make_sure_you_enter_the_referral_code_correctly_because_it_cannot_be_changed"
             app:helperTextEnabled="true"
             app:startIconContentDescription="@string/referral_code">
 

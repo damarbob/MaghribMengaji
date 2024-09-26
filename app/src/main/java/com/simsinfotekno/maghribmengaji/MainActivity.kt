@@ -1,8 +1,10 @@
 package com.simsinfotekno.maghribmengaji
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlarmManager
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -10,17 +12,29 @@ import android.provider.Settings
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.updateMargins
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.android.billingclient.api.BillingClient
 import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,9 +43,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.jakewharton.processphoenix.ProcessPhoenix
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPages
+import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumeRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranVolumes
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.studentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.transactionRepository
@@ -42,19 +58,30 @@ import com.simsinfotekno.maghribmengaji.event.OnMainActivityFeatureRequest
 import com.simsinfotekno.maghribmengaji.event.OnUserDataLoaded
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiPref
 import com.simsinfotekno.maghribmengaji.model.MaghribMengajiUser
+import com.simsinfotekno.maghribmengaji.ui.ImagePickerBottomSheetDialog
 import com.simsinfotekno.maghribmengaji.ui.infaq.InfaqFragment
+import com.simsinfotekno.maghribmengaji.ui.similarityscore.SimilarityScoreFragment
+import com.simsinfotekno.maghribmengaji.ui.similarityscore.SimilarityScoreFragment.Companion
 import com.simsinfotekno.maghribmengaji.usecase.CancelDailyNotificationUseCase
+import com.simsinfotekno.maghribmengaji.usecase.ExtractQRCodeToPageIdUseCase
+import com.simsinfotekno.maghribmengaji.usecase.LaunchCameraUseCase
+import com.simsinfotekno.maghribmengaji.usecase.LaunchGalleryUseCase
+import com.simsinfotekno.maghribmengaji.usecase.LaunchScannerUseCase
+import com.simsinfotekno.maghribmengaji.usecase.LoadBitmapFromUri
 import com.simsinfotekno.maghribmengaji.usecase.NetworkConnectivityUseCase
+import com.simsinfotekno.maghribmengaji.usecase.QRCodeScannerUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RequestPermissionsUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserTransactions
 import com.simsinfotekno.maghribmengaji.usecase.ScheduleDailyNotificationUseCase
+import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 
-class MainActivity : AppCompatActivity(), ActivityRestartable {
+class MainActivity : AppCompatActivity(), ActivityRestartable,
+    ActivityResultCallback<ActivityResult> {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -69,6 +96,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private var connectionStatus: ConnectivityObserver.Status =
         ConnectivityObserver.Status.Unavailable
     private lateinit var alertBuilder: AlertDialog
+    private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
+    private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
+    private lateinit var requestCameraPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var requestGalleryPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var pickMediaModernLauncher: ActivityResultLauncher<PickVisualMediaRequest>
     private val requestPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             permissions.entries.forEach { (permission, isGranted) ->
@@ -102,6 +135,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
     private val retrieveQuranPageStudent = RetrieveQuranPageStudent()
     private val retrieveUserTransactions = RetrieveUserTransactions()
     private lateinit var networkConnectivityUseCase: NetworkConnectivityUseCase
+    private val launchScannerUseCase = LaunchScannerUseCase()
+    private val launchCameraUseCase = LaunchCameraUseCase()
+    private val launchGalleryUseCase = LaunchGalleryUseCase()
+    private val loadBitmapFromUri = LoadBitmapFromUri()
+    private val qrCodeScannerUseCase = QRCodeScannerUseCase()
+    private val extractQRCodeToPageIdUseCase = ExtractQRCodeToPageIdUseCase()
 
     /* Notification */
     private val scheduleDailyNotificationUseCase = ScheduleDailyNotificationUseCase()
@@ -120,7 +159,8 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
         //set schedule notif
         val sharedPreferences = getSharedPreferences("NotificationPrefs", MODE_PRIVATE)
-        val isNotificationsEnabled = sharedPreferences.getBoolean(MaghribMengajiPref.NOTIF_ENABLED_KEY, true)
+        val isNotificationsEnabled =
+            sharedPreferences.getBoolean(MaghribMengajiPref.NOTIF_ENABLED_KEY, true)
 
         // Request notification permission
 //        if (!requestPermissionsUseCase.hasPostNotificationPermission(this) && !requestPermissionsUseCase.hasScheduleExactAlarmPermission(this)) {
@@ -157,7 +197,7 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                         }
                         .setNegativeButton(getString(R.string.no)) { _, _ ->
                             cancelDailyNotificationUseCase(this)
-                            sharedPreferences.edit().apply{
+                            sharedPreferences.edit().apply {
                                 putBoolean(MaghribMengajiPref.NOTIF_ENABLED_KEY, false)
                                 apply()
                             }
@@ -196,6 +236,8 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setupScanLaunchers()
 
         /* View models */
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -350,6 +392,292 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
             return@setNavigationItemSelectedListener true
         }
 
+        viewModel.studentLiveData.observe(this) { maghribMengajiUser ->
+            // Only show bottom nav if the role is student
+            binding.mainBottomNavigationView.visibility =
+                if (maghribMengajiUser.role == MaghribMengajiUser.ROLE_STUDENT) View.VISIBLE else View.GONE
+
+            // Set visibility of bottom nav
+            navController.addOnDestinationChangedListener { _, navDestination, _ ->
+                val destinationIds =
+                    setOf(R.id.volumeListFragment, R.id.pageListFragment, R.id.pageFragment)
+                when (navDestination.id) {
+                    R.id.similarityScoreFragment -> {
+                        binding.mainBottomNavigationView.visibility = View.GONE
+                    }
+
+                    in destinationIds -> {
+                        binding.mainBottomNavigationView.menu.findItem(R.id.menu_bottom_nav_volume).isChecked =
+                            true
+                        binding.mainBottomNavigationView.visibility =
+                            if (maghribMengajiUser.role == MaghribMengajiUser.ROLE_STUDENT) View.VISIBLE else View.GONE
+                    }
+
+                    else -> {
+//                    binding.mainBottomNavigationView.selectedItemId = R.id.menu_bottom_nav_home
+                        binding.mainBottomNavigationView.menu.findItem(R.id.menu_bottom_nav_home).isChecked =
+                            true
+                        binding.mainBottomNavigationView.visibility =
+                            if (maghribMengajiUser.role == MaghribMengajiUser.ROLE_STUDENT) View.VISIBLE else View.GONE
+                    }
+                }
+            }
+
+            //
+            if (maghribMengajiUser.role == MaghribMengajiUser.ROLE_STUDENT)
+                supportFragmentManager.fragments.forEach {
+                    if (it.id == R.id.similarityScoreFragment) {
+                        val layoutParams =
+                            it.requireView().layoutParams as ViewGroup.MarginLayoutParams
+                        layoutParams.setMargins(0, 0, 0, 0)
+                        it.requireView().layoutParams = layoutParams
+                    } else {
+                        val layoutParams =
+                            it.requireView().layoutParams as ViewGroup.MarginLayoutParams
+                        layoutParams.setMargins(0, 0, 0, 200)
+                        it.requireView().layoutParams = layoutParams
+                    }
+                }
+        }
+
+
+        binding.mainBottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_bottom_nav_home -> {
+                    navController.navigate(R.id.action_global_homeFragment)
+                    true
+                }
+
+                R.id.menu_bottom_nav_scan -> {
+                    startScan()
+                    true
+                }
+
+                R.id.menu_bottom_nav_volume -> {
+                    navController.navigate(R.id.action_global_volumeListFragment)
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        binding.mainBottomNavigationView.setOnItemReselectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_bottom_nav_home -> {
+                    if (navController.currentDestination?.id == R.id.homeFragment) {
+                        // If home menu reselected in home fragment, refresh data
+                        viewModel.refreshData()
+                    } else {
+                        navController.navigate(R.id.action_global_homeFragment)
+                    }
+                }
+
+                R.id.menu_bottom_nav_volume -> {
+                    if (navController.currentDestination?.id != R.id.volumeListFragment) {
+                        navController.navigate(R.id.action_global_volumeListFragment)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupScanLaunchers() {
+        // Initialize the scanner launcher
+        scannerLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult(), this
+        )
+
+        cameraLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    val imageBitmap = it.data?.extras?.get("data") as Bitmap
+                    val imageUri = BitmapToUriUtil.saveBitmapToFile(this, imageBitmap)
+
+                    // Submit image to similarity fragment
+                    submitImage(imageUri)
+
+                } else if (it.resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_scanner_cancelled),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_default_message),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+        requestCameraPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    launchCameraUseCase(
+                        this,
+                        cameraLauncher,
+                    )
+                } else {
+                    Toast.makeText(
+                        this, "Camera permission is required to take a photo", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+        galleryLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                    val imageUri = it.data?.data
+
+                    // Submit image to similarity fragment
+                    submitImage(imageUri)
+
+                } else if (it.resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_scanner_cancelled),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_default_message),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+        requestGalleryPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    launchGalleryUseCase(
+                        this, galleryLauncher
+                    )
+                } else {
+                    Toast.makeText(
+                        this, "Camera permission is required to take a photo", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+        // For Android 14+ (modern picker)
+        pickMediaModernLauncher =
+            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+                uri?.let {
+                    submitImage(it)
+                }
+            }
+    }
+
+    private fun submitImage(imageUri: Uri?) {
+        Log.d(TAG, "imageuri: $imageUri")
+        val bitmap = imageUri?.let { loadBitmapFromUri(this, it) }
+
+        // Check if bitmap is not null
+        if (bitmap != null) {
+            qrCodeScannerUseCase(bitmap, onBarcodeSuccess = { result ->
+                if (result != null) {
+                    val pageId = extractQRCodeToPageIdUseCase(result)
+
+                    // If page id not null and in between 1 and 604, navigate to similarity score fragment
+                    if (pageId != null && pageId in 1..604) {
+                        // Bundle to pass the data
+                        val bundle = Bundle().apply {
+                            putString(
+                                "imageUriString", imageUri.toString()
+                            )
+                            putInt("pageId", pageId)
+                        }
+
+                        // Navigate to the ResultFragment with the Bundle
+                        navController.navigate(
+                            R.id.action_global_similarityScoreFragment, bundle
+                        )
+                    } else {
+                        // If pageId is not found or not match
+                        showQRCodeError(
+                            getString(R.string.qr_code_not_detected), getString(
+                                R.string.make_sure_the_qr_code_is_clearly_visible_in_the_photo
+                            )
+                        )
+                    }
+                } else {
+                    // If QR Code not found
+                    showQRCodeError(
+                        getString(R.string.qr_code_not_detected), getString(
+                            R.string.make_sure_the_qr_code_is_in_the_photo_frame
+                        )
+                    )
+                }
+            }, onBarcodeError = {
+                it.localizedMessage?.let { it1 -> showQRCodeError(getString(R.string.error), it1) }
+            })
+        }
+    }
+
+    private fun showQRCodeError(title: String, message: String) {
+        MaterialAlertDialogBuilder(this).setTitle(title).setMessage(message)
+            .setPositiveButton(resources.getString(R.string.retry)) { _, _ ->
+                startScan()
+            }.setNeutralButton(getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }.show()
+    }
+
+    private fun startScan() {
+        if (MaghribMengajiPref.readBoolean(
+                this, MaghribMengajiPref.ML_KIT_SCANNER_ENABLED_KEY, true
+            )
+        ) {
+            launchScannerUseCase(this, scannerLauncher)
+        } else {
+            val bottomSheet = ImagePickerBottomSheetDialog().apply {
+                onCameraClick = {
+                    openCamera()
+                }
+                onGalleryClick = {
+                    openGallery()
+                }
+            }
+            this.let { it1 ->
+                bottomSheet.show(
+                    it1.supportFragmentManager, ImagePickerBottomSheetDialog.TAG
+                )
+            }
+        }
+    }
+
+    private fun openCamera() {
+        if (requestPermissionsUseCase.hasCameraPermission(this)) {
+            // Proceed with camera access
+            launchCameraUseCase(this, cameraLauncher)
+        } else {
+            showPermissionSettingsDialog()
+        }
+    }
+
+    private fun openGallery() {
+        if (requestPermissionsUseCase.hasReadMediaImagesPermission(this)) {
+            // Proceed with gallery access
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                showModernImagePicker()
+            } else {
+                launchGalleryUseCase(this, galleryLauncher)
+            }
+        } else {
+            showPermissionSettingsDialog()
+        }
+    }
+
+    // For Android 14+ (modern photo picker)
+    private fun showModernImagePicker() {
+        pickMediaModernLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
     }
 
     private fun showPermissionRationale(permission: String) {
@@ -799,6 +1127,82 @@ class MainActivity : AppCompatActivity(), ActivityRestartable {
                 cancelDailyNotificationUseCase(this)
             }
         }
+
+        val destinationIds =
+            setOf(R.id.volumeListFragment, R.id.pageListFragment, R.id.pageFragment)
+        if (navController.currentDestination?.id in destinationIds) {
+            binding.mainBottomNavigationView.menu.findItem(R.id.menu_bottom_nav_volume).isChecked =
+                true
+        } else binding.mainBottomNavigationView.menu.findItem(R.id.menu_bottom_nav_home).isChecked =
+            true
     }
 
+    override fun onActivityResult(result: ActivityResult) {
+        val resultCode = result.resultCode
+        val resultX = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+        if (resultCode == Activity.RESULT_OK && resultX != null) {
+            val pages = resultX.pages
+            if (!pages.isNullOrEmpty()) {
+
+                val bitmap = loadBitmapFromUri(this, pages[0].imageUri)
+                // Check if bitmap is not null
+                if (bitmap != null) {
+                    qrCodeScannerUseCase(bitmap, onBarcodeSuccess = { barcodeResult ->
+                        if (barcodeResult != null) {
+                            val pageId = extractQRCodeToPageIdUseCase(barcodeResult)
+
+                            // If page id not null and in between 1 and 604, navigate to similarity score fragment
+                            if (pageId != null && pageId in 1..604) {
+                                // Bundle to pass the data
+                                val bundle = Bundle().apply {
+                                    putString("imageUriString", pages[0].imageUri.toString())
+                                    putInt("pageId", pageId)
+                                }
+
+                                // Navigate to the ResultFragment with the Bundle
+                                navController.navigate(
+                                    R.id.action_global_similarityScoreFragment,
+                                    bundle
+                                )
+                            } else {
+                                // If pageId is not found or not match
+                                showQRCodeError(
+                                    getString(R.string.qr_code_not_detected), getString(
+                                        R.string.make_sure_the_qr_code_is_clearly_visible_in_the_photo
+                                    )
+                                )
+                            }
+                        } else {
+                            // If QR Code not found
+                            showQRCodeError(
+                                getString(R.string.qr_code_not_detected), getString(
+                                    R.string.make_sure_the_qr_code_is_in_the_photo_frame
+                                )
+                            )
+                        }
+                    }, onBarcodeError = {
+                        it.localizedMessage?.let { it1 ->
+                            showQRCodeError(
+                                getString(R.string.error),
+                                it1
+                            )
+                        }
+                    })
+                }
+            }
+
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            Toast.makeText(
+                this,
+                getString(R.string.error_scanner_cancelled),
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            Toast.makeText(
+                this,
+                getString(R.string.error_default_message),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 }

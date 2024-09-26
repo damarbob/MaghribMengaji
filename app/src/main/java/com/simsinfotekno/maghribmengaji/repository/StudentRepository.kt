@@ -44,14 +44,14 @@ class StudentRepository() : Repository<MaghribMengajiUser>() {
     }
 
     fun setStudent(student: MaghribMengajiUser) {
-        if (getRecordsCount() < 1) {
+//        if (getRecordsCount() < 1) {
             setRecords(
                 listOf(
                     student
                 ),
                 false
             )
-        }
+//        }
 
         _studentLiveData.postValue(student)
     }
