@@ -760,6 +760,30 @@ class MainActivity : AppCompatActivity(), ActivityRestartable,
 
     // Handle connection base on network status
     private fun handleConnectionStatus(status: ConnectivityObserver.Status) {
+        val navMenu = binding.mainNavigationView.menu
+        val bottomNavMenu = binding.mainBottomNavigationView.menu
+
+//        binding.mainNavigationView.isEnabled = (status == ConnectivityObserver.Status.Available)
+        navMenu.findItem(R.id.menu_volume_list).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+        navMenu.findItem(R.id.menu_chapter_list).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+        navMenu.findItem(R.id.menu_balance).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+        navMenu.findItem(R.id.menu_referral_code).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+        navMenu.findItem(R.id.menu_sign_out).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+        navMenu.findItem(R.id.menu_edit_profile).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+        navMenu.findItem(R.id.menu_donation).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+
+        bottomNavMenu.findItem(R.id.menu_bottom_nav_volume).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+        bottomNavMenu.findItem(R.id.menu_bottom_nav_scan).isEnabled =
+            (status == ConnectivityObserver.Status.Available)
+
         when (status) {
             ConnectivityObserver.Status.Available -> {
 
@@ -889,12 +913,12 @@ class MainActivity : AppCompatActivity(), ActivityRestartable,
                             )
                         )
 
-                        Toast.makeText(
-                            this,
-                            getString(R.string.login_successful),
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+//                        Toast.makeText(
+//                            this,
+//                            getString(R.string.login_successful),
+//                            Toast.LENGTH_SHORT
+//                        )
+//                            .show()
 
                         // Update menu UI
                         updateMenuItemVisibility()

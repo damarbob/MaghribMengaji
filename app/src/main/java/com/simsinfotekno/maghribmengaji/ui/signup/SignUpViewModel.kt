@@ -1,5 +1,6 @@
 package com.simsinfotekno.maghribmengaji.ui.signup
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -50,11 +51,12 @@ class SignUpViewModel : ViewModel() {
 
                 isReferralValid = true // Referral code is VALID
                 referredUser = user
-
+                Log.d("SignUpViewModel", "Referral code is VALID")
             }.onFailure { e ->
                 // If referral check fails, display a message to the user.
 //                _authResult.value = Result.failure(e)
 //                _progressVisibility.value = false
+                Log.d("SignUpViewModel", "Referral code is INVALID")
             }
         }
 
@@ -62,6 +64,8 @@ class SignUpViewModel : ViewModel() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    Log.d("SignUpViewModel", "Sign up successful")
+                    Log.d("SignUpViewModel", "User: ${task.result?.user}")
 
                     // Sign up success
                     val user = task.result?.user
@@ -76,6 +80,7 @@ class SignUpViewModel : ViewModel() {
                         user.updateProfile(profileUpdates)
                             .addOnCompleteListener { profileUpdateTask ->
                                 if (profileUpdateTask.isSuccessful) {
+                                    Log.d("SignUpViewModel", "User profile updated")
 
                                     // TODO: Move to use case
                                     // Create new student instance
@@ -96,6 +101,7 @@ class SignUpViewModel : ViewModel() {
 
                                     db.add(newStudent).addOnCompleteListener {
                                         if (it.isSuccessful) {
+                                            Log.d("SignUpViewModel", "New student data created")
 
                                             // Deposit to referred user
                                             if (isReferralValid) {
@@ -105,6 +111,7 @@ class SignUpViewModel : ViewModel() {
                                                         MaghribMengajiUser.AFFILIATE_REWARD
                                                     ) { transactionResult ->
                                                         transactionResult.onSuccess {
+                                                            Log.d("SignUpViewModel", "Deposit to referred user successful")
                                                             studentRepository.setStudent(
                                                                 newStudent
                                                             ) // Set newStudent to repository
@@ -112,6 +119,7 @@ class SignUpViewModel : ViewModel() {
                                                                 Result.success(user) // Return user
                                                             _progressVisibility.value = false
                                                         }.onFailure { e ->
+                                                            Log.d("SignUpViewModel", "Deposit to referred user failed")
                                                             _authResult.value =
                                                                 Result.failure(e)
                                                             _progressVisibility.value = false
@@ -119,6 +127,7 @@ class SignUpViewModel : ViewModel() {
                                                     }
                                                 }
                                             } else { // When referral is invalid, return user too
+                                                Log.d("SignUpViewModel", "Not deposit to referred user because referral is invalid, return user")
                                                 studentRepository.setStudent(
                                                     newStudent
                                                 ) // Set newStudent to repository
@@ -128,6 +137,8 @@ class SignUpViewModel : ViewModel() {
                                             }
 
                                         } else {
+                                            Log.d("SignUpViewModel", "Failed to create newStudent data")
+
                                             // Failed to create newStudent data
                                             _authResult.value = Result.failure(
                                                 it.exception
@@ -138,6 +149,7 @@ class SignUpViewModel : ViewModel() {
                                     }
 
                                 } else {
+                                    Log.d("SignUpViewModel", "Failed to update user profile")
                                     // If user profile update fails, display a message to the user.
                                     _authResult.value = Result.failure(
                                         profileUpdateTask.exception
@@ -148,18 +160,18 @@ class SignUpViewModel : ViewModel() {
                             }
 
                     } else {
+                        Log.d("SignUpViewModel", "User is null")
                         // User is null, handle this case if needed
                         _authResult.value = Result.failure(Exception("User is null"))
                         _progressVisibility.value = false
                     }
                 } else {
+                    Log.d("SignUpViewModel", "Sign up failed")
                     // If sign up fails, display a message to the user.
                     _authResult.value =
                         Result.failure(task.exception ?: Exception("Sign up failed"))
                     _progressVisibility.value = false
                 }
             }
-
-
     }
 }
