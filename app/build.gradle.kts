@@ -75,7 +75,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-auth")
-    implementation ("com.google.firebase:firebase-messaging:23.1.2")
+    implementation ("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-functions")
 
     // Also add the dependency for the Google Play services library and specify its version

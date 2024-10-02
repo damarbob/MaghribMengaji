@@ -131,6 +131,20 @@ class UstadhListViewModel : ViewModel() {
 
         _getUstadhResult.value = Result.success(teachers)
     }
+//    fun sendNotificationToUstadh(ustadhId: String) {
+//        // Call to backend API to send a notification
+//        val notificationRequest = NotificationRequest(ustadhId, "New Student", "A student has chosen you as their ustadh.")
+//        apiService.sendNotification(notificationRequest).enqueue(object : Callback<Unit> {
+//            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+//                Log.d("Notification", "Notification sent to ustadh successfully")
+//            }
+//
+//            override fun onFailure(call: Call<Unit>, t: Throwable) {
+//                Log.e("Notification", "Failed to send notification", t)
+//            }
+//        })
+//    }
+
 
 
 //    fun getUstadhFromDb() {
