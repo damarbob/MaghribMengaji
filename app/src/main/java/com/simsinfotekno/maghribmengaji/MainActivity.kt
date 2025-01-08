@@ -42,7 +42,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.jakewharton.processphoenix.ProcessPhoenix
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
@@ -825,6 +827,43 @@ class MainActivity : AppCompatActivity(), ActivityRestartable,
 
     }
 
+    private fun getFCMToken() {
+
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FCM", "Fetching FCM token failed", task.exception)
+                    return@addOnCompleteListener
+                }
+                // Get new FCM registration token
+                val token = task.result
+                Log.d("FCM Token", "Token: $token")
+                saveTokenToFirestore(token)
+            }
+    }
+
+        // Save token to Firestore
+        private fun saveTokenToFirestore(token: String) {
+            val db = FirebaseFirestore.getInstance()
+
+            db.collection(MaghribMengajiUser.COLLECTION).whereEqualTo("id", Firebase.auth.currentUser?.uid).get()
+                .addOnSuccessListener { querySnapshot ->
+                    if (querySnapshot.documents.isNotEmpty()) {
+                        val document = querySnapshot.documents[0]
+                        val documentId = document.id
+
+                        db.collection(MaghribMengajiUser.COLLECTION).document(documentId)
+                            .update("fcmToken", token)
+                            .addOnSuccessListener {
+                                Log.d("Firestore", "FCM token saved successfully.")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("Firestore", "Failed to save token", e)
+                            }
+                    }
+                }
+        }
+
     private fun runAuthentication() {
 
         /* Auth */
@@ -922,6 +961,9 @@ class MainActivity : AppCompatActivity(), ActivityRestartable,
 
                         // Update menu UI
                         updateMenuItemVisibility()
+
+                        // Set FCM Token
+                        getFCMToken()
 
                         // Start retrieving user data
                         student.ustadhId?.let { retrieveUstadhProfile(it) }

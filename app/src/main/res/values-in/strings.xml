@@ -326,4 +326,5 @@
     <string name="scan">Scan</string>
     <string name="please_make_sure_you_enter_the_referral_code_correctly_because_it_cannot_be_changed">Tolong pastikan Antum memasukkan kode referal dengan benar karena tidak dapat diubah.</string>
     <string name="scanned_result_is_null_or_empty">Hasil scan gagal diperoleh</string>
+    <string name="ustadh_has_not_given_a_mark_yet">Ustadz belum memberi nilai</string>
 </resources>

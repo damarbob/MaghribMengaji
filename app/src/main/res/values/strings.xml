@@ -338,4 +338,5 @@
     <string name="scan">Scan</string>
     <string name="please_make_sure_you_enter_the_referral_code_correctly_because_it_cannot_be_changed">Please make sure you enter the referral code correctly because it cannot be changed.</string>
     <string name="scanned_result_is_null_or_empty">Scanned result is null or empty</string>
+    <string name="ustadh_has_not_given_a_mark_yet">Ustadh has not given a mark yet</string>
 </resources>

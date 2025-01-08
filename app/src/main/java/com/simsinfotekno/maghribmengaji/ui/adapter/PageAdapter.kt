@@ -93,11 +93,17 @@ class PageAdapter(
         // Set the icon based on the completion status
         val status = quranPageStatusCheck(page)
         val quranPageStudent = quranPageStudentRepository.getRecordByPageId(page.id)
+        val ocrScore = quranPageStudent?.oCRScore ?: 0
+        val tidinessScore = quranPageStudent?.tidinessScore ?: 0
+        val accuracyScore = quranPageStudent?.accuracyScore ?: 0
+        val consistencyScore = quranPageStudent?.consistencyScore ?: 0
         when (status) {
             QuranItemStatus.FINISHED -> {
                 viewHolder.imageStatus.visibility = View.GONE
                 viewHolder.textViewScore.visibility = View.VISIBLE
-                if (quranPageStudent?.oCRScore != null) viewHolder.textViewScore.text = quranPageStudent.oCRScore.toString() else viewHolder.textViewScore.text = "0"
+                if (quranPageStudent?.oCRScore != null) {
+                    viewHolder.textViewScore.text = ((ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4).toString()
+                } else viewHolder.textViewScore.text = "0"
 //                viewHolder.textViewScore.text = quranPageStudent?.oCRScore.toString()
 //                viewHolder.imageStatus.setImageDrawable(
 //                    AppCompatResources.getDrawable(
@@ -108,15 +114,15 @@ class PageAdapter(
             }
 
             QuranItemStatus.ON_PROGRESS -> {
-//                viewHolder.imageStatus.setImageDrawable(
-//                    AppCompatResources.getDrawable(
-//                        viewHolder.imageStatus.context,
-//                        R.drawable.hourglass_empty_24px
-//                    )
-//                )
-                viewHolder.imageStatus.visibility = View.GONE
-                viewHolder.textViewScore.visibility = View.VISIBLE
-                if (quranPageStudent?.oCRScore != null) viewHolder.textViewScore.text = quranPageStudent.oCRScore.toString() else viewHolder.textViewScore.text = "0"
+                viewHolder.imageStatus.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        viewHolder.imageStatus.context,
+                        R.drawable.hourglass_empty_24px
+                    )
+                )
+                viewHolder.imageStatus.visibility = View.VISIBLE
+                viewHolder.textViewScore.visibility = View.GONE
+//                if (quranPageStudent?.oCRScore != null) viewHolder.textViewScore.text = quranPageStudent.oCRScore.toString() else viewHolder.textViewScore.text = "0"
             }
 
             QuranItemStatus.NONE -> {

@@ -263,12 +263,12 @@
                     android:text="uploaded at 12:00"
                     android:fontFamily="@font/plus_jakarta_sans_variable"
                     android:textStyle="bold"
-                    android:textSize="@dimen/Text.H5"
+                    android:textSize="@dimen/Text.P"
                     android:layout_marginTop="48dp"
                     android:paddingHorizontal="16dp"
                     android:textAlignment="center"/>
 
-                <!--<TextView
+                <TextView
                     android:id="@+id/pageCheckResultTextViewPreliminaryText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -276,13 +276,13 @@
                     android:text="@string/similarity"
                     app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorPreliminary"
                     app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorPreliminary"
-                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewUploadedAt" />
 
                 <TextView
                     android:id="@+id/pageCheckResultTextViewPreliminaryResult"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="100"
+                    android:text="00"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/pageCheckResultProgressIndicatorPreliminary"
@@ -298,7 +298,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="4dp"
-                    android:progress="100"
+                    android:progress="0"
                     app:indicatorColor="@color/md_theme_primary"
                     app:indicatorSize="72dp"
                     app:layout_constraintEnd_toStartOf="@id/pageCheckResultProgressIndicatorTidiness"
@@ -315,13 +315,13 @@
                     android:text="@string/tidiness"
                     app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorTidiness"
                     app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorTidiness"
-                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewUploadedAt" />
 
                 <TextView
                     android:id="@+id/pageCheckResultTextViewTidinessResult"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="100"
+                    android:text="00"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/pageCheckResultProgressIndicatorTidiness"
@@ -337,7 +337,7 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="4dp"
-                    android:progress="100"
+                    android:progress="0"
                     app:indicatorSize="72dp"
                     app:layout_constraintEnd_toStartOf="@id/pageCheckResultProgressIndicatorAccuracy"
                     app:layout_constraintStart_toEndOf="@id/pageCheckResultProgressIndicatorPreliminary"
@@ -353,13 +353,13 @@
                     android:text="@string/accuracy"
                     app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorAccuracy"
                     app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorAccuracy"
-                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewUploadedAt" />
 
                 <TextView
                     android:id="@+id/pageCheckResultTextViewAccuracyResult"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="10"
+                    android:text="00"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/pageCheckResultProgressIndicatorAccuracy"
@@ -375,7 +375,7 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="4dp"
-                    android:progress="100"
+                    android:progress="0"
                     app:indicatorColor="@color/md_theme_inversePrimary"
                     app:indicatorSize="72dp"
                     app:layout_constraintEnd_toStartOf="@id/pageCheckResultProgressIndicatorConsistency"
@@ -392,13 +392,13 @@
                     android:text="@string/consistency"
                     app:layout_constraintEnd_toEndOf="@+id/pageCheckResultProgressIndicatorConsistency"
                     app:layout_constraintStart_toStartOf="@+id/pageCheckResultProgressIndicatorConsistency"
-                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultCircularProgressScore" />
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewUploadedAt" />
 
                 <TextView
                     android:id="@+id/pageCheckResultTextViewConsistencyResult"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="100"
+                    android:text="00"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/pageCheckResultProgressIndicatorConsistency"
@@ -414,14 +414,27 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
-                    android:progress="100"
+                    android:progress="0"
                     app:indicatorColor="@color/md_theme_primary"
                     app:indicatorSize="72dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/pageCheckResultProgressIndicatorAccuracy"
                     app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewConsistencyText"
                     app:trackCornerRadius="4dp"
-                    app:trackThickness="8dp" />-->
+                    app:trackThickness="8dp" />
+
+                <TextView
+                    android:id="@+id/pageCheckResultTextViewStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                    android:text="@string/ustadh_has_not_given_a_mark_yet"
+                    android:textAlignment="center"
+                    android:textColor="@color/md_theme_error"
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultProgressIndicatorConsistency"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
                 <ImageView
                     android:id="@+id/pageCheckResultImageViewStudentPageImage"
@@ -437,7 +450,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewUploadedAt" />
+                    app:layout_constraintTop_toBottomOf="@id/pageCheckResultTextViewStatus" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
