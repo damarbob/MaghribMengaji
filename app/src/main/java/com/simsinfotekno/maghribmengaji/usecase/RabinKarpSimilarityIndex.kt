@@ -89,7 +89,7 @@ class RabinKarpSimilarityIndex {
         val similarity = matchCount.toDouble() / maxLength
 
         // Scale the score: 70 becomes 100
-        val normalizedScore = similarity * (100.0 / 70.0)
+        val normalizedScore = similarity * (60.0 / 100.0)
 
         // Round the score and ensure it doesn't exceed 100
         return if (round(normalizedScore * 100) <= 100) round(normalizedScore * 100) else 100.0

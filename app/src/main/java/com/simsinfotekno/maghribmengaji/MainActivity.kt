@@ -46,6 +46,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
+import com.google.firebase.messaging.FirebaseMessaging
 import com.jakewharton.processphoenix.ProcessPhoenix
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPages
@@ -76,6 +77,7 @@ import com.simsinfotekno.maghribmengaji.usecase.RequestPermissionsUseCase
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveQuranPageStudent
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserProfile
 import com.simsinfotekno.maghribmengaji.usecase.RetrieveUserTransactions
+import com.simsinfotekno.maghribmengaji.usecase.RetriveFCMkeyFromUser
 import com.simsinfotekno.maghribmengaji.usecase.ScheduleDailyNotificationUseCase
 import com.simsinfotekno.maghribmengaji.utils.BitmapToUriUtil
 import org.greenrobot.eventbus.Subscribe
@@ -152,12 +154,16 @@ class MainActivity : AppCompatActivity(), ActivityRestartable,
     private lateinit var myBilled: BillingClient
     private val courseList = listOf("")
 
+    private lateinit var db: FirebaseFirestore
+
     companion object {
         val TAG: String = MainActivity::class.java.simpleName
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        db = FirebaseFirestore.getInstance()
 
         //set schedule notif
         val sharedPreferences = getSharedPreferences("NotificationPrefs", MODE_PRIVATE)
@@ -207,6 +213,8 @@ class MainActivity : AppCompatActivity(), ActivityRestartable,
                 }
             }
         }
+        RetriveFCMkeyFromUser()
+
         // setup for IAP
 //        private fun doMyBiller() {
 //            myBiller = MyBiller.newBuilder(this)
@@ -394,6 +402,14 @@ class MainActivity : AppCompatActivity(), ActivityRestartable,
             return@setNavigationItemSelectedListener true
         }
 
+
+
+
+
+
+    }
+    private fun sendTokenToServer(token: String?) {
+        // Here, send the token to your server (or use it directly)
         viewModel.studentLiveData.observe(this) { maghribMengajiUser ->
             // Only show bottom nav if the role is student
             binding.mainBottomNavigationView.visibility =
@@ -1172,7 +1188,6 @@ class MainActivity : AppCompatActivity(), ActivityRestartable,
 //            navController.navigate(R.id.ustadhHomeFragment)
 //
 //        }
-
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)

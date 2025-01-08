@@ -20,7 +20,8 @@ class JaroWinklerSimilarityIndex {
         val rawScore = jaroWinklerDistance(cleanStr1, cleanStr2)
 
         // Normalize the raw score to 0-100
-        return normalizeScore(rawScore, cleanStr1.length, cleanStr2.length)
+        //return normalizeScore(rawScore)
+        return rawScore
     }
 
     /**
@@ -88,9 +89,9 @@ class JaroWinklerSimilarityIndex {
      * Normalize the Jaro-Winkler index to a scale of 0 to 100
      * where 70 is scaled to 100.
      */
-    private fun normalizeScore(rawScore: Double, length: Int, length1: Int): Double {
+    private fun normalizeScore(rawScore: Double): Double {
         // Normalize to a 0-100 scale where 70 maps to 100
-        val normalizedScore = rawScore * (100.0 / 70.0)
+        val normalizedScore = rawScore * (70.0 / 100.00)
 
         // Round and return the normalized score
         return if (round(normalizedScore * 100) <= 100) round(normalizedScore * 100) else 100.0

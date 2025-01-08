@@ -28,9 +28,9 @@ class JaroSimilarityIndex {
         val jaroScore = (m.toDouble() / cleanStr1.length + m.toDouble() / cleanStr2.length + t) / 2.0
 
         // Normalize the Jaro score
-        //return normalizeScore(jaroScore)
+        return normalizeScore(jaroScore)
         //nonactive for testing
-        return jaroScore
+        //return jaroScore
     }
 
     /**
@@ -61,14 +61,13 @@ class JaroSimilarityIndex {
         }
         return m
     }
-
     /**
      * Normalize the Jaro index to a scale of 0 to 100
      * where 90 is scaled to 100.
      */
     private fun normalizeScore(rawScore: Double): Double {
         // Normalize to a 0-100 scale where 90 maps to 100
-        val normalizedScore = ((rawScore) / (90.0 / 100.0))
+        val normalizedScore = ((rawScore) / (70.0 / 100.0))
 
         // Round and return the normalized score
         return if (round(normalizedScore * 100) <= 100) round(normalizedScore * 100) else 100.0

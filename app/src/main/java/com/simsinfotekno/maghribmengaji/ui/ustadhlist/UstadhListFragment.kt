@@ -88,6 +88,9 @@ class UstadhListFragment : Fragment() {
                 transactionService.depositTo(ustadhId, MaghribMengajiUser.TEACHER_REWARD) {
                     it.onSuccess {
 
+                        // Send a notification to the teacher
+                        //viewModel.sendNotificationToUstadh(ustadhId)
+
                         // Show success message
                         Toast.makeText(
                             requireContext(),
@@ -131,5 +134,7 @@ class UstadhListFragment : Fragment() {
         viewModel.getUstadhFromDb()
 
         return binding.root
+
     }
+
 }
