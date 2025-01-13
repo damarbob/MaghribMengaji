@@ -385,17 +385,40 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
 //        setCheckResult()
 
         /* Observers */
+        // Observe QuranPageStudent
         viewModel.quranPageStudent.observe(viewLifecycleOwner) { quranPageStudent ->
             Log.d(TAG, "ViewModel's QuranPageStudent: $quranPageStudent")
             val ocrScore = quranPageStudent?.oCRScore ?: 0
+            val tidinessScore = quranPageStudent?.tidinessScore ?: 0
+            val accuracyScore = quranPageStudent?.accuracyScore ?: 0
+            val consistencyScore = quranPageStudent?.consistencyScore ?: 0
 
-            binding.pageCheckResultTextViewOverallScore.text = ocrScore.toString()
-            binding.pageCheckResultCircularProgressScore.progress = ocrScore
+            binding.pageCheckResultTextViewOverallScore.text = ((ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4).toString()
+            binding.pageCheckResultCircularProgressScore.progress = (ocrScore + tidinessScore + accuracyScore + consistencyScore) / 4
+
+            binding.pageCheckResultTextViewPreliminaryResult.text = ocrScore.toString()
+            binding.pageCheckResultProgressIndicatorPreliminary.progress = ocrScore
+
+            binding.pageCheckResultTextViewTidinessResult.text = tidinessScore.toString()
+            binding.pageCheckResultProgressIndicatorTidiness.progress = tidinessScore
+
+            binding.pageCheckResultTextViewAccuracyResult.text = accuracyScore.toString()
+            binding.pageCheckResultProgressIndicatorAccuracy.progress = accuracyScore
+
+            binding.pageCheckResultTextViewConsistencyResult.text = consistencyScore.toString()
+            binding.pageCheckResultProgressIndicatorConsistency.progress = consistencyScore
+
+            if (tidinessScore != 0 && accuracyScore != 0 && consistencyScore != 0) {
+                binding.pageCheckResultTextViewStatus.visibility = View.GONE
+            } else {
+                binding.pageCheckResultTextViewStatus.visibility = View.VISIBLE
+            }
+
 //            binding.pageCheckResultTextViewUploadedAt.text =
 //                getString(R.string.submitted_at_x, Calendar.getInstance().apply {
 //                    timeInMillis = quranPageStudent?.createdAt!!.seconds*1000
 //                }.time)
-            val sfd = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.FULL, SimpleDateFormat.DEFAULT, Locale.UK)
+            val sfd = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.FULL, SimpleDateFormat.DEFAULT, Locale.getDefault())
             binding.pageCheckResultTextViewUploadedAt.text =
                 getString(R.string.submitted_at_x,
 //                    quranPageStudent?.createdAt?.seconds?.let { sfd.format(Date(it*1000)) })
@@ -680,16 +703,16 @@ class PageFragment : Fragment(), ActivityResultCallback<ActivityResult> {
         val consistencyScore = pageStudent?.consistencyScore ?: 0
 
         binding.pageCheckResultTextViewOverallScore.text = ocrScore.toString()
-        /*binding.pageCheckResultTextViewPreliminaryResult.text = ocrScore.toString()
+        binding.pageCheckResultTextViewPreliminaryResult.text = ocrScore.toString()
         binding.pageCheckResultTextViewTidinessResult.text = tidinessScore.toString()
         binding.pageCheckResultTextViewAccuracyResult.text = accuracyScore.toString()
-        binding.pageCheckResultTextViewConsistencyResult.text = consistencyScore.toString()*/
+        binding.pageCheckResultTextViewConsistencyResult.text = consistencyScore.toString()
 
         binding.pageCheckResultCircularProgressScore.progress = ocrScore
-        /*binding.pageCheckResultProgressIndicatorPreliminary.progress = ocrScore
+        binding.pageCheckResultProgressIndicatorPreliminary.progress = ocrScore
         binding.pageCheckResultProgressIndicatorTidiness.progress = tidinessScore
         binding.pageCheckResultProgressIndicatorAccuracy.progress = accuracyScore
-        binding.pageCheckResultProgressIndicatorConsistency.progress = consistencyScore*/
+        binding.pageCheckResultProgressIndicatorConsistency.progress = consistencyScore
 
         pageStudent?.pictureUriString?.let {
             loadImageIntoImageView(it, binding.pageCheckResultImageViewStudentPageImage, false)
