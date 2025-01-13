@@ -1,5 +1,6 @@
 package com.simsinfotekno.maghribmengaji.ui.similarityscore
 
+import JaroWinklerSimilarityIndex
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
@@ -25,7 +26,6 @@ import com.simsinfotekno.maghribmengaji.usecase.ExtractTextFromQuranAPIJSON
 import com.simsinfotekno.maghribmengaji.usecase.FetchQuranPageUseCase
 import com.simsinfotekno.maghribmengaji.usecase.JaccardSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.JaroSimilarityIndex
-import com.simsinfotekno.maghribmengaji.usecase.JaroWinklerSimilarityIndex
 import com.simsinfotekno.maghribmengaji.usecase.MaghribBonusUseCase
 import com.simsinfotekno.maghribmengaji.usecase.OCRAsyncTask
 import com.simsinfotekno.maghribmengaji.usecase.QRCodeScannerUseCase
@@ -92,7 +92,8 @@ class SimilarityScoreViewModel : ViewModel() {
     private val extractQRCodeToPageIdUseCase = ExtractQRCodeToPageIdUseCase()
     private val maghribBonusUseCase = MaghribBonusUseCase()
     private val submitStreakBonusUseCase = SubmitStreakBonusUseCase()
-    /*Algorithm*/
+
+    /* Algorithm */
     private val jaccardSimilarityIndex = JaccardSimilarityIndex()
     private val editDistanceSimilarityIndex= EditDistanceSimilarityIndex()
     private val jaroWinklerSimilarityIndex= JaroWinklerSimilarityIndex()

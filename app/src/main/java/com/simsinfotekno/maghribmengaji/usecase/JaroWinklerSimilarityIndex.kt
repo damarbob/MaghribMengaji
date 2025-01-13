@@ -1,4 +1,4 @@
-package com.simsinfotekno.maghribmengaji.usecase
+import com.simsinfotekno.maghribmengaji.usecase.RemoveDiacritics
 
 import kotlin.math.min
 import kotlin.math.round
@@ -20,8 +20,7 @@ class JaroWinklerSimilarityIndex {
         val rawScore = jaroWinklerDistance(cleanStr1, cleanStr2)
 
         // Normalize the raw score to 0-100
-        //return normalizeScore(rawScore)
-        return rawScore
+        return normalizeScore(rawScore, cleanStr1.length, cleanStr2.length)
     }
 
     /**
@@ -34,7 +33,7 @@ class JaroWinklerSimilarityIndex {
         if (m == 0.0) return 0.0
 
         val j = (m / str1.length + m / str2.length + (m - mtp[1]) / m) / 3.0
-        val jw = if (j < 0.7) j else j + min(0.1, 1.0 / mtp[3]) * mtp[2] * (1 - j)
+        val jw = if (j < 1.0) j else j + min(0.1, 1.0 / mtp[3]) * mtp[2] * (1 - j)
 
         return jw
     }
@@ -89,9 +88,9 @@ class JaroWinklerSimilarityIndex {
      * Normalize the Jaro-Winkler index to a scale of 0 to 100
      * where 70 is scaled to 100.
      */
-    private fun normalizeScore(rawScore: Double): Double {
+    private fun normalizeScore(rawScore: Double, length: Int, length1: Int): Double {
         // Normalize to a 0-100 scale where 70 maps to 100
-        val normalizedScore = rawScore * (70.0 / 100.00)
+        val normalizedScore = rawScore * (100.0 / 100.0)
 
         // Round and return the normalized score
         return if (round(normalizedScore * 100) <= 100) round(normalizedScore * 100) else 100.0

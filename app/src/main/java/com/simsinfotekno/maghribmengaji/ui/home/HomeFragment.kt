@@ -24,7 +24,6 @@ import com.google.android.material.transition.MaterialFade
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.jakewharton.processphoenix.ProcessPhoenix
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranChapterRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageBookmarkStudentRepository
 import com.simsinfotekno.maghribmengaji.MainApplication.Companion.quranPageStudentRepository
@@ -547,7 +546,7 @@ class HomeFragment : Fragment() {
     private fun setupBanner() {
         val bannerList = ArrayList<Int>()
         bannerList.apply {
-            add(R.drawable.banner_1)
+            add(R.drawable.banner_1_new)
             add(R.drawable.banner_2)
             add(R.drawable.banner_3)
         }

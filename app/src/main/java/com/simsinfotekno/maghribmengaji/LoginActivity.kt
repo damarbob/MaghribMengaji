@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -62,8 +61,8 @@ class LoginActivity : AppCompatActivity() {
             (supportFragmentManager.findFragmentById(binding.loginContent.navHostFragmentContentLogin.id) as NavHostFragment).navController
 
         // Set the status bar color
-        window.statusBarColor =
-            ContextCompat.getColor(this, R.color.md_theme_primaryContainer)
+//        window.statusBarColor =
+//            ContextCompat.getColor(this, R.color.md_theme_primaryContainer)
         setStatusBarTextColor(isLightTheme = false)// Set the status bar text color
 
         // Bottom sheet attributes
